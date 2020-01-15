@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragment.Login_Fragment_2"
+    android:gravity="center"
+    android:orientation="vertical">
+<tech.iwish.taxi.extended.TextViewFont
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:textColor="@color/white"
+    android:text="Auto Verifying OTP send to"
+    android:textSize="16sp"/>
+<tech.iwish.taxi.extended.TextViewFont
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:text="8871121959"
+    android:textColor="@color/white"
+    android:textSize="16sp"/>
+
+    <tech.iwish.taxi.extended.EditTextFont
+        android:id="@+id/otp_check"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="80dp"
+        android:padding="5dp"
+        android:inputType="number"
+        android:layout_marginStart="80dp"
+        android:layout_marginTop="10dp"/>
+
+
+    <Button
+        android:id="@+id/otp_button"
+        android:layout_width="match_parent"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:padding="8dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/login_button_design"
+        android:layout_height="wrap_content"
+        android:text="@string/continu"/>
+</LinearLayout>

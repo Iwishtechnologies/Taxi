@@ -1,18 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".activity.MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <fragment
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+<!--<LinearLayout-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="match_parent"-->
+<!--    android:orientation="vertical">-->
+<!--    <androidx.drawerlayout.widget.DrawerLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:elevation="30dp">-->
+<!--        <com.google.android.material.navigation.NavigationView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:layout_gravity="start"-->
+<!--            app:menu="@menu/navigation_menu">-->
+<!--        </com.google.android.material.navigation.NavigationView>-->
+<!--    </androidx.drawerlayout.widget.DrawerLayout>-->
+<!--</LinearLayout>-->
+
+    <tech.iwish.taxi.extended.TextViewFont
+        android:id="@+id/pickup"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/search_place_design_main"
+        android:inputType="text"
+        android:ellipsize="end"
+        android:onClick="locationpic"
+        android:tag="pickLocations"
+        android:singleLine="true"
+        android:maxLines="1"
+        android:elevation="10dp"
+        android:paddingEnd="20dp"
+        android:shadowColor="@color/blackColor"
+        android:shadowDx="10"
+        android:shadowDy="5"
+        android:textColor="@color/blackColor"
+        app:fonttype="font5"
+        android:padding="10dp" />
+    <tech.iwish.taxi.extended.TextViewFont
+        android:id="@+id/droplocation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/pickup"
+        android:onClick="locationpic"
+        android:tag="dropLocations"
+        app:fonttype="font5"
+        android:paddingLeft="15dp"
+        android:ellipsize="end"
+        android:elevation="10dp"
+        android:textColor="@color/blackColor"
+        android:shadowColor="@color/blackColor"
+        android:text="Enter drop location"
+        android:shadowDx="10"
+        android:shadowDy="5"
+        android:singleLine="true"
+        android:maxLines="1"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/search_place_design_main"
+        android:padding="10dp" />
+    <!--    <fragment android:id="@+id/droplocation"-->
+    <!--        android:layout_below="@id/pickUplocation"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment" />-->
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <!--    <TextView-->
+    <!--        android:id="@+id/pickUplocation"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:background="@color/whiteColor"-->
+    <!--        android:padding="8dp"-->
+    <!--        android:hint="search"-->
+    <!--        android:textSize="16sp"-->
+    <!--        android:layout_marginStart="20dp"-->
+    <!--        android:layout_marginEnd="20dp"-->
+    <!--        android:ellipsize="end"-->
+    <!--        android:inputType="text"-->
+    <!--        android:maxLines="1"/>-->
+
+
+    <ImageView
+        android:id="@+id/blue_pin_icon"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_centerInParent="true"
+        android:elevation="5dp" />
+    <ImageView
+        android:id="@+id/red_pin_icon"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_centerInParent="true"
+        android:elevation="5dp" />
+
+    <FrameLayout
+        android:id="@+id/confirRide"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+    </FrameLayout>
+
+</RelativeLayout>

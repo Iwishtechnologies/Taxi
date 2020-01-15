@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".fragment.LoginFragment_1">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical">
+        <tech.iwish.taxi.extended.TextViewFont
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/login"
+            android:gravity="center"
+            android:textSize="27sp"
+            android:padding="3dp"
+            android:layout_marginBottom="5dp"
+            android:textColor="@color/white"
+            app:fonttype="font7"/>
+        <tech.iwish.taxi.extended.TextViewFont
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/registered"
+            android:gravity="center"
+            android:layout_marginBottom="5dp"
+            android:padding="2dp"
+            android:textSize="12sp"
+            android:textColor="@color/white"
+            app:fonttype="font7"/>
+        <tech.iwish.taxi.extended.EditTextFont
+            android:id="@+id/mobile_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white"
+            android:hint="Mobile number"
+            android:backgroundTint="@color/white"/>
+        <Button
+            android:id="@+id/login_button"
+            android:layout_width="match_parent"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            android:padding="8dp"
+            android:layout_marginEnd="20dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/login_button_design"
+            android:text="@string/continu"/>
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_login"
+    android:orientation="vertical"
+    android:padding="50dp"
+    tools:context=".activity.SignupActivity">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:src="@drawable/taxi_logo" />
+
+    <tech.iwish.taxi.extended.EditTextFont
+        android:id="@+id/signup_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:background="@drawable/login_edit_design"
+        android:drawableLeft="@drawable/user_icon_login"
+        android:drawablePadding="15dp"
+        android:hint="Name"
+        android:inputType="text"
+        android:paddingLeft="8dp"
+        android:paddingTop="3dp"
+        android:paddingRight="20dp"
+        android:paddingBottom="3dp"
+        android:textColor="@color/white"
+        android:textColorHint="@color/white"
+        app:fonttype="font5" />
+
+    <tech.iwish.taxi.extended.EditTextFont
+        android:id="@+id/signup_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/login_edit_design"
+        android:drawableLeft="@drawable/email_login_icon"
+        android:drawablePadding="15dp"
+        android:hint="Email Id"
+        android:inputType="text"
+        android:paddingLeft="8dp"
+        android:paddingTop="3dp"
+        android:paddingRight="20dp"
+        android:paddingBottom="3dp"
+        android:textColor="@color/white"
+        android:textColorHint="@color/white"
+        app:fonttype="font5" />
+
+    <tech.iwish.taxi.extended.EditTextFont
+        android:id="@+id/signup_contact"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/login_edit_design"
+        android:drawableLeft="@drawable/user_icon_login"
+        android:drawablePadding="15dp"
+        android:hint="Contact"
+        android:inputType="text"
+        android:paddingLeft="8dp"
+        android:paddingTop="3dp"
+        android:paddingRight="20dp"
+        android:paddingBottom="3dp"
+        android:textColor="@color/white"
+        android:textColorHint="@color/white"
+        app:fonttype="font5" />
+
+    <tech.iwish.taxi.extended.EditTextFont
+        android:id="@+id/signup_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/login_edit_design"
+        android:drawableLeft="@drawable/password_icon"
+        android:drawablePadding="15dp"
+        android:hint="Password"
+        android:inputType="text"
+        android:paddingLeft="8dp"
+        app:fonttype="font5"
+        android:paddingTop="3dp"
+        android:paddingRight="20dp"
+        android:paddingBottom="3dp"
+        android:textColor="@color/white"
+        android:textColorHint="@color/white" />
+
+    <tech.iwish.taxi.extended.ButtonFont
+        android:id="@+id/signup_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        app:fonttype="font10"
+        android:background="@drawable/login_edit_button_design"
+        android:text="SIGN IN" />
+
+</LinearLayout>
+
+
+
+
+
+
+
+
+
+
+

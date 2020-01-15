@@ -1,0 +1,122 @@
+{
+  "project_info": {
+    "project_number": "430920252155",
+    "firebase_url": "https://driver-ef8e9.firebaseio.com",
+    "project_id": "driver-ef8e9",
+    "storage_bucket": "driver-ef8e9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:430920252155:android:898b6504b8f0f4a1ba4e5e",
+        "android_client_info": {
+          "package_name": "com.example.taxidriver"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "430920252155-29f9033nfhffob0i85mignth8mcjm79g.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.taxidriver",
+            "certificate_hash": "5d642a101c9d8da2657e660396322dc6f9effd41"
+          }
+        },
+        {
+          "client_id": "430920252155-o9msgvmg3c624fvb5128qt4l6phkrae8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCdh-ZLF--XSps6pinZ-ku3VSXU4lf8KXs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "430920252155-o9msgvmg3c624fvb5128qt4l6phkrae8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:430920252155:android:f78a0a4ae768dce3ba4e5e",
+        "android_client_info": {
+          "package_name": "com.vacuum.routedirectionmap"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "430920252155-jkafvr3badboi7vubkq8l7d8c1rvh628.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.vacuum.routedirectionmap",
+            "certificate_hash": "5d642a101c9d8da2657e660396322dc6f9effd41"
+          }
+        },
+        {
+          "client_id": "430920252155-o9msgvmg3c624fvb5128qt4l6phkrae8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCdh-ZLF--XSps6pinZ-ku3VSXU4lf8KXs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "430920252155-o9msgvmg3c624fvb5128qt4l6phkrae8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:430920252155:android:971c94e6be1f53cfba4e5e",
+        "android_client_info": {
+          "package_name": "tech.iwish.taxi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "430920252155-k2uvfh156s7m88p2n2u76vsqtrp3tqa1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "tech.iwish.taxi",
+            "certificate_hash": "d58ab37350c14d9cafc0aa28a9bcbe0810f0b12d"
+          }
+        },
+        {
+          "client_id": "430920252155-o9msgvmg3c624fvb5128qt4l6phkrae8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCdh-ZLF--XSps6pinZ-ku3VSXU4lf8KXs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "430920252155-o9msgvmg3c624fvb5128qt4l6phkrae8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

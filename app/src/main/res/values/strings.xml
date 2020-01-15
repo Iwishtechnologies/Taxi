@@ -1,3 +1,21 @@
 <resources>
     <string name="app_name">Taxi</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="rideDetails">RIDE DETAILS</string>
+    <string name="tripDistance">Trip Distane</string>
+    <string name="tripduration">Trip Duration</string>
+    <string name="billDetails">BILL DETAILS</string>
+    <string name="rideFare">Ride Fare</string>
+    <string name="specialDiscount">Special Discount</string>
+    <string name="total_access_fee">Total Access Fee</string>
+    <string name="booking_fee">Booking Fee</string>
+    <string name="Total_fare">Booking Fee</string>
+    <string name="callDriver">CALL DRIVER</string>
+    <string name="note">Note : This is total fare for your ride. It might change if you change your drop or route.</string>
+    <string name="login">Login</string>
+    <string name="continu">CONTINUE</string>
+    <string name="registered">Enter Your registered mobile number</string>
+
 </resources>

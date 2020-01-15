@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ProximaFonts">
+        <attr name="fonttype" format="enum">
+            <enum name ="font1" value="1"></enum>
+            <enum name="font2" value="2"></enum>
+            <enum name ="font3" value="3"></enum>
+            <enum name="font4" value="4"></enum>
+            <enum name="font5" value="5"></enum>
+            <enum name="font6" value="6"></enum>
+            <enum name="font7" value="7"></enum>
+            <enum name="font8" value="8"></enum>
+            <enum name="font9" value="9"></enum>
+            <enum name="font10" value="10"></enum>
+        </attr>
+    </declare-styleable>
+    <declare-styleable name="FontIcon_iconname">
+    </declare-styleable>
+</resources>
