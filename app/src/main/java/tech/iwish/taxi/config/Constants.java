@@ -18,10 +18,12 @@ public class Constants {
     public static String URL = "http://173.212.226.143:8082/";
 
     public static String SEARCH_PLACE = URL+"placesearch";
+    public static String SEARCH_PLACE_PICKUP = URL+"user/placesearch/pickup";
     public static String Vehicle = URL+"categoryVehical";
     public static String USER_SIGUP = URL+"user/signup";
     public static String USER_LOGIN = URL+"user/login";
     public static String USER_OTP= URL+"user/otp";
+    public static String PICKUPLOCATIONREQUEST= URL+"user/pickupLocationRequest";
 
 
     public static String DISTANCE = URL+"distanceapi";

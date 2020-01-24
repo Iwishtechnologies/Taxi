@@ -60,7 +60,7 @@
         android:drawableLeft="@drawable/user_icon_login"
         android:drawablePadding="15dp"
         android:hint="Contact"
-        android:inputType="text"
+        android:inputType="number"
         android:paddingLeft="8dp"
         android:paddingTop="3dp"
         android:paddingRight="20dp"
@@ -78,7 +78,8 @@
         android:drawableLeft="@drawable/password_icon"
         android:drawablePadding="15dp"
         android:hint="Password"
-        android:inputType="text"
+        android:visibility="gone"
+        android:inputType="textPassword"
         android:paddingLeft="8dp"
         app:fonttype="font5"
         android:paddingTop="3dp"
@@ -94,8 +95,22 @@
         android:layout_marginTop="20dp"
         app:fonttype="font10"
         android:background="@drawable/login_edit_button_design"
-        android:text="SIGN IN" />
+        android:text="SIGN Up" />
 
+    <LinearLayout
+        android:id="@+id/login_activity_go"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/login_activity"
+            android:gravity="center"
+            android:padding="5dp"
+            android:textColor="@color/white"
+            android:textSize="12sp"/>
+    </LinearLayout>
 </LinearLayout>
 
 

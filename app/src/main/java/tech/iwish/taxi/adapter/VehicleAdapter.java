@@ -26,8 +26,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.WebSocket;
+import okhttp3.WebSocketListener;
+import okio.ByteString;
 import tech.iwish.taxi.R;
 
+import tech.iwish.taxi.activity.MainActivity;
 import tech.iwish.taxi.config.Constants;
 import tech.iwish.taxi.config.SharedpreferencesUser;
 import tech.iwish.taxi.connection.ConnectionServer;
@@ -43,23 +51,26 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.Viewhold
 
     List<VehicleList> vehicleList;
     Context context;
-    private int currentSelectedPosition = RecyclerView.NO_POSITION ;
-    private Map  data ;
-    Map<String , LatLng>  allLatLng ;
-    Map<String , Double>  latitude_logitude ;
+    private int currentSelectedPosition = RecyclerView.NO_POSITION;
+    private Map data;
+    Map<String, LatLng> AllLatLng;
+    Map<String, Double> latitude_logitude;
     List<DistanceList> distanceLists = new ArrayList<>();
+    Map<String, String> AddressMap;
+    VehicleLatLon vehicleLatLongWebSocket ;
 
 
-    public VehicleAdapter(FragmentActivity activity, List<VehicleList> vehicleList , Map<String, LatLng> allLatLng  , Map<String, Double> latitude_logitude) {
+
+    public VehicleAdapter(FragmentActivity activity, List<VehicleList> vehicleList, Map<String, LatLng> allLatLng, Map<String, Double> latitude_logitude, Map<String, String> AddressMap) {
 
         this.vehicleList = vehicleList;
         this.context = activity;
-        this.allLatLng = allLatLng ;
-        this.latitude_logitude = latitude_logitude ;
+        this.AllLatLng = allLatLng;
+        this.latitude_logitude = latitude_logitude;
+        this.AddressMap = AddressMap;
 
 
     }
-
 
 
     @NonNull
@@ -79,9 +90,9 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.Viewhold
         holder.clickConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-            SharedpreferencesUser sharedpreferencesUser = new SharedpreferencesUser(context);
-            data = sharedpreferencesUser.getShare();
-            Object userContact =data.get(USER_CONTACT);
+                SharedpreferencesUser sharedpreferencesUser = new SharedpreferencesUser(context);
+                data = sharedpreferencesUser.getShare();
+                Object userContact = data.get(USER_CONTACT);
 
                 currentSelectedPosition = position;
                 notifyDataSetChanged();
@@ -89,7 +100,7 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.Viewhold
             }
         });
 
-        if (currentSelectedPosition == position){
+        if (currentSelectedPosition == position) {
 
 //            holder.clickConfirm.setBackgroundColor(context.getResources().getColor(R.color.yellowColor));
             holder.clickConfirm.setBackground(context.getResources().getDrawable(R.drawable.click_design));
@@ -99,24 +110,75 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.Viewhold
                 public void onClick(View view) {
 
 
-                Firebase url = new Firebase("https://driver-ef8e9.firebaseio.com/confirm/");
-                Firebase firebase = url.child("LatlngPick");
-                Firebase firebase1 = url.child("VehicleType");
-                Firebase firebase2 = url.child("UserType");
-                Firebase firebase3 = url.child("LatlngDrop");
-                firebase.setValue(allLatLng.get("PickupCurrentLocation"));
-                firebase1.setValue(vehicleList.get(position).getCatagory_name());
-                firebase2.setValue(data.get(USER_CONTACT));
-                firebase3.setValue(allLatLng.get("DroplocationLatLng"));
-
                     RideConfiremDriverDetailsFragment rideConfiremDriverDetailsFragment = new RideConfiremDriverDetailsFragment();
-                    FragmentManager fm = ((FragmentActivity)context).getSupportFragmentManager();
+                    FragmentManager fm = ((FragmentActivity) context).getSupportFragmentManager();
                     fm.beginTransaction().replace(R.id.confirRide, rideConfiremDriverDetailsFragment).commit();
 
 
+                    //=================================web socket============================================
+                    SharedpreferencesUser sharedpreferencesUser = new SharedpreferencesUser(context);
+                    Map data = sharedpreferencesUser.getShare();
+                    Object mobile = data.get(USER_CONTACT);
+                    AddressMap.get("PickupCityName");
+                    AddressMap.get("PickupstateName");
+                    AddressMap.get("PickupcountryName");
+
+                    final String Json = "{\"pickUpLat\" : \"" + latitude_logitude.get("PickLatitude") + "\" ,\"pickUpLong\" : \"" + latitude_logitude.get("PickLogitude") + "\" , \"userType\" : \"client\" , \"type\" : \"vehicleInfo\" , \"userID\" : \"" + mobile.toString() + "\" , \"PickupCityName\" : \"" + AddressMap.get("PickupCityName") + "\" , \"PickupstateName\" : \"" + AddressMap.get("PickupstateName") + "\" , \"PickupStretName\" : \"" + AddressMap.get("PickupStretName") + "\"}";
+                    WebSocketListener webSocketListener = new WebSocketListener() {
+                        @Override
+                        public void onOpen(WebSocket webSocket, Response response) {
+                            webSocket.send(Json);
+
+                        }
+
+                        @Override
+                        public void onMessage(WebSocket webSocket, String text) {
+//                            onMessage(webSocket, text);
+                            Log.e("value",text);
+//                            vehicleLatLongWebSocket.vehicaleLatlong(26.1234,72.01234 );
+
+//                            JsonHelper jsonHelper = new JsonHelper(text);
+//                            String response = jsonHelper.GetResult("response");
+//                            if(response.equals("TRUE")){
+//
+//                            }
+                        }
+
+                        @Override
+                        public void onMessage(WebSocket webSocket, ByteString bytes) {
+                            onMessage(webSocket, bytes);
+                        }
+
+                        @Override
+                        public void onClosing(WebSocket webSocket, int code, String reason) {
+                            onClosing(webSocket, code, reason);
+                            webSocket.close(1000, null);
+                            webSocket.cancel();
+                            Log.e("onCllosing", "CLOSE: " + code + " " + reason);
+                        }
+
+                        @Override
+                        public void onClosed(WebSocket webSocket, int code, String reason) {
+                            onClosed(webSocket, code, reason);
+                        }
+
+                        @Override
+                        public void onFailure(WebSocket webSocket, Throwable t, Response response) {
+                            onFailure(webSocket, t, response);
+
+                        }
+                    };
+                    WebSocket webSocket;
+                    OkHttpClient okHttpClient = new OkHttpClient();
+                    Request request = new Request.Builder().url("ws://173.212.226.143:8090/").build();
+                    webSocket = okHttpClient.newWebSocket(request, webSocketListener);
+                    okHttpClient.dispatcher().executorService();
+
+//                    =============================================================================
+
                 }
             });
-        }else {
+        } else {
             holder.button_Conirm.setVisibility(View.GONE);
             holder.clickConfirm.setBackground(context.getResources().getDrawable(R.drawable.fragment_design_vehicle));
         }
@@ -133,7 +195,7 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.Viewhold
         LinearLayout clickConfirm;
         LinearLayout button_Conirm;
         Button booking_confirm;
-        TextView total_rate , total_titme;
+        TextView total_rate, total_titme;
 
         public Viewholder(@NonNull View itemView) {
             super(itemView);
@@ -144,4 +206,14 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.Viewhold
             total_titme = (TextView) itemView.findViewById(R.id.total_titme);
         }
     }
+
+    public void Setvehicle(VehicleLatLon vehicleLatLon){
+        this.vehicleLatLongWebSocket = vehicleLatLon ;
+    }
+
+    public interface VehicleLatLon{
+         void vehicaleLatlong(Double latitude , Double longitude);
+    }
+
+
 }

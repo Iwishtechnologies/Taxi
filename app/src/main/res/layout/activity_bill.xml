@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activity.BillActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/whiteColor"
+        android:orientation="horizontal"
+        android:padding="15dp">
+
+        <tech.iwish.taxi.extended.TextViewFont
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/bill"
+            android:textColor="@color/blackColor"
+            android:textSize="17sp"
+            app:fonttype="font5" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/orangeColor"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        android:weightSum="2">
+
+        <tech.iwish.taxi.extended.TextViewFont
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:layout_weight="1"
+            android:gravity="end"
+            android:text="@string/rs_symbol"
+            android:textColor="@color/whiteColor"
+            android:textSize="17sp" />
+
+        <tech.iwish.taxi.extended.TextViewFont
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="79"
+            android:textColor="@color/whiteColor"
+            android:textSize="30sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="15dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="10dp"
+            android:weightSum="2">
+
+            <tech.iwish.taxi.extended.TextViewFont
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:text="Jan 13" />
+
+            <tech.iwish.taxi.extended.TextViewFont
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:text="Monday , 02:30pm" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_marginTop="35dp">
+<!--            <LinearLayout-->
+<!--                android:layout_width="2dp"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:background="@drawable/dash_line"-->
+<!--                android:layout_marginStart="8dp"-->
+<!--                android:layout_marginTop="20dp">-->
+<!--            </LinearLayout>-->
+            <View
+                android:layout_width="2dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/dash_line" >
+            </View>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="18dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/create_circule"
+                    android:text="" />
+
+                <tech.iwish.taxi.extended.TextViewFont
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:text="City Center, Gwalior"
+                    android:textColor="@color/blackColor"
+                    android:textSize="15sp"
+                    app:fonttype="font5" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="18dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/create_circule"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="18dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/create_circule"
+                    android:text="" />
+
+                <tech.iwish.taxi.extended.TextViewFont
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:text="City Center, Gwalior"
+                    android:textColor="@color/blackColor"
+                    android:textSize="15sp"
+                    app:fonttype="font5" />
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="2"
+            android:layout_marginTop="20dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2"
+                android:orientation="vertical"
+                android:padding="5dp"
+                android:gravity="center">
+                <tech.iwish.taxi.extended.TextViewFont
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/rating"
+                    android:gravity="center"/>
+                <RatingBar
+                    android:id="@+id/ratingBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:numStars="5" />
+            </LinearLayout>
+        </LinearLayout>
+        <tech.iwish.taxi.extended.TextViewFont
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/payment_option"
+            android:textSize="20sp"
+            android:textColor="@color/blackColor"/>
+
+        <tech.iwish.taxi.extended.TextViewFont
+            android:layout_width="200dp"
+            android:layout_gravity="center"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:background="@drawable/cash_design"
+            android:padding="5dp"
+            android:text="@string/cash"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/blackColor"/>
+
+    </LinearLayout>
+</LinearLayout>

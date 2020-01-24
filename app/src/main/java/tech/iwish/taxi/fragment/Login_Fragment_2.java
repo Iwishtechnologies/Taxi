@@ -17,6 +17,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.goodiebag.pinview.Pinview;
+
 import org.json.JSONArray;
 
 import java.util.ArrayList;
@@ -37,6 +39,7 @@ public class Login_Fragment_2 extends Fragment {
     private Button otp_button ;
     private EditText otp_check ;
     private List<User_DetailsList> user_detailsLists = new ArrayList<>() ;
+    private Pinview pinview ;
 
 
     @Nullable
@@ -45,7 +48,18 @@ public class Login_Fragment_2 extends Fragment {
         View view = inflater.inflate(R.layout.fragment_login__fragment_2 , null);
 
         otp_button = (Button)view.findViewById(R.id.otp_button);
-        otp_check = (EditText)view.findViewById(R.id.otp_check);
+//        otp_check = (EditText)view.findViewById(R.id.otp_check);
+        pinview = (Pinview)view.findViewById(R.id.pinview);
+        pinview.setPinHeight(100);
+        pinview.setPinWidth(100);
+        pinview.setPinBackgroundRes(R.drawable.pin_design);
+//        pinview.setPinViewEventListener(new Pinview.PinViewEventListener() {
+//            @Override
+//            public void onDataEntered(Pinview pinview, boolean fromUser) {
+//                Toast.makeText(getActivity(), ""+pinview, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getActivity(), ""+fromUser, Toast.LENGTH_SHORT).show();
+//            }
+//        });
 
 
 
@@ -61,7 +75,7 @@ public class Login_Fragment_2 extends Fragment {
                 connectionServer.set_url(Constants.USER_OTP);
                 connectionServer.requestedMethod("POST");
                 connectionServer.buildParameter("mobile_number" , mobile);
-                connectionServer.buildParameter("otp" , otp_check.getText().toString().trim());
+                connectionServer.buildParameter("otp" , pinview.getValue());
                 connectionServer.execute(new ConnectionServer.AsyncResponse() {
                     @Override
                     public void processFinish(String output) {

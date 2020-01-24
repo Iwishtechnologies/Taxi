@@ -16,6 +16,33 @@
     <string name="note">Note : This is total fare for your ride. It might change if you change your drop or route.</string>
     <string name="login">Login</string>
     <string name="continu">CONTINUE</string>
+    <string name="cash">cash</string>
+    <string name="payment_option">PAYMENT OPTION</string>
+    <string name="rating">How was yours ride experience ?</string>
     <string name="registered">Enter Your registered mobile number</string>
+    <string name="title_activity_navigation_map">NavigationMap</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+    <string name="rs_symbol">\u20B9</string>
+    <string name="bill">Your Bill</string>
+
+    <string name="menu_home">Home</string>
+    <string name="ride_history">Ride Historu</string>
+    <string name="rate_card">Rate Card</string>
+    <string name="payment">Payment</string>
+    <string name="refer_earn">Refer  Earn</string>
+    <string name="menu_share">Share</string>
+    <string name="menu_send">Send</string>
+    <string name="open">Open</string>
+    <string name="close">Close</string>
+    <string name="daily">DAILY</string>
+    <string name="rental">RENTAL</string>
+    <string name="outstation">OUTSTATION</string>
+    <string name="login_activity">If You Are Signed In Click Here to Continue</string>
+    <string name="title_activity_navigation_avtivity">NavigationAvtivity</string>
 
 </resources>

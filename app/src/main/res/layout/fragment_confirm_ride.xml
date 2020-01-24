@@ -10,79 +10,10 @@
        <androidx.recyclerview.widget.RecyclerView
            android:id="@+id/vehicle_recycle"
            android:layout_width="match_parent"
-           android:layout_height="match_parent">
+           android:layout_height="match_parent"
+           android:nestedScrollingEnabled="false"
+           android:animateLayoutChanges="false">
        </androidx.recyclerview.widget.RecyclerView>
-<!--        <LinearLayout-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_weight="1"-->
-<!--            android:background="@drawable/fragment_design_vehicle"-->
-<!--            android:orientation="vertical"-->
-<!--            android:layout_margin="10dp"-->
-<!--            android:padding="5dp">-->
-<!--            <TextView-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:gravity="center"-->
-<!--                android:layout_gravity="center"-->
-<!--                android:textColor="@color/blackColor"-->
-<!--                android:text="Auto"/>-->
-<!--            <TextView-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:gravity="center"-->
-<!--                android:layout_gravity="center"-->
-<!--                android:textColor="@color/blackColor"-->
-<!--                android:text="Total Fair"-->
-<!--                android:padding="5dp"-->
-<!--                android:textSize="14sp"/>-->
-<!--            <TextView-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:gravity="center"-->
-<!--                android:layout_gravity="center"-->
-<!--                android:textColor="@color/blackColor"-->
-<!--                android:text="79"/>-->
-<!--            <RelativeLayout-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content">-->
-<!--                <ImageView-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:src="@drawable/car_image"/>-->
-<!--            </RelativeLayout>-->
-
-<!--            <LinearLayout-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:orientation="horizontal"-->
-<!--                android:weightSum="2"-->
-<!--                android:gravity="center"-->
-<!--                android:layout_gravity="center">-->
-<!--                <TextView-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="2"/>-->
-<!--                <TextView-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="min"/>-->
-<!--            </LinearLayout>-->
-<!--            <LinearLayout-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="30dp"-->
-<!--                android:orientation="vertical"-->
-<!--                android:layout_gravity="center"-->
-<!--                android:gravity="center">-->
-<!--                <Button-->
-<!--                    android:text="BOOK NOW"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:textSize="10sp"-->
-<!--                    android:background="@drawable/button_design_vehicle"/>-->
-<!--            </LinearLayout>-->
-<!--        </LinearLayout>-->
-
 
 
 </LinearLayout>
