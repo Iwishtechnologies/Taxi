@@ -20,6 +20,8 @@ public class SharedpreferencesUser {
     public static final String LOCATION_CHANGE = "mo" ;
     public static final String DROP_INTENT_CITY = "" ;
     public static final String PICKUP_INTENT_CITY = "" ;
+    public static final String JSON = "json" ;
+    public static final String DATA_WB = "datawb" ;
 
 
     SharedPreferences.Editor editor;
@@ -69,8 +71,25 @@ public class SharedpreferencesUser {
     }
     public void pickup_location_Intenrt_Destrou(){
         editor.remove(PICKUP_INTENT_CITY).commit();
+
     }
 
 
+     public void setjson(String json ){
+        editor.putString(JSON,json);
+        editor.commit();
+     }
+
+     public String getjson()
+     {
+       return   Preferences.getString(JSON,null);
+     }
+
+     public void getDatas(String string){
+        editor.putString(DATA_WB , string).commit();
+     }
+     public String getdata(){
+        return  Preferences.getString(DATA_WB , null);
+     }
 
 }

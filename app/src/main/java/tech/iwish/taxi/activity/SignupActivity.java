@@ -67,10 +67,7 @@ public class SignupActivity extends AppCompatActivity {
 //                    signup_email.setError("Please Enter Valid Number ");
 //                    return false ;
 //                }
-                if(signup_password.getText().toString().trim().isEmpty()){
-                    signup_email.setError("Please Fill Your Password");
-                    return false ;
-                }
+
 
                 return true;
             }

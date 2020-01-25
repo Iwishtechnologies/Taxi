@@ -123,7 +123,7 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.Viewhold
                     AddressMap.get("PickupstateName");
                     AddressMap.get("PickupcountryName");
 
-                    final String Json = "{\"pickUpLat\" : \"" + latitude_logitude.get("PickLatitude") + "\" ,\"pickUpLong\" : \"" + latitude_logitude.get("PickLogitude") + "\" , \"userType\" : \"client\" , \"type\" : \"vehicleInfo\" , \"userID\" : \"" + mobile.toString() + "\" , \"PickupCityName\" : \"" + AddressMap.get("PickupCityName") + "\" , \"PickupstateName\" : \"" + AddressMap.get("PickupstateName") + "\" , \"PickupStretName\" : \"" + AddressMap.get("PickupStretName") + "\"}";
+                    final String Json = "{\"pickUpLat\" : \"" + latitude_logitude.get("PickLatitude") + "\"  ,\"pickUpLong\" : \"" + latitude_logitude.get("PickLogitude") + "\" ,\"DropLocationLatitude\" : \""+latitude_logitude.get("dropLatitude")+"\",\"DropLocationLogitude\" : \""+latitude_logitude.get("dropLongitude")+"\"  , \"userType\" : \"client\" , \"type\" : \"vehicleCall\" , \"userID\" : \"" + mobile.toString() + "\" , \"PickupCityName\" : \"" + AddressMap.get("PickupCityName") + "\" , \"PickupstateName\" : \"" + AddressMap.get("PickupstateName") + "\" , \"PickupStretName\" : \"" + AddressMap.get("PickupStretName") + "\"}";
                     WebSocketListener webSocketListener = new WebSocketListener() {
                         @Override
                         public void onOpen(WebSocket webSocket, Response response) {
@@ -146,25 +146,25 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.Viewhold
 
                         @Override
                         public void onMessage(WebSocket webSocket, ByteString bytes) {
-                            onMessage(webSocket, bytes);
+//                            onMessage(webSocket, bytes);
                         }
 
                         @Override
                         public void onClosing(WebSocket webSocket, int code, String reason) {
-                            onClosing(webSocket, code, reason);
-                            webSocket.close(1000, null);
-                            webSocket.cancel();
-                            Log.e("onCllosing", "CLOSE: " + code + " " + reason);
+//                            onClosing(webSocket, code, reason);
+//                            webSocket.close(1000, null);
+//                            webSocket.cancel();
+//                            Log.e("onCllosing", "CLOSE: " + code + " " + reason);
                         }
 
                         @Override
                         public void onClosed(WebSocket webSocket, int code, String reason) {
-                            onClosed(webSocket, code, reason);
+//                            onClosed(webSocket, code, reason);
                         }
 
                         @Override
                         public void onFailure(WebSocket webSocket, Throwable t, Response response) {
-                            onFailure(webSocket, t, response);
+//                            onFailure(webSocket, t, response);
 
                         }
                     };

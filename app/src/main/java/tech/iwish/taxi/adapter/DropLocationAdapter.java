@@ -20,6 +20,7 @@ import java.util.List;
 import tech.iwish.taxi.R;
 
 import tech.iwish.taxi.config.SharedpreferencesUser;
+import tech.iwish.taxi.fragment.ConfirmRideFragment;
 import tech.iwish.taxi.other.DropLocationList;
 
 public class DropLocationAdapter extends RecyclerView.Adapter<DropLocationAdapter.Viewholder> {
@@ -56,10 +57,10 @@ public class DropLocationAdapter extends RecyclerView.Adapter<DropLocationAdapte
 
 
 
-//                Intent intent = new Intent(context, MainActivity.class);
-//                intent.putExtra("dropLocation" , dropLocationLists.get(position).getDescription());
-//                context.startActivity(intent);
                 droplocationnameinterface.setdropPlace(dropLocationLists.get(position).getDescription());
+//                ConfirmRideFragment confirmRideFragment = new ConfirmRideFragment(AllLatLng, latitude_logitude, AddressMap);
+//                 getSupportFragmentManager().beginTransaction().replace(R.id.confirRide, confirmRideFragment).commit();
+
 
             }
         });

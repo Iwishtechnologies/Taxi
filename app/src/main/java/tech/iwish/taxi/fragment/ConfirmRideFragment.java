@@ -106,8 +106,6 @@ public class ConfirmRideFragment extends Fragment {
                             @Override
                             public void vehicaleLatlong(Double latitude, Double longitude) {
                                 vehicleInterfaces.vehicaleLatLongWeb(latitude , longitude);
-                                Toast.makeText(getContext(), ""+latitude, Toast.LENGTH_SHORT).show();
-                                Toast.makeText(getContext(), ""+longitude, Toast.LENGTH_SHORT).show();
 
                             }
                         });
