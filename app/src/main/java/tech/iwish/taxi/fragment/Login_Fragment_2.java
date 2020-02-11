@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.goodiebag.pinview.Pinview;
@@ -40,6 +41,7 @@ public class Login_Fragment_2 extends Fragment {
     private EditText otp_check ;
     private List<User_DetailsList> user_detailsLists = new ArrayList<>() ;
     private Pinview pinview ;
+    private TextView mobNumber;
 
 
     @Nullable
@@ -50,9 +52,14 @@ public class Login_Fragment_2 extends Fragment {
         otp_button = (Button)view.findViewById(R.id.otp_button);
 //        otp_check = (EditText)view.findViewById(R.id.otp_check);
         pinview = (Pinview)view.findViewById(R.id.pinview);
+        mobNumber = (TextView)view.findViewById(R.id.mobNumber);
         pinview.setPinHeight(100);
         pinview.setPinWidth(100);
         pinview.setPinBackgroundRes(R.drawable.pin_design);
+
+        String mobile = getArguments().getString("number");
+        mobNumber.setText(mobile);
+
 //        pinview.setPinViewEventListener(new Pinview.PinViewEventListener() {
 //            @Override
 //            public void onDataEntered(Pinview pinview, boolean fromUser) {
@@ -68,8 +75,6 @@ public class Login_Fragment_2 extends Fragment {
             public void onClick(View view) {
 
 
-                String mobile = getArguments().getString("number");
-//                Toast.makeText(getActivity(), ""+mobile, Toast.LENGTH_SHORT).show();
 
                 ConnectionServer connectionServer = new ConnectionServer();
                 connectionServer.set_url(Constants.USER_OTP);

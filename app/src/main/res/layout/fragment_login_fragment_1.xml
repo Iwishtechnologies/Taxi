@@ -1,56 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:gravity="center"
+    android:orientation="vertical"
     tools:context=".fragment.LoginFragment_1">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
+        android:layout_height="match_parent"
         android:layout_alignParentBottom="true"
-        android:orientation="vertical">
-        <tech.iwish.taxi.extended.TextViewFont
+        android:orientation="vertical"
+        android:weightSum="2">
+
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/login"
+            android:layout_weight="2"
             android:gravity="center"
-            android:textSize="27sp"
-            android:padding="3dp"
-            android:layout_marginBottom="5dp"
-            android:textColor="@color/white"
-            app:fonttype="font7"/>
-        <tech.iwish.taxi.extended.TextViewFont
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/registered"
-            android:gravity="center"
-            android:layout_marginBottom="5dp"
-            android:padding="2dp"
-            android:textSize="12sp"
-            android:textColor="@color/white"
-            app:fonttype="font7"/>
-        <tech.iwish.taxi.extended.EditTextFont
-            android:id="@+id/mobile_number"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="number"
-            android:textColor="@color/white"
-            android:textColorHint="@color/white"
-            android:hint="Mobile number"
-            android:backgroundTint="@color/white"/>
+            android:orientation="vertical"
+            android:paddingBottom="30dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <tech.iwish.taxi.extended.TextViewFont
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:gravity="center"
+                    android:padding="2dp"
+                    android:text="@string/login"
+                    android:textColor="@color/blackColor"
+                    android:textSize="27sp"
+                    app:fonttype="font7" />
+
+                <tech.iwish.taxi.extended.TextViewFont
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:gravity="center"
+                    android:padding="2dp"
+                    android:text="@string/registered"
+                    android:textColor="@color/blackColor"
+                    android:textSize="12sp"
+                    app:fonttype="font7" />
+
+                <tech.iwish.taxi.extended.EditTextFont
+                    android:id="@+id/mobile_number"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/blackColor"
+                    android:foregroundGravity="center"
+                    android:hint="Mobile number"
+                    android:inputType="number"
+                    android:textColor="@color/blackColor"
+                    android:textColorHint="@color/blackColor"
+                    android:windowSoftInputMode="stateVisible|adjustPan" />
+            </LinearLayout>
+
+            <com.github.ybq.android.spinkit.SpinKitView
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/login_progress"
+                style="@style/SpinKitView.Large.Circle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:visibility="gone"
+                app:SpinKit_Color="@color/orangeColor" />
+        </RelativeLayout>
+
         <Button
             android:id="@+id/login_button"
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
             android:layout_marginStart="20dp"
             android:layout_marginTop="10dp"
-            android:padding="8dp"
             android:layout_marginEnd="20dp"
-            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
             android:background="@drawable/login_button_design"
-            android:text="@string/continu"/>
-    </LinearLayout>
+            android:padding="8dp"
+            android:text="@string/continu" />
 
+
+    </LinearLayout>
 </LinearLayout>

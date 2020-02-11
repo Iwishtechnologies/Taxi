@@ -1,6 +1,13 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 
+repositories {
+    mavenCentral()
+    flatDir {
+        dirs 'libs'
+    }
+}
+
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
@@ -49,6 +56,8 @@ dependencies {
     implementation 'com.google.android.gms:play-services-maps:16.1.0'
     implementation 'com.google.android.gms:play-services-location:16.0.0'
 
+    implementation 'com.android.support:appcompat-v7:29.1.0'
+    implementation 'com.android.support:design:29.0.1'
 
     implementation 'com.github.mancj:MaterialSearchBar:0.8.2'
 //    https://github.com/lopspower/CircularImageView
@@ -63,4 +72,20 @@ dependencies {
     implementation 'com.github.mohammadatif:Animatoo:master'
 
     implementation 'com.squareup.okhttp3:okhttp:3.11.0'
+
+    implementation 'com.squareup.retrofit2:retrofit:2.1.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.1.0'
+    implementation 'com.squareup.retrofit2:converter-scalars:2.3.0'
+
+    implementation 'com.github.tintinscorpion:CarMarker-Animation:1.1'
+
+    implementation 'com.kaopiz:kprogresshud:1.1.0'
+
+    implementation 'com.google.code.gson:gson:2.8.5'
+//    https://github.com/sahildave/Search-View-Layout
+    implementation 'xyz.sahildave:searchviewlayout:0.6'
+//    https://github.com/ybq/Android-SpinKit
+    implementation 'com.github.ybq:Android-SpinKit:1.4.0'
+
+    implementation 'com.razorpay:checkout:1.5.13'
 }

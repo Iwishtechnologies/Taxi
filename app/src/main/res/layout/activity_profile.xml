@@ -8,10 +8,22 @@
     android:weightSum="2"
     tools:context=".activity.ProfileActivity">
 
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/profile_image"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_gravity="center"
+        android:src="@drawable/user_photo"
+        android:layout_marginTop="120dp"
+        app:civ_border_color="@color/silverColor"
+        app:civ_border_width="1dp" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="0.9"
+        android:layout_weight="1"
         android:orientation="vertical">
 
         <ImageView
@@ -22,14 +34,15 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1.1"
+        android:layout_weight="1"
         android:background="@drawable/profile_background_design"
         android:gravity="center"
         android:orientation="vertical"
-        android:paddingLeft="30dp"
-        android:paddingRight="30dp">
+        android:paddingLeft="40dp"
+        android:paddingRight="40dp">
 
         <tech.iwish.taxi.extended.EditTextFont
+            android:id="@+id/profile_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/profile_edit_design"
@@ -40,18 +53,9 @@
             android:layout_marginBottom="5dp"
             android:paddingStart="15dp"
             android:padding="5dp" />
+
         <tech.iwish.taxi.extended.EditTextFont
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/profile_edit_design"
-            android:inputType="text"
-            android:hint="Last Name"
-            android:textSize="17sp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:paddingStart="15dp"
-            android:padding="5dp" />
-        <tech.iwish.taxi.extended.EditTextFont
+            android:id="@+id/profile_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/profile_edit_design"
@@ -63,6 +67,7 @@
             android:paddingStart="15dp"
             android:padding="5dp" />
         <tech.iwish.taxi.extended.EditTextFont
+            android:id="@+id/user_number"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/profile_edit_design"
@@ -73,5 +78,10 @@
             android:layout_marginBottom="5dp"
             android:paddingStart="15dp"
             android:padding="5dp" />
+       <ImageView
+           android:layout_width="25dp"
+           android:layout_height="25dp"
+           android:src="@drawable/edit_design_btn"
+           android:layout_marginTop="20dp"/>
     </LinearLayout>
 </LinearLayout>

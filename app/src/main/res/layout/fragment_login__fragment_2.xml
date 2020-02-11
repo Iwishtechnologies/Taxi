@@ -1,49 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".fragment.Login_Fragment_2"
+    android:layout_marginBottom="20dp"
     android:gravity="center"
-    android:orientation="vertical">
-<tech.iwish.taxi.extended.TextViewFont
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:gravity="center"
-    android:textColor="@color/white"
-    android:text="Auto Verifying OTP send to"
-    android:textSize="16sp"/>
-<tech.iwish.taxi.extended.TextViewFont
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:gravity="center"
-    android:text="8871121959"
-    android:textColor="@color/white"
-    android:textSize="16sp"/>
+    android:orientation="vertical"
+    tools:context=".fragment.Login_Fragment_2">
 
-    <com.goodiebag.pinview.Pinview
-        android:id="@+id/pinview"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:pinWidth="50dp"
-        app:pinHeight="50dp"
-        app:pinLength="4"
-        app:textSize="5sp"
-        app:cursorVisible="false"
-        app:forceKeyboard="false"
-        app:hint="0"
-        app:inputType="number"
-        app:password="false"/>
+        android:layout_weight="1"
+        android:gravity="center"
+        android:layout_marginBottom="40dp"
+        android:orientation="vertical">
+
+        <tech.iwish.taxi.extended.TextViewFont
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Auto Verifying OTP send to"
+            android:textColor="@color/blackColor"
+            android:textSize="16sp" />
+
+        <tech.iwish.taxi.extended.TextViewFont
+            android:id="@+id/mobNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="8871121959"
+            android:textColor="@color/blackColor"
+            android:textSize="16sp" />
+
+        <com.goodiebag.pinview.Pinview
+            android:id="@+id/pinview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cursorVisible="false"
+            app:forceKeyboard="false"
+            app:hint="0"
+            app:inputType="number"
+            app:password="false"
+            app:pinHeight="50dp"
+            app:pinLength="4"
+            app:pinWidth="50dp"
+            app:textSize="8sp" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/otp_button"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="10dp"
-        android:padding="8dp"
         android:layout_marginEnd="20dp"
         android:background="@drawable/login_button_design"
-        android:layout_height="wrap_content"
-        android:text="@string/continu"/>
+        android:padding="8dp"
+        android:text="@string/continu" />
 </LinearLayout>

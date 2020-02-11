@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
+    android:layout_height="match_parent">
     <LinearLayout
         android:id="@+id/header_navigationss"
         android:layout_width="match_parent"
@@ -12,35 +11,51 @@
         android:orientation="horizontal"
         android:weightSum="2"
         android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp">
+        android:layout_marginBottom="15dp">
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="15dp">
-            <ImageView
+            <de.hdodenhof.circleimageview.CircleImageView
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/profile_image"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_marginEnd="10dp"
-                android:src="@drawable/pin_icon"/>
+                android:src="@drawable/user_photo"
+                app:civ_border_color="@color/silverColor"
+                app:civ_border_width="1dp" />
+
         </LinearLayout>
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="2"
             android:layout_gravity="center"
-            android:gravity="center">
+            android:orientation="vertical"
+            android:layout_marginStart="5dp"
+            android:weightSum="2">
             <tech.iwish.taxi.extended.TextViewFont
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="My Profile"
-                android:padding="5dp"
-                android:textSize="17sp"
-                android:gravity="center"
-                android:layout_gravity="center"/>
+                android:layout_weight="1"
+                app:fonttype="font10"
+                android:textColor="@color/blackColor"
+                android:textSize="17sp" />
+            <tech.iwish.taxi.extended.TextViewFont
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="8871121959"
+                android:layout_weight="1"
+                app:fonttype="font5"
+                android:textColor="@color/blackColor"
+                android:textSize="12sp" />
         </LinearLayout>
+
     </LinearLayout>
-   <View
+
+    <View
        android:layout_width="match_parent"
        android:layout_height="1dp"
-       android:background="@color/blackColor"/>
+       android:background="@color/silverColor"/>
 </LinearLayout>

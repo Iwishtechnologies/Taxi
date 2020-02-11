@@ -12,10 +12,11 @@
     <string name="total_access_fee">Total Access Fee</string>
     <string name="booking_fee">Booking Fee</string>
     <string name="Total_fare">Booking Fee</string>
+    <string name="ride_now">Ride Now</string>
     <string name="callDriver">CALL DRIVER</string>
     <string name="note">Note : This is total fare for your ride. It might change if you change your drop or route.</string>
     <string name="login">Login</string>
-    <string name="continu">CONTINUE</string>
+    <string name="continu">Continue</string>
     <string name="cash">cash</string>
     <string name="payment_option">PAYMENT OPTION</string>
     <string name="rating">How was yours ride experience ?</string>
@@ -29,20 +30,34 @@
     <string name="action_settings">Settings</string>
     <string name="rs_symbol">\u20B9</string>
     <string name="bill">Your Bill</string>
+    <string name="confirm">Confirm</string>
+    <string name="book_now">Book now</string>
 
     <string name="menu_home">Home</string>
-    <string name="ride_history">Ride Historu</string>
+    <string name="ride_history">Ride History</string>
     <string name="rate_card">Rate Card</string>
     <string name="payment">Payment</string>
     <string name="refer_earn">Refer  Earn</string>
+    <string name="wallet">Wallet</string>
+    <string name="fill_amount">Pleace fill amount</string>
+    <string name="support">Support</string>
+    <string name="about">About</string>
     <string name="menu_share">Share</string>
+    <string name="logout">Logout</string>
+    <string name="add_money">Add Money to your Account</string>
     <string name="menu_send">Send</string>
+    <string name="add_money_wallet">Add Money</string>
+    <string name="rayru_wallet">Rayru Wallet</string>
     <string name="open">Open</string>
+    <string name="available_bal">Available Balance</string>
     <string name="close">Close</string>
-    <string name="daily">DAILY</string>
-    <string name="rental">RENTAL</string>
-    <string name="outstation">OUTSTATION</string>
-    <string name="login_activity">If You Are Signed In Click Here to Continue</string>
+    <string name="daily">Daily</string>
+    <string name="rsSymbol">\u20B9</string>
+    <string name="proceed_money">Proceed Add Money</string>
+    <string name="rental">Rental</string>
+    <string name="outstation">Outstation</string>
+    <string name="login_activity">Already Registered?</string>
+    <string name="login_here">Login Here</string>
     <string name="title_activity_navigation_avtivity">NavigationAvtivity</string>
 
 </resources>

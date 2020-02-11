@@ -1,11 +1,9 @@
 package tech.iwish.taxi.fragment;
 
-import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,23 +14,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.firebase.client.realtime.WebsocketConnection;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
 
-import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.WebSocket;
-import okhttp3.WebSocketListener;
-import okio.ByteString;
 import tech.iwish.taxi.R;
+import tech.iwish.taxi.activity.MainActivity;
 import tech.iwish.taxi.adapter.VehicleAdapter;
 import tech.iwish.taxi.config.Constants;
 import tech.iwish.taxi.connection.ConnectionServer;
@@ -46,7 +37,8 @@ public class ConfirmRideFragment extends Fragment {
     Map<String , LatLng>  allLatLng ;
     Map<String , Double>  latitude_logitude ;
     Map<String , String> AddressMap ;
-    vehicleInterface vehicleInterfaces ;
+    MainActivity WebsocketHandel;
+    public vehicleInter jsodata;
 
 
     public ConfirmRideFragment( Map<String, LatLng> allLatLng   , Map<String , Double> latitude_logitude ,Map<String , String> AddressMap) {
@@ -54,6 +46,7 @@ public class ConfirmRideFragment extends Fragment {
         this.allLatLng = allLatLng ;
         this.latitude_logitude = latitude_logitude ;
         this.AddressMap = AddressMap ;
+        WebsocketHandel = new MainActivity();
 
     }
 
@@ -96,7 +89,7 @@ public class ConfirmRideFragment extends Fragment {
                         for (int i = 0; i < jsonArray.length(); i++) {
                             jsonHelper.setChildjsonObj(jsonArray, i);
 
-                            vehicleList.add(new VehicleList(jsonHelper.GetResult("catagory_id"),jsonHelper.GetResult("catagory_name"),jsonHelper.GetResult("vehicle_type"),jsonHelper.GetResult("waitingRate_m"),jsonHelper.GetResult("totrate"),jsonHelper.GetResult("tottime")));
+                            vehicleList.add(new VehicleList(jsonHelper.GetResult("catagory_id"),jsonHelper.GetResult("catagory_name"),jsonHelper.GetResult("vehicle_type"),jsonHelper.GetResult("waitingRate_m"),jsonHelper.GetResult("totrate"),jsonHelper.GetResult("tottime"),jsonHelper.GetResult("distance")));
 
                         }
                         VehicleAdapter vehicleAdapter = new VehicleAdapter(getActivity() , vehicleList , allLatLng , latitude_logitude , AddressMap);
@@ -104,13 +97,10 @@ public class ConfirmRideFragment extends Fragment {
                         vehicle_recycle.setNestedScrollingEnabled(false);
                         vehicleAdapter.Setvehicle(new VehicleAdapter.VehicleLatLon() {
                             @Override
-                            public void vehicaleLatlong(Double latitude, Double longitude) {
-                                vehicleInterfaces.vehicaleLatLongWeb(latitude , longitude);
-
+                            public void vehicaleLatlong(String jsoneData) {
+                                jsodata.websok(jsoneData);
                             }
                         });
-
-
                     }
                 }
             }
@@ -119,12 +109,14 @@ public class ConfirmRideFragment extends Fragment {
         return view;
     }
 
-    public void setvehicleValue(vehicleInterface vehicleInterfaces){
-        this.vehicleInterfaces = vehicleInterfaces;
+    public void setdata(vehicleInter vehicleInter){
+        this.jsodata = vehicleInter;
     }
 
-    public interface vehicleInterface{
-        void vehicaleLatLongWeb(Double latitude , Double longitude);
+
+
+    public interface vehicleInter{
+        void websok(String value);
     }
 
 

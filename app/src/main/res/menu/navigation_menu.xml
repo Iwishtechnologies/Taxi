@@ -1,42 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:showIn="navigation_view">
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_home"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="@string/menu_home" />
-        <item
             android:id="@+id/nav_ride_history"
-            android:icon="@drawable/ic_menu_gallery"
+            android:icon="@drawable/hist"
             android:title="@string/ride_history" />
         <item
             android:id="@+id/nav_rate_card"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="@string/rate_card" />
+            android:icon="@drawable/card_1"
+            android:title="@string/rate_card"
+            />
+
         <item
-            android:id="@+id/nav_payment"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="@string/payment" />
+            android:id="@+id/offer"
+            android:icon="@drawable/offer_3"
+            android:title="Offers" />
         <item
             android:id="@+id/refer_earn"
-            android:icon="@drawable/ic_menu_manage"
+            android:icon="@drawable/gift"
             android:title="@string/refer_earn" />
-    </group>
 
-<!--    <item android:title="Communicate">-->
-<!--        <menu>-->
-<!--            <item-->
-<!--                android:id="@+id/nav_share"-->
-<!--                android:icon="@drawable/ic_menu_share"-->
-<!--                android:title="@string/menu_share" />-->
-<!--            <item-->
-<!--                android:id="@+id/nav_send"-->
-<!--                android:icon="@drawable/ic_menu_send"-->
-<!--                android:title="@string/menu_send" />-->
-<!--        </menu>-->
-<!--    </item>-->
+        <item
+            android:id="@+id/wallet"
+            android:icon="@drawable/support_1"
+            android:title="@string/wallet" />
+        <item
+            android:icon="@drawable/support_1"
+            android:title="@string/support" />
+        <item
+            android:icon="@drawable/info"
+            android:title="@string/about" />
+        <item
+            android:icon="@drawable/logout"
+            android:title="@string/logout" />
+
+
+    </group>
 
 </menu>

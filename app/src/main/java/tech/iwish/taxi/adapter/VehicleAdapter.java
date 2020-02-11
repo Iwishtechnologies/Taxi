@@ -1,7 +1,11 @@
 package tech.iwish.taxi.adapter;
 
+import android.content.ComponentName;
 import android.content.Context;
-import android.graphics.Color;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +13,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
@@ -17,22 +20,20 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
-import com.firebase.client.Firebase;
 import com.google.android.gms.maps.model.LatLng;
 
-import org.json.JSONArray;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
-import okhttp3.HttpUrl;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.WebSocket;
-import okhttp3.WebSocketListener;
-import okio.ByteString;
 import tech.iwish.taxi.R;
 
 import tech.iwish.taxi.activity.MainActivity;
@@ -40,11 +41,14 @@ import tech.iwish.taxi.config.Constants;
 import tech.iwish.taxi.config.SharedpreferencesUser;
 import tech.iwish.taxi.connection.ConnectionServer;
 import tech.iwish.taxi.connection.JsonHelper;
-import tech.iwish.taxi.extended.TextViewFont;
 import tech.iwish.taxi.fragment.RideConfiremDriverDetailsFragment;
 import tech.iwish.taxi.other.DistanceList;
+import tech.iwish.taxi.other.User_DetailsList;
 import tech.iwish.taxi.other.VehicleList;
+import tech.iwish.taxi.websocket.SocketService;
+import tech.iwish.taxi.websocket.Websocket;
 
+import static tech.iwish.taxi.config.SharedpreferencesUser.JSON;
 import static tech.iwish.taxi.config.SharedpreferencesUser.USER_CONTACT;
 
 public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.Viewholder> {
@@ -57,9 +61,13 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.Viewhold
     Map<String, Double> latitude_logitude;
     List<DistanceList> distanceLists = new ArrayList<>();
     Map<String, String> AddressMap;
-    VehicleLatLon vehicleLatLongWebSocket ;
-
-
+    VehicleLatLon vehicleLatLongWebSocket;
+    //    public KProgressHUD kProgressHUD;
+    MainActivity mainActivity;
+    private final static String CONFIRM_FRAGMENT_RID = "CONFIR_FRAGMENT_RIDESSS";
+    public static String JSONDATA = "jsno";
+    public String driverShow;
+    Bundle bundle;
 
     public VehicleAdapter(FragmentActivity activity, List<VehicleList> vehicleList, Map<String, LatLng> allLatLng, Map<String, Double> latitude_logitude, Map<String, String> AddressMap) {
 
@@ -68,7 +76,7 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.Viewhold
         this.AllLatLng = allLatLng;
         this.latitude_logitude = latitude_logitude;
         this.AddressMap = AddressMap;
-
+        this.mainActivity = new MainActivity();
 
     }
 
@@ -96,7 +104,6 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.Viewhold
 
                 currentSelectedPosition = position;
                 notifyDataSetChanged();
-
             }
         });
 
@@ -108,14 +115,8 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.Viewhold
             holder.booking_confirm.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
-
-                    RideConfiremDriverDetailsFragment rideConfiremDriverDetailsFragment = new RideConfiremDriverDetailsFragment();
-                    FragmentManager fm = ((FragmentActivity) context).getSupportFragmentManager();
-                    fm.beginTransaction().replace(R.id.confirRide, rideConfiremDriverDetailsFragment).commit();
-
-
                     //=================================web socket============================================
+
                     SharedpreferencesUser sharedpreferencesUser = new SharedpreferencesUser(context);
                     Map data = sharedpreferencesUser.getShare();
                     Object mobile = data.get(USER_CONTACT);
@@ -123,58 +124,35 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.Viewhold
                     AddressMap.get("PickupstateName");
                     AddressMap.get("PickupcountryName");
 
-                    final String Json = "{\"pickUpLat\" : \"" + latitude_logitude.get("PickLatitude") + "\"  ,\"pickUpLong\" : \"" + latitude_logitude.get("PickLogitude") + "\" ,\"DropLocationLatitude\" : \""+latitude_logitude.get("dropLatitude")+"\",\"DropLocationLogitude\" : \""+latitude_logitude.get("dropLongitude")+"\"  , \"userType\" : \"client\" , \"type\" : \"vehicleCall\" , \"userID\" : \"" + mobile.toString() + "\" , \"PickupCityName\" : \"" + AddressMap.get("PickupCityName") + "\" , \"PickupstateName\" : \"" + AddressMap.get("PickupstateName") + "\" , \"PickupStretName\" : \"" + AddressMap.get("PickupStretName") + "\"}";
-                    WebSocketListener webSocketListener = new WebSocketListener() {
-                        @Override
-                        public void onOpen(WebSocket webSocket, Response response) {
-                            webSocket.send(Json);
 
-                        }
+                    JSONDATA = "{ \"type\" : \"vehicleCall\",\"totalRate\" : \"" + vehicleList.get(currentSelectedPosition).getTotrate() + "\",\"totalTime\" : \"" + vehicleList.get(currentSelectedPosition).getTottime() + "\" , \"request\" :\"booking\" ,\"pickUpLat\" : \"" + latitude_logitude.get("PickLatitude") + "\"  ,\"pickUpLong\" : \"" + latitude_logitude.get("PickLogitude") + "\" ,\"DropLocationLatitude\" : \"" + latitude_logitude.get("dropLatitude") + "\",\"DropLocationLogitude\" : \"" + latitude_logitude.get("dropLongitude") + "\"  , \"userType\" : \"client\"  , \"userID\" : \"" + mobile.toString() + "\" , \"PickupCityName\" : \"" + AddressMap.get("PickupCityName") + "\" , \"PickupstateName\" : \"" + AddressMap.get("PickupstateName") + "\" , \"PickupStretName\" : \"" + AddressMap.get("PickupStretName") + "\"}";
+                    sharedpreferencesUser.getDatasWebsocket(JSONDATA);
 
-                        @Override
-                        public void onMessage(WebSocket webSocket, String text) {
-//                            onMessage(webSocket, text);
-                            Log.e("value",text);
-//                            vehicleLatLongWebSocket.vehicaleLatlong(26.1234,72.01234 );
 
-//                            JsonHelper jsonHelper = new JsonHelper(text);
-//                            String response = jsonHelper.GetResult("response");
-//                            if(response.equals("TRUE")){
-//
-//                            }
-                        }
+                    Timer timer = new Timer();
+                    timer.scheduleAtFixedRate(new TimerTask() {
+
+//                        private String driverShow;
 
                         @Override
-                        public void onMessage(WebSocket webSocket, ByteString bytes) {
-//                            onMessage(webSocket, bytes);
+                        public void run() {
+                            String driverData = sharedpreferencesUser.driverReturnData();
+                            if (driverData != null) {
+                                Log.e("driverData", driverData);
+                                driverData(driverData);
+                                timer.cancel();
+                            }
                         }
+                    }, 0, 1000);
 
-                        @Override
-                        public void onClosing(WebSocket webSocket, int code, String reason) {
-//                            onClosing(webSocket, code, reason);
-//                            webSocket.close(1000, null);
-//                            webSocket.cancel();
-//                            Log.e("onCllosing", "CLOSE: " + code + " " + reason);
-                        }
 
-                        @Override
-                        public void onClosed(WebSocket webSocket, int code, String reason) {
-//                            onClosed(webSocket, code, reason);
-                        }
+                     bundle = new Bundle();
+                    bundle.putString("rate", vehicleList.get(position).getTotrate());
+                    bundle.putString("time", vehicleList.get(position).getTottime());
+                    bundle.putString("distance", vehicleList.get(position).getDistance());
 
-                        @Override
-                        public void onFailure(WebSocket webSocket, Throwable t, Response response) {
-//                            onFailure(webSocket, t, response);
 
-                        }
-                    };
-                    WebSocket webSocket;
-                    OkHttpClient okHttpClient = new OkHttpClient();
-                    Request request = new Request.Builder().url("ws://173.212.226.143:8090/").build();
-                    webSocket = okHttpClient.newWebSocket(request, webSocketListener);
-                    okHttpClient.dispatcher().executorService();
 
-//                    =============================================================================
 
                 }
             });
@@ -207,13 +185,69 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.Viewhold
         }
     }
 
-    public void Setvehicle(VehicleLatLon vehicleLatLon){
-        this.vehicleLatLongWebSocket = vehicleLatLon ;
+    private ServiceConnection Mconnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+
+        }
+    };
+
+
+    public void driverData(String data){
+      this.driverShow = data ;
+        try {
+            JSONObject jsonObject = new JSONObject(data);
+            JSONObject value = jsonObject.getJSONObject("data");
+            String driverId = value.getString("driverId");
+
+            ConnectionServer connectionServer = new ConnectionServer();
+            connectionServer.set_url(Constants.DRIVERSHOW);
+            connectionServer.requestedMethod("POST");
+            connectionServer.buildParameter("driverId", driverId);
+            connectionServer.execute(new ConnectionServer.AsyncResponse() {
+                @Override
+                public void processFinish(String output) {
+                    Log.e("output", output);
+                    JsonHelper jsonHelper = new JsonHelper(output);
+                    if (jsonHelper.isValidJson()) {
+                        String response = jsonHelper.GetResult("response");
+                        if (response.equals("TRUE")) {
+
+//                            JSONArray jsonArray = jsonHelper.setChildjsonArray(jsonHelper.getCurrentJsonObj(), "data");
+//                            for (int i = 0; i < jsonArray.length(); i++) {
+//                                jsonHelper.setChildjsonObj(jsonArray, i);
+//                                bundle.putString("driver_name" , );
+//                            }
+
+                            bundle.putString("driver_name" , jsonHelper.GetResult("DriverName"));
+                            bundle.putString("driver_mobile" , jsonHelper.GetResult("Mobile"));
+
+                            RideConfiremDriverDetailsFragment rideConfiremDriverDetailsFragment = new RideConfiremDriverDetailsFragment();
+                            FragmentManager fm = ((FragmentActivity) context).getSupportFragmentManager();
+                            rideConfiremDriverDetailsFragment.setArguments(bundle);
+                            fm.beginTransaction().replace(R.id.confirmRideLoad, rideConfiremDriverDetailsFragment, CONFIRM_FRAGMENT_RID).commit();
+
+                        }
+                    }
+                }
+            });
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    };
+
+    public void Setvehicle(VehicleLatLon vehicleLatLon) {
+        this.vehicleLatLongWebSocket = vehicleLatLon;
     }
 
-    public interface VehicleLatLon{
-         void vehicaleLatlong(Double latitude , Double longitude);
+    public interface VehicleLatLon {
+        public void vehicaleLatlong(String jsoneData);
     }
-
 
 }

@@ -18,8 +18,8 @@ import tech.iwish.taxi.other.PickupLocationList;
 
 public class PickupLocationAdapter extends RecyclerView.Adapter<PickupLocationAdapter.Viewholder> {
 
-    List<PickupLocationList> pickupLocationLists;
-    Context context;
+    private List<PickupLocationList> pickupLocationLists;
+    private Context context;
     private onPickupListner onpickupListner;
 
 
@@ -50,12 +50,7 @@ public class PickupLocationAdapter extends RecyclerView.Adapter<PickupLocationAd
 //                Toast.makeText(context, "" + pickupLocationLists.get(position).getDescription(), Toast.LENGTH_SHORT).show();
 
                 onpickupListner.onListen(pickupLocationLists.get(position).getDescription());
-//
-//
-//
-//                Intent intent = new Intent(context, MainActivity.class);
-//                intent.putExtra("pickupsearchLoaction" , pickupLocationLists.get(position).getDescription());
-//                context.startActivity(intent);
+
 
             }
         });
@@ -70,8 +65,8 @@ public class PickupLocationAdapter extends RecyclerView.Adapter<PickupLocationAd
 
     public class Viewholder extends RecyclerView.ViewHolder {
 
-        TextView place;
-        LinearLayout placeLayout, click_linerLayout_vehicle;
+        private TextView place;
+        private LinearLayout placeLayout, click_linerLayout_vehicle;
 
         public Viewholder(@NonNull View itemView) {
             super(itemView);

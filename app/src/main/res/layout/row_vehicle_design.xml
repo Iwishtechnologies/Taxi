@@ -84,11 +84,11 @@
             android:layout_height="25dp"
             android:orientation="vertical"
             android:layout_gravity="center"
-            android:visibility="gone"
+            android:visibility="invisible"
             android:gravity="center">
             <tech.iwish.taxi.extended.ButtonFont
                 android:id="@+id/booking_confirm"
-                android:text="BOOK NOW"
+                android:text="@string/book_now"
                 app:fonttype="font7"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

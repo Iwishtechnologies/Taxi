@@ -1,77 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".fragment.RideConfiremDriverDetailsFragment"
-    android:background="@color/blackColor">
+    android:background="@color/orangeColor"
+    tools:context=".fragment.RideConfiremDriverDetailsFragment">
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:padding="20dp">
-        <LinearLayout
+
+<!--
+        <ImageView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:layout_above="@id/aa"
+            android:layout_centerVertical="true"
+            android:foregroundGravity="center"
+            android:src="@drawable/taxi_logo" />
+-->
+
+        <LinearLayout
+            android:id="@+id/aa"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:background="@drawable/desing_driver_det"
             android:elevation="10dp"
-            android:layout_alignParentBottom="true"
-            android:outlineSpotShadowColor="@color/blackColor"
             android:gravity="bottom"
+            android:orientation="vertical"
+            android:outlineSpotShadowColor="@color/blackColor"
             android:padding="20dp">
-            <TextView
+
+            <tech.iwish.taxi.extended.TextViewFont
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/rideDetails"
                 android:textColor="@color/blackColor"
-                android:textSize="16sp"/>
+                android:textSize="16sp"
+                app:fonttype="font10" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:weightSum="2">
+
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
                     android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:layout_marginTop="10dp">
-                    <TextView
+                    android:orientation="vertical">
+
+                    <tech.iwish.taxi.extended.TextViewFont
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/tripDistance"
-                        android:textSize="14sp"/>
+                        android:textSize="14sp"
+                        app:fonttype="font5" />
+
                     <TextView
+                        android:id="@+id/trip_distance"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="4.5 KM"
-                        android:textSize="12sp"/>
+                        android:textSize="12sp" />
                 </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
                     android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:layout_marginTop="10dp">
+                    android:orientation="vertical">
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/tripDistance"
-                        android:textSize="14sp"/>
+                        android:text="@string/tripduration"
+                        android:textSize="14sp" />
+
                     <TextView
+                        android:id="@+id/trip_duration"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="4.5 KM"
-                        android:textSize="12sp"/>
+                        android:textSize="12sp" />
                 </LinearLayout>
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
-                android:background="@color/blackColor"
-                android:layout_marginTop="10dp">
+                android:layout_marginTop="10dp"
+                android:background="@color/blackColor">
                 <!--    <view-->
                 <!--        android:layout_width="match_parent"-->
                 <!--        android:layout_height="2dp"-->
@@ -82,199 +108,306 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/billDetails"
                 android:layout_marginTop="10dp"
+                android:text="@string/billDetails"
                 android:textColor="@color/blackColor"
-                android:textSize="16sp"/>
+                android:textSize="16sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:weightSum="2">
+
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
                     android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:layout_marginTop="10dp">
+                    android:orientation="vertical">
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/rideFare"
-                        android:textSize="14sp"/>
+                        android:textSize="14sp" />
                     <TextView
+                        android:id="@+id/trip_rate"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="4.5 KM"
-                        android:textSize="12sp"/>
+                        android:textSize="12sp" />
                 </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
                     android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:layout_marginTop="10dp">
+                    android:orientation="vertical">
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/specialDiscount"
-                        android:textSize="14sp"/>
+                        android:textSize="14sp" />
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="4.5 KM"
-                        android:textSize="12sp"/>
+                        android:textSize="12sp" />
                 </LinearLayout>
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:orientation="horizontal"
-                android:weightSum="2"
-                android:layout_marginTop="10dp">
+                android:weightSum="2">
+
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
                     android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:layout_marginTop="10dp">
+                    android:orientation="vertical">
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/total_access_fee"
-                        android:textSize="14sp"/>
+                        android:textSize="14sp" />
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="4.5 KM"
-                        android:textSize="12sp"/>
+                        android:textSize="12sp" />
                 </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
                     android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:layout_marginTop="10dp">
+                    android:orientation="vertical">
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/booking_fee"
-                        android:textSize="14sp"/>
+                        android:textSize="14sp" />
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="4.5 KM"
-                        android:textSize="12sp"/>
+                        android:textSize="12sp" />
                 </LinearLayout>
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="2"
+                android:layout_marginTop="10dp"
                 android:layout_marginBottom="3dp"
-                android:layout_marginTop="10dp">
+                android:orientation="horizontal"
+                android:weightSum="2">
+
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
                     android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:layout_marginTop="10dp">
+                    android:orientation="vertical">
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/Total_fare"
-                        android:textSize="14sp"/>
+                        android:textSize="14sp" />
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="4.5 KM"
-                        android:textSize="12sp"/>
+                        android:textSize="12sp" />
                 </LinearLayout>
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="80"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:textColor="@color/blackColor"
                     android:layout_gravity="center"
                     android:layout_marginTop="5dp"
-                    android:textSize="20sp"/>
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="80"
+                    android:textColor="@color/blackColor"
+                    android:textSize="20sp" />
             </LinearLayout>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:text="@string/note"
-                android:gravity="center" />
+                android:gravity="center"
+                android:text="@string/note" />
 
 
             <LinearLayout
+                android:id="@+id/confirmOtp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="2"
+                android:layout_marginTop="10dp"
                 android:background="@drawable/dessign_driver_details"
-                android:layout_marginTop="10dp">
+                android:orientation="horizontal"
+                android:visibility="gone"
+                android:weightSum="2">
+
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:orientation="vertical"
-                    android:layout_marginTop="10dp">
+                    android:orientation="vertical">
 
-                    <de.hdodenhof.circleimageview.CircleImageView
-                        xmlns:app="http://schemas.android.com/apk/res-auto"
+                    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
                         android:id="@+id/profile_image"
                         android:layout_width="80dp"
-                        android:src="@drawable/pin_icon"
                         android:layout_height="80dp"
-                        app:civ_border_width="2dp"
-                        app:civ_border_color="#FF000000"/>
+                        android:src="@drawable/pin_icon"
+                        app:civ_border_color="#FF000000"
+                        app:civ_border_width="2dp" />
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Name"
                         android:gravity="center"
-                        android:textSize="12sp"/>
+                        android:text="Name"
+                        android:textSize="12sp" />
                 </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
                     android:layout_gravity="center"
-                    android:layout_marginTop="10dp">
+                    android:layout_marginTop="10dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:orientation="vertical">
+
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:padding="5dp"
                             android:gravity="center"
-                            android:textColor="@color/blackColor"
-                            android:text="@string/callDriver"/>
+                            android:padding="5dp"
+                            android:text="@string/callDriver"
+                            android:textColor="@color/blackColor" />
                     </LinearLayout>
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="OTP"
+                        android:gravity="center"
                         android:padding="4dp"
-                        android:gravity="center"/>
+                        android:text="OTP" />
                 </LinearLayout>
             </LinearLayout>
+
+            <tech.iwish.taxi.extended.ButtonFont
+                android:id="@+id/info_driver"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:text="@string/confirm"
+                android:layout_marginStart="40dp"
+                android:layout_marginEnd="40dp"
+                android:layout_marginTop="5dp"
+                android:textColor="@color/whiteColor"
+                android:background="@drawable/wallet_button"/>
+
+
+<!--
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@color/orangeColor"
+                android:weightSum="2"
+                android:layout_marginTop="20dp">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    android:orientation="vertical"
+                    android:weightSum="2">
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        xmlns:app="http://schemas.android.com/apk/res-auto"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:src="@drawable/user_photo"
+                        android:layout_marginTop="20dp"
+                        android:layout_weight="1"
+                        app:civ_border_color="@color/silverColor"
+                        app:civ_border_width="1dp" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="name"
+                        android:layout_marginTop="5dp"
+                        android:gravity="center"
+                        android:textSize="16sp"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    android:orientation="vertical"
+                    android:weightSum="2">
+                    <tech.iwish.taxi.extended.TextViewFont
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Call Driver"
+                        android:gravity="center"
+                        android:textSize="16sp"
+                        android:padding="10dp"
+                        app:fonttype="font10"
+                        android:background="@color/whiteColor"
+                        android:textColor="@color/blackColor"/>
+                    <tech.iwish.taxi.extended.TextViewFont
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Otp"
+                        android:gravity="center"
+                        android:textSize="12sp"
+                        app:fonttype="font10"
+                        android:textColor="@color/whiteColor"/>
+                    <com.goodiebag.pinview.Pinview
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cursorVisible="false"
+                        app:forceKeyboard="false"
+                        app:hint="0"
+                        app:inputType="number"
+                        app:password="false"
+                        app:pinHeight="40dp"
+                        app:pinLength="4"
+                        app:pinWidth="40dp"
+                        app:textSize="8sp" />
+                </LinearLayout>
+            </LinearLayout>
+-->
+
+
         </LinearLayout>
     </RelativeLayout>
 

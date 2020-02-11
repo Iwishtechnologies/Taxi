@@ -9,11 +9,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.mancj.materialsearchbar.MaterialSearchBar;
@@ -31,109 +34,92 @@ import tech.iwish.taxi.connection.ConnectionServer;
 import tech.iwish.taxi.connection.JsonHelper;
 import tech.iwish.taxi.other.PickupLocationList;
 
-public class Pickup_Search_fragment extends DialogFragment implements TextWatcher {
+public class Pickup_Search_fragment extends DialogFragment{
 
-    MaterialSearchBar pickuploactionMaterialSearchBar ;
+    MaterialSearchBar pickuploactionMaterialSearchBar;
     RecyclerView pickuprecycle;
-    List<PickupLocationList> pickupLocationLists= new ArrayList<>();
+    List<PickupLocationList> pickupLocationLists = new ArrayList<>();
     private PickupInterFacePlace pickuplocationName;
+    private SearchView placeSearchview ;
 
-//    @Nullable
-//    @Override
-//    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-//        View view = inflater.inflate(R.layout.pickup_dialog_fragemnt ,container , false);
-//
-//
-//        return view;
-//    }
-
-        @Nullable
+    @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.pickup_dialog_fragemnt,container , false);
+        View view = inflater.inflate(R.layout.pickup_dialog_fragemnt, container, false);
 
-        pickuploactionMaterialSearchBar = (MaterialSearchBar)view.findViewById(R.id.pickuploactionMaterialSearchBar);
-        pickuprecycle = (RecyclerView)view. findViewById(R.id.pickuprecycle);
-        pickuploactionMaterialSearchBar.setSpeechMode(false);
+        pickuploactionMaterialSearchBar = (MaterialSearchBar) view.findViewById(R.id.pickuploactionMaterialSearchBar);
+        pickuprecycle = (RecyclerView) view.findViewById(R.id.pickuprecycle);
+        placeSearchview = (SearchView)view.findViewById(R.id.placeSearchview);
+
+
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
         pickuprecycle.setLayoutManager(linearLayoutManager);
 
-//        PickPlaceAdapter pickPlaceAdapter = new PickPlaceAdapter(PickupSearchActivity.this , );
-//        pickuprecycle.setAdapter(pickPlaceAdapter);
-//        pickPlaceAdapter.notifyDataSetChanged();
-
-
-        pickuploactionMaterialSearchBar.addTextChangeListener(this);
-
-        return view ;
-    }
-
-    @Override
-    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-    }
-
-    @Override
-    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-        ConnectionServer connectionServer = new ConnectionServer();
-        connectionServer.set_url(Constants.SEARCH_PLACE_PICKUP);
-        connectionServer.requestedMethod("POST");
-        connectionServer.buildParameter("value" , charSequence.toString());
-        connectionServer.execute(new ConnectionServer.AsyncResponse() {
+        placeSearchview.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public void processFinish(String output) {
-                Log.e("output",output);
-                JsonHelper jsonHelper = new JsonHelper(output);
-                if(jsonHelper.isValidJson()){
-                    pickupLocationLists.clear();
-                    String response = jsonHelper.GetResult("status");
-                    if(response.equals("OK")){
-                        JSONArray jsonArray = jsonHelper.setChildjsonArray(jsonHelper.getCurrentJsonObj(), "predictions");
+            public boolean onQueryTextSubmit(String s) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+
+                ConnectionServer connectionServer = new ConnectionServer();
+                connectionServer.set_url(Constants.SEARCH_PLACE);
+                connectionServer.requestedMethod("POST");
+                connectionServer.buildParameter("value", s.toString());
+                connectionServer.execute(new ConnectionServer.AsyncResponse() {
+                    @Override
+                    public void processFinish(String output) {
+                        Log.e("output", output);
+                        JsonHelper jsonHelper = new JsonHelper(output);
+                        if (jsonHelper.isValidJson()) {
+                            pickupLocationLists.clear();
+                            String response = jsonHelper.GetResult("status");
+                            if (response.equals("OK")) {
+                                JSONArray jsonArray = jsonHelper.setChildjsonArray(jsonHelper.getCurrentJsonObj(), "predictions");
 
 
-                        for (int i = 0; i < jsonArray.length(); i++) {
-                            jsonHelper.setChildjsonObj(jsonArray, i);
+                                for (int i = 0; i < jsonArray.length(); i++) {
+                                    jsonHelper.setChildjsonObj(jsonArray, i);
 
-                            pickupLocationLists.add(new PickupLocationList(jsonHelper.GetResult("description"),jsonHelper.GetResult("id"),jsonHelper.GetResult("matched_substrings"),jsonHelper.GetResult("place_id"),jsonHelper.GetResult("reference"),jsonHelper.GetResult("structured_formatting"),jsonHelper.GetResult("terms")));
+                                    pickupLocationLists.add(new PickupLocationList(jsonHelper.GetResult("description"), jsonHelper.GetResult("id"), jsonHelper.GetResult("matched_substrings"), jsonHelper.GetResult("place_id"), jsonHelper.GetResult("reference"), jsonHelper.GetResult("structured_formatting"), jsonHelper.GetResult("terms")));
 
-                        }
-                        PickupLocationAdapter pickupLocationAdapter = new PickupLocationAdapter(getActivity() , pickupLocationLists );
-                        pickuprecycle.setAdapter(pickupLocationAdapter);
+                                }
+                                PickupLocationAdapter pickupLocationAdapter = new PickupLocationAdapter(getActivity(), pickupLocationLists);
+                                pickuprecycle.setAdapter(pickupLocationAdapter);
 
-                        pickupLocationAdapter.setOnPickupListner(new PickupLocationAdapter.onPickupListner() {
-                            @Override
-                            public void onListen(String location) {
+                                pickupLocationAdapter.setOnPickupListner(new PickupLocationAdapter.onPickupListner() {
+                                    @Override
+                                    public void onListen(String location) {
 
+                                        pickuplocationName.placeName_Pickup(location);
 
-                                pickuplocationName.placeName_Pickup(location);
+                                    }
+                                });
+
 
                             }
-                        });
-
-
-
+                        }
                     }
-                }
+                });
+
+                return false;
             }
         });
 
-    }
-
-    @Override
-    public void afterTextChanged(Editable editable) {
-
+        return view;
     }
 
 
-    public void valuePickup(PickupInterFacePlace pickupInterFacePlaces){
-            this.pickuplocationName = pickupInterFacePlaces ;
+    public void valuePickup(PickupInterFacePlace pickupInterFacePlaces) {
+        this.pickuplocationName = pickupInterFacePlaces;
     }
 
-public    interface PickupInterFacePlace{
-         public   void placeName_Pickup(String location);
+    public interface PickupInterFacePlace {
+        public void placeName_Pickup(String location);
     }
 
 }

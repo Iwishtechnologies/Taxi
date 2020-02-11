@@ -7,15 +7,18 @@ public class VehicleList {
     String waitingRate_m;
     String totrate;
     String tottime;
+    String distance;
 
-    public VehicleList(String catagory_id, String catagory_name, String vehicle_type, String waitingRate_m, String totrate, String tottime) {
+    public VehicleList(String catagory_id, String catagory_name, String vehicle_type, String waitingRate_m, String totrate, String tottime, String distance) {
         this.catagory_id = catagory_id;
         this.catagory_name = catagory_name;
         this.vehicle_type = vehicle_type;
         this.waitingRate_m = waitingRate_m;
         this.totrate = totrate;
         this.tottime = tottime;
+        this.distance = distance;
     }
+
 
     public String getCatagory_id() {
         return catagory_id;
@@ -63,5 +66,13 @@ public class VehicleList {
 
     public void setTottime(String tottime) {
         this.tottime = tottime;
+    }
+
+    public String getDistance() {
+        return distance;
+    }
+
+    public void setDistance(String distance) {
+        this.distance = distance;
     }
 }

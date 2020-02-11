@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import tech.iwish.taxi.R;
@@ -30,6 +31,7 @@ public class LoginFragment_1 extends Fragment {
 
     private EditText mobile_number;
     private Button login_button;
+    private ProgressBar login_progress;
 
     @Nullable
     @Override
@@ -39,29 +41,13 @@ public class LoginFragment_1 extends Fragment {
 
         mobile_number = (EditText) view.findViewById(R.id.mobile_number);
         login_button = (Button) view.findViewById(R.id.login_button);
+        login_progress = (ProgressBar)view.findViewById(R.id.login_progress);
+
 
 
         login_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-
-
-//                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.Login_fragmentLayout , login_fragment_2).commit() ;
-//                getActivity().getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.enter_fragment1 , R.anim.exit_fragment1 ,R.anim.enter_fragment1 , R.anim.exit_fragment1).addToBackStack(null).add(R.id.Login_fragmentLayout, login_fragment_2, "BLANK_FRAGMENT").commit();
-//                ********************************************************************************************************************
-//                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-//                FragmentTransaction transaction = fragmentManager.beginTransaction();
-//                transaction.setCustomAnimations(R.anim.enter_fragment1, R.anim.exit_fragment1, R.anim.enter_fragment1, R.anim.exit_fragment1);
-//                transaction.addToBackStack(null);
-//                transaction.add(R.id.Login_fragmentLayout, login_fragment_2, "BLANK_FRAGMENT").commit();
-//                ********************************************************************************************************************
-
-//                ********************************************************************************************************************
-//                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-//                fragmentManager.beginTransaction().replace(R.id.Login_fragmentLayout, login_fragment_2)
-//                        .addToBackStack(null)
-//                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-//                        .commit();
 
 
                 ConnectionServer connectionServer = new ConnectionServer();
@@ -80,7 +66,7 @@ public class LoginFragment_1 extends Fragment {
                                 Login_Fragment_2 login_fragment_2 = new Login_Fragment_2();
                                 Bundle args = new Bundle();
                                 args.putString("number", mobile_number.getText().toString().trim());
-                                login_fragment_2.setArguments(args);
+                                        login_fragment_2.setArguments(args);
                                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                                 FragmentTransaction transaction = fragmentManager.beginTransaction();
                                 transaction.setCustomAnimations(R.anim.enter_fragment1, R.anim.exit_fragment1, R.anim.enter_fragment1, R.anim.exit_fragment1);

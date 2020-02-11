@@ -3,6 +3,8 @@ package tech.iwish.taxi.config;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.security.PublicKey;
 import java.util.Map;
 
@@ -22,7 +24,10 @@ public class SharedpreferencesUser {
     public static final String PICKUP_INTENT_CITY = "" ;
     public static final String JSON = "json" ;
     public static final String DATA_WB = "datawb" ;
-
+    public static final String SOCKETCONNECTION = "socketconnection";
+    private static final String VEHICALE_UPDATE_LATLNG = "vehicled";
+    private static final String WALLET_AMOUNT = "walletamount";
+    private static final String DRIVERSHOW = "drivershow";
 
     SharedPreferences.Editor editor;
 
@@ -38,12 +43,16 @@ public class SharedpreferencesUser {
 
     public void user_detail(String user_name , String user_email ,String contact ){
 
-        editor.putString(USER_EMAIL , user_email);
         editor.putString(USER_NAME , user_name);
+        editor.putString(USER_EMAIL , user_email);
         editor.putString(USER_CONTACT , contact);
         editor.putString(TEST_CHECH, "1");
         editor.commit() ;
 
+    }
+
+    public void walletAdd(String data){
+        editor.putString(WALLET_AMOUNT , data);
     }
 
     public void location(String value){
@@ -55,22 +64,15 @@ public class SharedpreferencesUser {
         return Preferences.getAll();
     }
 
-    public void dropIntent_City(String value){
-        editor.putString(DROP_INTENT_CITY, value);
-        editor.commit();
-    }
-    public void pickup_Intent_City(String value){
-        editor.putString(PICKUP_INTENT_CITY, value);
-        editor.commit();
-    }
+
     public void clickLocationDestroy(){
         editor.remove(LOCATION_CHANGE).commit();
     }
     public void dropLocationIntenrt_Destrou(){
         editor.remove(DROP_INTENT_CITY).commit();
     }
-    public void pickup_location_Intenrt_Destrou(){
-        editor.remove(PICKUP_INTENT_CITY).commit();
+    public void removedata(){
+        editor.remove(DATA_WB).commit();
 
     }
 
@@ -80,16 +82,45 @@ public class SharedpreferencesUser {
         editor.commit();
      }
 
+     public void driverShow(String json){
+         editor.putString(DRIVERSHOW,json);
+         editor.commit();
+     }
+
+     public void driverShowRemove(){
+         editor.remove(DRIVERSHOW).commit();
+     }
+
+
+     public String driverReturnData(){
+        return Preferences.getString(DRIVERSHOW,null);
+     }
+
      public String getjson()
      {
        return   Preferences.getString(JSON,null);
      }
 
-     public void getDatas(String string){
+     public void getDatasWebsocket(String string){
         editor.putString(DATA_WB , string).commit();
      }
-     public String getdata(){
-        return  Preferences.getString(DATA_WB , null);
+     public void removeDataWebsocket(){
+          editor.remove(DATA_WB).commit();
      }
 
+    /**
+     * set Socketconnection
+     * **/
+    public void setSocketConnection(Boolean aBoolean)
+    {
+        editor.putString(SOCKETCONNECTION,String.valueOf(aBoolean)).commit();
+    }
+    /**
+     * set Socketconnection
+     *
+     * @return**/
+    public boolean getSocketConnection()
+    {
+        return Boolean.valueOf(Preferences.getString(SOCKETCONNECTION,null));
+    }
 }
