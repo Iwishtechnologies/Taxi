@@ -1,5 +1,6 @@
 package tech.iwish.taxi.adapter;
 
+import android.app.DialogFragment;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
@@ -21,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 
 import com.google.android.gms.maps.model.LatLng;
+import com.kaopiz.kprogresshud.KProgressHUD;
 
 
 import org.json.JSONArray;
@@ -68,6 +71,7 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.Viewhold
     public static String JSONDATA = "jsno";
     public String driverShow;
     Bundle bundle;
+    private KProgressHUD kProgressHUD;
 
     public VehicleAdapter(FragmentActivity activity, List<VehicleList> vehicleList, Map<String, LatLng> allLatLng, Map<String, Double> latitude_logitude, Map<String, String> AddressMap) {
 
@@ -94,6 +98,7 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.Viewhold
 
         holder.total_rate.setText(vehicleList.get(position).getTotrate());
         holder.total_titme.setText(vehicleList.get(position).getTottime());
+        
 
         holder.clickConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -115,7 +120,15 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.Viewhold
             holder.booking_confirm.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+
+
                     //=================================web socket============================================
+                    kProgressHUD = new KProgressHUD(context);
+
+//                    progress bar start
+                    setProgressDialog("Vehicle Serach..");
+                    autoDismissProgressbar();
+//                    progress bar end
 
                     SharedpreferencesUser sharedpreferencesUser = new SharedpreferencesUser(context);
                     Map data = sharedpreferencesUser.getShare();
@@ -146,7 +159,7 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.Viewhold
                     }, 0, 1000);
 
 
-                     bundle = new Bundle();
+
                     bundle.putString("rate", vehicleList.get(position).getTotrate());
                     bundle.putString("time", vehicleList.get(position).getTottime());
                     bundle.putString("distance", vehicleList.get(position).getDistance());
@@ -218,19 +231,19 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.Viewhold
                         String response = jsonHelper.GetResult("response");
                         if (response.equals("TRUE")) {
 
-//                            JSONArray jsonArray = jsonHelper.setChildjsonArray(jsonHelper.getCurrentJsonObj(), "data");
-//                            for (int i = 0; i < jsonArray.length(); i++) {
-//                                jsonHelper.setChildjsonObj(jsonArray, i);
-//                                bundle.putString("driver_name" , );
-//                            }
-
-                            bundle.putString("driver_name" , jsonHelper.GetResult("DriverName"));
-                            bundle.putString("driver_mobile" , jsonHelper.GetResult("Mobile"));
+                            JSONArray jsonArray = jsonHelper.setChildjsonArray(jsonHelper.getCurrentJsonObj(), "data");
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                jsonHelper.setChildjsonObj(jsonArray, i);
+                                bundle.putString("driver_name" , jsonHelper.GetResult("DriverName"));
+                                bundle.putString("driver_mobile" , jsonHelper.GetResult("Mobile"));
+                            }
 
                             RideConfiremDriverDetailsFragment rideConfiremDriverDetailsFragment = new RideConfiremDriverDetailsFragment();
                             FragmentManager fm = ((FragmentActivity) context).getSupportFragmentManager();
                             rideConfiremDriverDetailsFragment.setArguments(bundle);
                             fm.beginTransaction().replace(R.id.confirmRideLoad, rideConfiremDriverDetailsFragment, CONFIRM_FRAGMENT_RID).commit();
+
+                            remove_progress_Dialog();
 
                         }
                     }
@@ -240,7 +253,33 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.Viewhold
         } catch (JSONException e) {
             e.printStackTrace();
         }
-    };
+    }
+
+
+    private void autoDismissProgressbar(){
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                remove_progress_Dialog();
+                Log.e("vehicle not " , "vehcl not");
+                timer.cancel();
+            }
+        },20000,20000);
+    }
+
+    public void setProgressDialog(String msg) {
+        kProgressHUD.setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
+                .setLabel(msg)
+                .setAnimationSpeed(2)
+                .setDimAmount(0.5f)
+                .show();
+
+    }
+
+    public void remove_progress_Dialog() {
+        kProgressHUD.dismiss();
+    }
 
     public void Setvehicle(VehicleLatLon vehicleLatLon) {
         this.vehicleLatLongWebSocket = vehicleLatLon;
