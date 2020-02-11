@@ -98,7 +98,7 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.Viewhold
 
         holder.total_rate.setText(vehicleList.get(position).getTotrate());
         holder.total_titme.setText(vehicleList.get(position).getTottime());
-        
+
 
         holder.clickConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
