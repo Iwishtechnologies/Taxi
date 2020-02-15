@@ -30,12 +30,15 @@
             android:icon="@drawable/support_1"
             android:title="@string/wallet" />
         <item
+            android:id="@+id/support"
             android:icon="@drawable/support_1"
             android:title="@string/support" />
         <item
+            android:id="@+id/about"
             android:icon="@drawable/info"
             android:title="@string/about" />
         <item
+            android:id="@+id/logout"
             android:icon="@drawable/logout"
             android:title="@string/logout" />
 

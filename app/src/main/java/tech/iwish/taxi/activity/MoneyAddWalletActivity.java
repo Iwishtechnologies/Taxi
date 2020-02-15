@@ -68,7 +68,7 @@ public class MoneyAddWalletActivity extends AppCompatActivity implements Payment
         paymenterror();
     }
 
-    private void paymenterror(){
+    private void paymenterror() {
         Intent intent = new Intent(this, PaymentSuccessfully.class);
         intent.putExtra("message", "fail");
         startActivity(intent);

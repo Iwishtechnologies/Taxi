@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -41,18 +42,16 @@ public class PickupLocationAdapter extends RecyclerView.Adapter<PickupLocationAd
 
     @Override
     public void onBindViewHolder(@NonNull Viewholder holder, final int position) {
+
         holder.place.setText(pickupLocationLists.get(position).getDescription());
 
-
-        holder.placeLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        holder.placeLayout.setOnClickListener(view -> {
 //                Toast.makeText(context, "" + pickupLocationLists.get(position).getDescription(), Toast.LENGTH_SHORT).show();
+            InputMethodManager input = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
+            input.hideSoftInputFromWindow(view.getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
+            onpickupListner.onListen(pickupLocationLists.get(position).getDescription());
 
-                onpickupListner.onListen(pickupLocationLists.get(position).getDescription());
 
-
-            }
         });
     }
 

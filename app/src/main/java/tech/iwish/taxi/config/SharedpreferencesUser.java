@@ -8,6 +8,8 @@ import com.google.android.gms.maps.model.LatLng;
 import java.security.PublicKey;
 import java.util.Map;
 
+import tech.iwish.taxi.activity.MainActivity;
+
 public class SharedpreferencesUser {
 
     SharedPreferences Preferences ;
@@ -26,8 +28,19 @@ public class SharedpreferencesUser {
     public static final String DATA_WB = "datawb" ;
     public static final String SOCKETCONNECTION = "socketconnection";
     private static final String VEHICALE_UPDATE_LATLNG = "vehicled";
-    private static final String WALLET_AMOUNT = "walletamount";
-    private static final String DRIVERSHOW = "drivershow";
+    public static final String WALLET_AMOUNT = "walletamount";
+    public static final String DRIVERSHOW = "drivershow";
+    public static final String VEHICLE_DATA = "scdscsdcd";
+    public static final String IMAGE_URL = "173.212.226.143:8083/";
+
+//    info driver
+
+    public static final String DRIVER_NAME = "driver_name";
+    public static final String DRIVER_NUMBER = "driver_mob";
+    public static final String RATE = "rate";
+    public static final String TIME = "time";
+    public static final String DISTANCE = "distance";
+    public static final int OTP = 6256;
 
     SharedPreferences.Editor editor;
 
@@ -123,4 +136,33 @@ public class SharedpreferencesUser {
     {
         return Boolean.valueOf(Preferences.getString(SOCKETCONNECTION,null));
     }
+
+    public void driverInfo(String driver_name , String driver_mobile , String rate , String time , String distance , int otp){
+
+         editor.putString(DRIVER_NAME , driver_name).commit();
+         editor.putString(DRIVER_NUMBER , driver_mobile).commit();
+         editor.putString(RATE , rate).commit();
+         editor.putString(TIME, time).commit();
+         editor.putString(DISTANCE, distance).commit();
+         editor.putInt(String.valueOf(OTP), otp).commit();
+
+     }
+    public void driverInfo_remove(){
+
+         editor.remove(DRIVER_NAME).commit();
+         editor.remove(DRIVER_NUMBER).commit();
+         editor.remove(RATE ).commit();
+         editor.remove(TIME).commit();
+         editor.remove(DISTANCE).commit();
+         editor.remove(String.valueOf(OTP)).commit();
+
+     }
+
+    public void vehicledata(String text){
+        editor.putString(VEHICLE_DATA, text).commit();
+    }
+    public void remove_vehicledata(){
+        editor.remove(VEHICLE_DATA).commit();
+    }
+
 }

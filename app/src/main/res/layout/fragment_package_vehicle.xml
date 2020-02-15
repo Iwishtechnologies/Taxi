@@ -4,36 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    tools:context=".fragment.Package_vehicle"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".fragment.RentalPackageFragmnet"
     android:orientation="vertical">
-
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/pakagerecycleview"
+        android:id="@+id/vehicle_package_recycle"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="40dp"/>
-
+        android:layout_height="match_parent"/>
 </LinearLayout>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

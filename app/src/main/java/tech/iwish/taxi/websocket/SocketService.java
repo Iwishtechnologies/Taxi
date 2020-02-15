@@ -52,12 +52,14 @@ public class SocketService extends Service {
     private Map data;
 
 
+
     public SocketService(Context context, Map<String, LatLng> allLatLng, Map<String, Double> latitude_logitude, Map<String, String> addressMap) {
         this.context = context;
         sharedpreferencesUser = new SharedpreferencesUser(context);
         this.allLatLng = allLatLng;
         this.latitude_logitude = latitude_logitude;
         this.AddressMap = addressMap;
+        mainActivity = new MainActivity();
     }
 
 
@@ -92,13 +94,21 @@ public class SocketService extends Service {
                     switch (type) {
                         case "vehicleInfo":
                             Log.e("text", text);
+//                            checkehi(text);
+                            sharedpreferencesUser.vehicledata(text);
+
                             break;
                         case "vehicleAccept":
                             Log.e("text", text);
-
                             sharedpreferencesUser.driverShowRemove();
                             sharedpreferencesUser.driverShow(text);
                             break;
+                        case "otpconfirm":
+                            Log.e("text", text);
+//                            sharedpreferencesUser.driverShowRemove();
+//                            sharedpreferencesUser.driverShow(text);
+                            break;
+
                         default:
                             break;
                     }
@@ -120,12 +130,12 @@ public class SocketService extends Service {
 
             @Override
             public void onClosed(WebSocket webSocket, int code, String reason) {
-                super.onClosed(webSocket, code, reason);
+
             }
 
             @Override
             public void onFailure(WebSocket webSocket, Throwable t, Response response) {
-                super.onFailure(webSocket, t, response);
+                   onOpen(webSocket,response);
                 socketconnection = false;
             }
         };

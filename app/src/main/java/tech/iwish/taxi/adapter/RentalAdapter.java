@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,6 +22,7 @@ public class RentalAdapter extends RecyclerView.Adapter<RentalAdapter.Viewholder
 
     private List<PickupLocationList> pickupLocationLists;
     private Context context;
+    public RentalPlace rentalPlaceDatas;
 
     public RentalAdapter(FragmentActivity activity, List<PickupLocationList> pickupLocationLists) {
         this.context = activity ;
@@ -44,7 +46,9 @@ public class RentalAdapter extends RecyclerView.Adapter<RentalAdapter.Viewholder
         holder.placeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(context, "rental", Toast.LENGTH_SHORT).show();
+                InputMethodManager input = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                input.hideSoftInputFromWindow(view.getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
+                rentalPlaceDatas.rentalVehiclePass(pickupLocationLists.get(position).getDescription());
             }
         });
     }
@@ -66,4 +70,14 @@ public class RentalAdapter extends RecyclerView.Adapter<RentalAdapter.Viewholder
             placeLayout = (LinearLayout) itemView.findViewById(R.id.placeLayout);
         }
     }
+
+    public void setrentalPlace(RentalPlace rentalPlace){
+        this.rentalPlaceDatas = rentalPlace;
+    }
+
+    public interface RentalPlace{
+        void rentalVehiclePass(String data);
+    }
+
+
 }

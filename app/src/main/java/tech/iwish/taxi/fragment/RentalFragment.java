@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 
@@ -35,6 +36,7 @@ public class RentalFragment extends DialogFragment implements SearchView.OnQuery
     private SearchView rental_searchview ;
     private RecyclerView rental_recycleview ;
     private List<PickupLocationList> pickupLocationLists = new ArrayList<>();
+    public Rentalint setrentaldat;
 
     @Nullable
     @Override
@@ -65,7 +67,7 @@ public class RentalFragment extends DialogFragment implements SearchView.OnQuery
         ConnectionServer connectionServer = new ConnectionServer();
         connectionServer.set_url(Constants.SEARCH_PLACE);
         connectionServer.requestedMethod("POST");
-        connectionServer.buildParameter("value", s.toString());
+        connectionServer.buildParameter("value", s);
         connectionServer.execute(new ConnectionServer.AsyncResponse() {
             @Override
             public void processFinish(String output) {
@@ -86,9 +88,7 @@ public class RentalFragment extends DialogFragment implements SearchView.OnQuery
                         }
                         RentalAdapter rentalAdapter = new RentalAdapter(getActivity() , pickupLocationLists);
                         rental_recycleview.setAdapter(rentalAdapter);
-
-
-
+                        rentalAdapter.setrentalPlace(data -> setrentaldat.rentaldatass(data));
                     }
                 }
             }
@@ -97,4 +97,35 @@ public class RentalFragment extends DialogFragment implements SearchView.OnQuery
 
         return false;
     }
+
+    public void setRentalDatas(Rentalint rentalDatas){
+        this.setrentaldat = rentalDatas;
+    }
+
+    public interface Rentalint{
+        public void rentaldatass(String data);
+    }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

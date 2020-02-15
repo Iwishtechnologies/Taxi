@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import com.kaopiz.kprogresshud.KProgressHUD;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 
 import org.json.JSONArray;
@@ -44,6 +45,7 @@ public class Search_dropFragment extends DialogFragment  {
     private List<DropLocationList> dropLocationListMap  = new ArrayList<>();
     private DropValueInterFace valuedrop;
     private SearchView searchview;
+    private KProgressHUD kProgressHUD;
 
     @Nullable
     @Override
@@ -86,12 +88,7 @@ public class Search_dropFragment extends DialogFragment  {
 
                                 SearchDropAdapter searchDropAdapter = new SearchDropAdapter(getActivity() , dropLocationListMap);
                                 search_drop_recycle.setAdapter(searchDropAdapter);
-                                searchDropAdapter.setdropLOcationValue(new SearchDropAdapter.DropInterFace() {
-                                    @Override
-                                    public void droplocationInterFace(String data) {
-                                        valuedrop.DroplocationValue(data);
-                                    }
-                                });
+                                searchDropAdapter.setdropLOcationValue(data -> valuedrop.DroplocationValue(data));
 
                             }
                         }
@@ -118,5 +115,20 @@ public class Search_dropFragment extends DialogFragment  {
     public interface DropValueInterFace{
         void DroplocationValue(String data);
     }
+
+
+    public void setProgressDialog(String msg) {
+        kProgressHUD.setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
+                .setLabel(msg)
+                .setAnimationSpeed(2)
+                .setDimAmount(0.5f)
+                .show();
+
+    }
+
+    public void remove_progress_Dialog() {
+        kProgressHUD.dismiss();
+    }
+
 
 }

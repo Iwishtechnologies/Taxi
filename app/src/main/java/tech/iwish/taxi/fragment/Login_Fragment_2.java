@@ -50,7 +50,6 @@ public class Login_Fragment_2 extends Fragment {
         View view = inflater.inflate(R.layout.fragment_login__fragment_2 , null);
 
         otp_button = (Button)view.findViewById(R.id.otp_button);
-//        otp_check = (EditText)view.findViewById(R.id.otp_check);
         pinview = (Pinview)view.findViewById(R.id.pinview);
         mobNumber = (TextView)view.findViewById(R.id.mobNumber);
         pinview.setPinHeight(100);
@@ -70,52 +69,43 @@ public class Login_Fragment_2 extends Fragment {
 
 
 
-        otp_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        otp_button.setOnClickListener(view1 -> {
+            ConnectionServer connectionServer = new ConnectionServer();
+            connectionServer.set_url(Constants.USER_OTP);
+            connectionServer.requestedMethod("POST");
+            connectionServer.buildParameter("mobile_number" , mobile);
+            connectionServer.buildParameter("otp" , pinview.getValue());
+            connectionServer.execute(output -> {
+                Log.e("output" , output);
+                JsonHelper jsonHelper = new JsonHelper(output);
+                if(jsonHelper.isValidJson()){
+                    String response = jsonHelper.GetResult("response");
+                    if(response.equals("TRUE")){
 
+                        JSONArray jsonArray = jsonHelper.setChildjsonArray(jsonHelper.getCurrentJsonObj(), "data");
 
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            jsonHelper.setChildjsonObj(jsonArray, i);
 
-                ConnectionServer connectionServer = new ConnectionServer();
-                connectionServer.set_url(Constants.USER_OTP);
-                connectionServer.requestedMethod("POST");
-                connectionServer.buildParameter("mobile_number" , mobile);
-                connectionServer.buildParameter("otp" , pinview.getValue());
-                connectionServer.execute(new ConnectionServer.AsyncResponse() {
-                    @Override
-                    public void processFinish(String output) {
-                        Log.e("output" , output);
-                        JsonHelper jsonHelper = new JsonHelper(output);
-                        if(jsonHelper.isValidJson()){
-                            String response = jsonHelper.GetResult("response");
-                            if(response.equals("TRUE")){
+                            user_detailsLists.add(new User_DetailsList(jsonHelper.GetResult("name"),jsonHelper.GetResult("email"),jsonHelper.GetResult("constact")));
 
-                                JSONArray jsonArray = jsonHelper.setChildjsonArray(jsonHelper.getCurrentJsonObj(), "data");
-
-                                for (int i = 0; i < jsonArray.length(); i++) {
-                                    jsonHelper.setChildjsonObj(jsonArray, i);
-
-                                    user_detailsLists.add(new User_DetailsList(jsonHelper.GetResult("name"),jsonHelper.GetResult("email"),jsonHelper.GetResult("constact")));
-
-                                }
-                                String name = jsonHelper.GetResult("name");
-                                String email = jsonHelper.GetResult("email");
-                                String contact = jsonHelper.GetResult("contact");
-
-                                SharedpreferencesUser sharedpreferencesUser = new SharedpreferencesUser(getActivity());
-                                sharedpreferencesUser.user_detail(name , email , contact );
-
-                                Intent intent = new Intent(getActivity() , MainActivity.class);
-                                startActivity(intent);
-
-                            }
-                            else{
-                                Toast.makeText(getActivity(), "Otp not Match", Toast.LENGTH_SHORT).show();
-                            }
                         }
+                        String name = jsonHelper.GetResult("name");
+                        String email = jsonHelper.GetResult("email");
+                        String contact = jsonHelper.GetResult("contact");
+
+                        SharedpreferencesUser sharedpreferencesUser = new SharedpreferencesUser(getActivity());
+                        sharedpreferencesUser.user_detail(name , email , contact );
+
+                        Intent intent = new Intent(getActivity() , MainActivity.class);
+                        startActivity(intent);
+
                     }
-                });
-            }
+                    else{
+                        Toast.makeText(getActivity(), "Otp not Match", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
         });
 
 

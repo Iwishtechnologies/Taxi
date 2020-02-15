@@ -45,41 +45,34 @@ public class LoginFragment_1 extends Fragment {
 
 
 
-        login_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View view) {
+        login_button.setOnClickListener(view1 -> {
 
+            ConnectionServer connectionServer = new ConnectionServer();
+            connectionServer.set_url(Constants.USER_LOGIN);
+            connectionServer.requestedMethod("POST");
+            connectionServer.buildParameter("mobile_number", mobile_number.getText().toString().trim());
+            connectionServer.execute(output -> {
+                Log.e("output", output);
+                JsonHelper jsonHelper = new JsonHelper(output);
+                if (jsonHelper.isValidJson()) {
+                    String response = jsonHelper.GetResult("response");
+                    if (response.equals("TRUE")) {
 
-                ConnectionServer connectionServer = new ConnectionServer();
-                connectionServer.set_url(Constants.USER_LOGIN);
-                connectionServer.requestedMethod("POST");
-                connectionServer.buildParameter("mobile_number", mobile_number.getText().toString().trim());
-                connectionServer.execute(new ConnectionServer.AsyncResponse() {
-                    @Override
-                    public void processFinish(String output) {
-                        Log.e("output", output);
-                        JsonHelper jsonHelper = new JsonHelper(output);
-                        if (jsonHelper.isValidJson()) {
-                            String response = jsonHelper.GetResult("response");
-                            if (response.equals("TRUE")) {
+                        Login_Fragment_2 login_fragment_2 = new Login_Fragment_2();
+                        Bundle args = new Bundle();
+                        args.putString("number", mobile_number.getText().toString().trim());
+                                login_fragment_2.setArguments(args);
+                        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                        FragmentTransaction transaction = fragmentManager.beginTransaction();
+                        transaction.setCustomAnimations(R.anim.enter_fragment1, R.anim.exit_fragment1, R.anim.enter_fragment1, R.anim.exit_fragment1);
+                        transaction.addToBackStack(null);
+                        transaction.replace(R.id.Login_fragmentLayout, login_fragment_2, "BLANK_FRAGMENT").commit();
 
-                                Login_Fragment_2 login_fragment_2 = new Login_Fragment_2();
-                                Bundle args = new Bundle();
-                                args.putString("number", mobile_number.getText().toString().trim());
-                                        login_fragment_2.setArguments(args);
-                                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                                FragmentTransaction transaction = fragmentManager.beginTransaction();
-                                transaction.setCustomAnimations(R.anim.enter_fragment1, R.anim.exit_fragment1, R.anim.enter_fragment1, R.anim.exit_fragment1);
-                                transaction.addToBackStack(null);
-                                transaction.replace(R.id.Login_fragmentLayout, login_fragment_2, "BLANK_FRAGMENT").commit();
-
-                            } else {
-                                Toast.makeText(getActivity(), "Mobile Number Not Match", Toast.LENGTH_SHORT).show();
-                            }
-                        }
+                    } else {
+                        Toast.makeText(getActivity(), "Mobile Number Not Match", Toast.LENGTH_SHORT).show();
                     }
-                });
-            }
+                }
+            });
         });
 
 

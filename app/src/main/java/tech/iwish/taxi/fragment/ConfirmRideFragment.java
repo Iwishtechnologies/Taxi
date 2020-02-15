@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.kaopiz.kprogresshud.KProgressHUD;
 
 import org.json.JSONArray;
 
@@ -39,6 +40,7 @@ public class ConfirmRideFragment extends Fragment {
     Map<String , String> AddressMap ;
     MainActivity WebsocketHandel;
     public vehicleInter jsodata;
+    private KProgressHUD kProgressHUD;
 
 
     public ConfirmRideFragment( Map<String, LatLng> allLatLng   , Map<String , Double> latitude_logitude ,Map<String , String> AddressMap) {
@@ -62,7 +64,7 @@ public class ConfirmRideFragment extends Fragment {
         linearLayoutManager.setOrientation(RecyclerView.HORIZONTAL);
         vehicle_recycle.setLayoutManager(linearLayoutManager);
 
-
+        kProgressHUD = new KProgressHUD(getContext());
 
         Double PickLatitude = latitude_logitude.get("PickLatitude");
         Double PickLogitude = latitude_logitude.get("PickLogitude");
@@ -76,32 +78,25 @@ public class ConfirmRideFragment extends Fragment {
         connectionServer.buildParameter("PickLogitude" ,PickLogitude.toString());
         connectionServer.buildParameter("destinationsLatitude" ,destinationsLatitude.toString());
         connectionServer.buildParameter("destinationsLogitude" ,destinationsLogitude.toString());
-        connectionServer.execute(new ConnectionServer.AsyncResponse() {
-            @Override
-            public void processFinish(String output) {
-                Log.e("output" , output);
-                JsonHelper jsonHelper = new JsonHelper(output);
-                if(jsonHelper.isValidJson()){
-                    String response = jsonHelper.GetResult("response");
-                    if(response.equals("TRUE")){
-                        JSONArray jsonArray = jsonHelper.setChildjsonArray(jsonHelper.getCurrentJsonObj(), "result1");
+        connectionServer.execute(output -> {
+            Log.e("output" , output);
+            JsonHelper jsonHelper = new JsonHelper(output);
+            if(jsonHelper.isValidJson()){
+                String response = jsonHelper.GetResult("response");
+                if(response.equals("TRUE")){
+                    remove_progress_Dialog();
+                    JSONArray jsonArray = jsonHelper.setChildjsonArray(jsonHelper.getCurrentJsonObj(), "result1");
 
-                        for (int i = 0; i < jsonArray.length(); i++) {
-                            jsonHelper.setChildjsonObj(jsonArray, i);
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        jsonHelper.setChildjsonObj(jsonArray, i);
 
-                            vehicleList.add(new VehicleList(jsonHelper.GetResult("catagory_id"),jsonHelper.GetResult("catagory_name"),jsonHelper.GetResult("vehicle_type"),jsonHelper.GetResult("waitingRate_m"),jsonHelper.GetResult("totrate"),jsonHelper.GetResult("tottime"),jsonHelper.GetResult("distance")));
+                        vehicleList.add(new VehicleList(jsonHelper.GetResult("catagory_id"),jsonHelper.GetResult("catagory_name"),jsonHelper.GetResult("vehicle_type"),jsonHelper.GetResult("waitingRate_m"),jsonHelper.GetResult("totrate"),jsonHelper.GetResult("tottime"),jsonHelper.GetResult("distance")));
 
-                        }
-                        VehicleAdapter vehicleAdapter = new VehicleAdapter(getActivity() , vehicleList , allLatLng , latitude_logitude , AddressMap);
-                        vehicle_recycle.setAdapter(vehicleAdapter);
-                        vehicle_recycle.setNestedScrollingEnabled(false);
-                        vehicleAdapter.Setvehicle(new VehicleAdapter.VehicleLatLon() {
-                            @Override
-                            public void vehicaleLatlong(String jsoneData) {
-                                jsodata.websok(jsoneData);
-                            }
-                        });
                     }
+                    VehicleAdapter vehicleAdapter = new VehicleAdapter(getActivity() , vehicleList , allLatLng , latitude_logitude , AddressMap);
+                    vehicle_recycle.setAdapter(vehicleAdapter);
+                    vehicle_recycle.setNestedScrollingEnabled(false);
+                    vehicleAdapter.Setvehicle(jsoneData -> jsodata.websok(jsoneData));
                 }
             }
         });
@@ -118,6 +113,20 @@ public class ConfirmRideFragment extends Fragment {
     public interface vehicleInter{
         void websok(String value);
     }
+
+    public void setProgressDialog(String msg) {
+        kProgressHUD.setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
+                .setLabel(msg)
+                .setAnimationSpeed(2)
+                .setDimAmount(0.5f)
+                .show();
+
+    }
+
+    public void remove_progress_Dialog() {
+        kProgressHUD.dismiss();
+    }
+
 
 
 }

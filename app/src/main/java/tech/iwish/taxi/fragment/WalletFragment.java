@@ -56,33 +56,25 @@ public class WalletFragment extends Fragment {
         connectionServer.set_url(Constants.WALLET);
         connectionServer.requestedMethod("POST");
         connectionServer.buildParameter("mobile" , mob);
-        connectionServer.execute(new ConnectionServer.AsyncResponse() {
-            @Override
-            public void processFinish(String output) {
-                Log.e("output" , output);
-                JsonHelper jsonHelper = new JsonHelper(output);
-                if(jsonHelper.isValidJson()){
-                    String response = jsonHelper.GetResult("response");
-                    if(response.equals("TRUE")){
-                        JSONArray jsonArray = jsonHelper.setChildjsonArray(jsonHelper.getCurrentJsonObj(), "data");
-                        for (int i = 0; i < jsonArray.length(); i++) {
-                            jsonHelper.setChildjsonObj(jsonArray, i);
-                            wallet_money.setText(jsonHelper.GetResult("wallet"));
-                            sharedpreferencesUser.walletAdd(jsonHelper.GetResult("wallet"));
-
-                        }
+        connectionServer.execute(output -> {
+            Log.e("output" , output);
+            JsonHelper jsonHelper = new JsonHelper(output);
+            if(jsonHelper.isValidJson()){
+                String response = jsonHelper.GetResult("response");
+                if(response.equals("TRUE")){
+                    JSONArray jsonArray = jsonHelper.setChildjsonArray(jsonHelper.getCurrentJsonObj(), "data");
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        jsonHelper.setChildjsonObj(jsonArray, i);
+                        wallet_money.setText(jsonHelper.GetResult("wallet"));
+                        sharedpreferencesUser.walletAdd(jsonHelper.GetResult("wallet"));
                     }
                 }
             }
         });
-
-        wallet_click.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getActivity() , MoneyAddWalletActivity.class);
-                intent.putExtra("money",wallet_money.getText().toString().trim());
-                startActivity(intent);
-            }
+        wallet_click.setOnClickListener(view1 -> {
+            Intent intent = new Intent(getActivity() , MoneyAddWalletActivity.class);
+            intent.putExtra("money",wallet_money.getText().toString().trim());
+            startActivity(intent);
         });
 
 

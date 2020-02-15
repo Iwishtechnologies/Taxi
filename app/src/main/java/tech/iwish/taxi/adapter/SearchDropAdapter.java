@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -11,6 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.kaopiz.kprogresshud.KProgressHUD;
 
 import java.util.List;
 
@@ -23,6 +26,7 @@ public class SearchDropAdapter extends RecyclerView.Adapter<SearchDropAdapter.Vi
     private List<DropLocationList>dropLocationLists ;
     private Context context;
     private DropInterFace dropInterFace;
+    private KProgressHUD kProgressHUD;
 
 
     public SearchDropAdapter(FragmentActivity activity, List<DropLocationList> dropLocationListMap) {
@@ -41,20 +45,23 @@ public class SearchDropAdapter extends RecyclerView.Adapter<SearchDropAdapter.Vi
     @Override
     public void onBindViewHolder(@NonNull Viewholder holder, int position) {
         holder.place.setText(dropLocationLists.get(position).getDescription());
-        holder.placeLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dropInterFace.droplocationInterFace(dropLocationLists.get(position).getDescription());
+         kProgressHUD = new KProgressHUD(context);
+
+        holder.placeLayout.setOnClickListener(view -> {
+
+            InputMethodManager input = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
+            input.hideSoftInputFromWindow(view.getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
+
+            dropInterFace.droplocationInterFace(dropLocationLists.get(position).getDescription());
 
 /*
-                ConfirmRideFragment confirmRideFragment = new ConfirmRideFragment(null , null , null);
-                FragmentManager fm = ((FragmentActivity) context).getSupportFragmentManager();
-                fm.beginTransaction().replace(R.id.confirmRideLoad, confirmRideFragment).commit();
+            ConfirmRideFragment confirmRideFragment = new ConfirmRideFragment(null , null , null);
+            FragmentManager fm = ((FragmentActivity) context).getSupportFragmentManager();
+            fm.beginTransaction().replace(R.id.confirmRideLoad, confirmRideFragment).commit();
 */
 
 
 
-            }
         });
     }
 
@@ -82,5 +89,20 @@ public class SearchDropAdapter extends RecyclerView.Adapter<SearchDropAdapter.Vi
     }
     public interface DropInterFace{
         void droplocationInterFace(String data);
+
     }
+
+    public void setProgressDialog(String msg) {
+        kProgressHUD.setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
+                .setLabel(msg)
+                .setAnimationSpeed(2)
+                .setDimAmount(0.5f)
+                .show();
+
+    }
+
+    public void remove_progress_Dialog() {
+        kProgressHUD.dismiss();
+    }
+
 }

@@ -92,7 +92,7 @@
             android:id="@+id/confirRide"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_above="@id/bottom_layout"
+            android:layout_above="@id/aa"
             android:elevation="20dp">
         </FrameLayout>
         <FrameLayout
@@ -108,24 +108,28 @@
             android:layout_height="match_parent"
             android:elevation="20dp"/>
 
-        <include
-            android:id="@+id/bottom_layout"
+        <LinearLayout
+            android:id="@+id/aa"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            layout="@layout/bottom_layout"
-            android:layout_alignParentBottom="true"
-            />
+            android:orientation="vertical"
+            android:layout_alignParentBottom="true">
+            <include
+                android:id="@+id/bottom_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_above="@id/rantalPackage"
+                layout="@layout/bottom_layout" />
+            <Button
+                android:id="@+id/rantalPackage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/orangeColor"
 
-        <Button
-            android:id="@+id/rantalPackage"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_above="@id/bottom_layout"
-            android:background="@color/orangeColor"
-            android:text="@string/ride_now"
-            android:textColor="@color/whiteColor"
+                android:text="@string/ride_now"
+                android:textColor="@color/whiteColor" />
+        </LinearLayout>
 
-            />
 
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"

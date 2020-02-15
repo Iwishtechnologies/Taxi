@@ -26,6 +26,10 @@ public class Constants {
     public static String WALLET= URL+"user/wallet";
     public static String PACKAGEVEHICLE= URL+"user/packagevehicle";
     public static String DRIVERSHOW= URL+"user/drivershow";
+    public static String OTP_DRIVER_UPDATE= URL+"user/otpupdate";
+    public static String CHECK_RIDE_CONFIRM= URL+"user/check_ride_confirm";
+    public static String WALLET_MONEY_UPDATE= URL+"user/wallet/update";
+    public static String RATE_CARD= URL+"ratecard";
     public static String PICKUPLOCATIONREQUEST= URL+"user/pickupLocationRequest";
 
 

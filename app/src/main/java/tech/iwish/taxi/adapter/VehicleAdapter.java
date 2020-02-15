@@ -62,14 +62,12 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.Viewhold
     private Map data;
     Map<String, LatLng> AllLatLng;
     Map<String, Double> latitude_logitude;
-    List<DistanceList> distanceLists = new ArrayList<>();
     Map<String, String> AddressMap;
     VehicleLatLon vehicleLatLongWebSocket;
     //    public KProgressHUD kProgressHUD;
     MainActivity mainActivity;
     private final static String CONFIRM_FRAGMENT_RID = "CONFIR_FRAGMENT_RIDESSS";
     public static String JSONDATA = "jsno";
-    public String driverShow;
     Bundle bundle;
     private KProgressHUD kProgressHUD;
 
@@ -99,6 +97,44 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.Viewhold
         holder.total_rate.setText(vehicleList.get(position).getTotrate());
         holder.total_titme.setText(vehicleList.get(position).getTottime());
 
+        kProgressHUD = new KProgressHUD(context);
+        bundle = new Bundle();
+//        **********************************************************
+/*
+        ConnectionServer connectionServer = new ConnectionServer();
+        connectionServer.set_url(Constants.DRIVERSHOW);
+        connectionServer.requestedMethod("POST");
+        connectionServer.buildParameter("driverId", "6");
+        connectionServer.execute(new ConnectionServer.AsyncResponse() {
+            @Override
+            public void processFinish(String output) {
+                Log.e("output", output);
+                JsonHelper jsonHelper = new JsonHelper(output);
+                if (jsonHelper.isValidJson()) {
+                    String response = jsonHelper.GetResult("response");
+                    if (response.equals("TRUE")) {
+
+                        JSONArray jsonArray = jsonHelper.setChildjsonArray(jsonHelper.getCurrentJsonObj(), "data");
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            jsonHelper.setChildjsonObj(jsonArray, i);
+                            bundle.putString("driver_name" , jsonHelper.GetResult("DriverName"));
+                            bundle.putString("driver_mobile" , jsonHelper.GetResult("Mobile"));
+                        }
+
+                        RideConfiremDriverDetailsFragment rideConfiremDriverDetailsFragment = new RideConfiremDriverDetailsFragment();
+                        FragmentManager fm = ((FragmentActivity) context).getSupportFragmentManager();
+                        rideConfiremDriverDetailsFragment.setArguments(bundle);
+                        fm.beginTransaction().replace(R.id.confirmRideLoad, rideConfiremDriverDetailsFragment, CONFIRM_FRAGMENT_RID).commit();
+
+//                        remove_progress_Dialog();
+
+                    }
+                }
+            }
+        });
+*/
+
+//        **********************************************************
 
         holder.clickConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -117,57 +153,54 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.Viewhold
 //            holder.clickConfirm.setBackgroundColor(context.getResources().getColor(R.color.yellowColor));
             holder.clickConfirm.setBackground(context.getResources().getDrawable(R.drawable.click_design));
             holder.button_Conirm.setVisibility(View.VISIBLE);
-            holder.booking_confirm.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
+            holder.booking_confirm.setOnClickListener(view -> {
 
 
-                    //=================================web socket============================================
-                    kProgressHUD = new KProgressHUD(context);
+                //=================================web socket============================================
+
 
 //                    progress bar start
-                    setProgressDialog("Vehicle Serach..");
-                    autoDismissProgressbar();
+                setProgressDialog("Vehicle Serach..");
+                autoDismissProgressbar();
 //                    progress bar end
 
-                    SharedpreferencesUser sharedpreferencesUser = new SharedpreferencesUser(context);
-                    Map data = sharedpreferencesUser.getShare();
-                    Object mobile = data.get(USER_CONTACT);
-                    AddressMap.get("PickupCityName");
-                    AddressMap.get("PickupstateName");
-                    AddressMap.get("PickupcountryName");
+                SharedpreferencesUser sharedpreferencesUser = new SharedpreferencesUser(context);
+                Map data = sharedpreferencesUser.getShare();
+                Object mobile = data.get(USER_CONTACT);
+                AddressMap.get("PickupCityName");
+                AddressMap.get("PickupstateName");
+                AddressMap.get("PickupcountryName");
 
 
-                    JSONDATA = "{ \"type\" : \"vehicleCall\",\"totalRate\" : \"" + vehicleList.get(currentSelectedPosition).getTotrate() + "\",\"totalTime\" : \"" + vehicleList.get(currentSelectedPosition).getTottime() + "\" , \"request\" :\"booking\" ,\"pickUpLat\" : \"" + latitude_logitude.get("PickLatitude") + "\"  ,\"pickUpLong\" : \"" + latitude_logitude.get("PickLogitude") + "\" ,\"DropLocationLatitude\" : \"" + latitude_logitude.get("dropLatitude") + "\",\"DropLocationLogitude\" : \"" + latitude_logitude.get("dropLongitude") + "\"  , \"userType\" : \"client\"  , \"userID\" : \"" + mobile.toString() + "\" , \"PickupCityName\" : \"" + AddressMap.get("PickupCityName") + "\" , \"PickupstateName\" : \"" + AddressMap.get("PickupstateName") + "\" , \"PickupStretName\" : \"" + AddressMap.get("PickupStretName") + "\"}";
-                    sharedpreferencesUser.getDatasWebsocket(JSONDATA);
+                JSONDATA = "{ \"type\" : \"vehicleCall\",\"totalRate\" : \"" + vehicleList.get(currentSelectedPosition).getTotrate() + "\",\"totalTime\" : \"" + vehicleList.get(currentSelectedPosition).getTottime() + "\" , \"request\" :\""+vehicleList.get(currentSelectedPosition).getCatagory_name()+"\" ,\"pickUpLat\" : \"" + latitude_logitude.get("PickLatitude") + "\"  ,\"pickUpLong\" : \"" + latitude_logitude.get("PickLogitude") + "\" ,\"DropLocationLatitude\" : \"" + latitude_logitude.get("dropLatitude") + "\",\"DropLocationLogitude\" : \"" + latitude_logitude.get("dropLongitude") + "\"  , \"userType\" : \"client\"  , \"userID\" : \"" + mobile.toString() + "\" , \"PickupCityName\" : \"" + AddressMap.get("PickupCityName") + "\" , \"PickupstateName\" : \"" + AddressMap.get("PickupstateName") + "\" , \"PickupStretName\" : \"" + AddressMap.get("PickupStretName") + "\"}";
+                sharedpreferencesUser.getDatasWebsocket(JSONDATA);
 
 
-                    Timer timer = new Timer();
-                    timer.scheduleAtFixedRate(new TimerTask() {
+                Timer timer = new Timer();
+                timer.scheduleAtFixedRate(new TimerTask() {
 
 //                        private String driverShow;
 
-                        @Override
-                        public void run() {
-                            String driverData = sharedpreferencesUser.driverReturnData();
-                            if (driverData != null) {
-                                Log.e("driverData", driverData);
-                                driverData(driverData);
-                                timer.cancel();
-                            }
+                    @Override
+                    public void run() {
+                        String driverData = sharedpreferencesUser.driverReturnData();
+                        if (driverData != null) {
+                            Log.e("driverData", driverData);
+                            driverData(driverData);
+                            timer.cancel();
                         }
-                    }, 0, 1000);
+                    }
+                }, 0, 1000);
 
 
 
-                    bundle.putString("rate", vehicleList.get(position).getTotrate());
-                    bundle.putString("time", vehicleList.get(position).getTottime());
-                    bundle.putString("distance", vehicleList.get(position).getDistance());
+                bundle.putString("rate", vehicleList.get(position).getTotrate());
+                bundle.putString("time", vehicleList.get(position).getTottime());
+                bundle.putString("distance", vehicleList.get(position).getDistance());
 
 
 
 
-                }
             });
         } else {
             holder.button_Conirm.setVisibility(View.GONE);
@@ -212,40 +245,38 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.Viewhold
 
 
     public void driverData(String data){
-      this.driverShow = data ;
+
         try {
             JSONObject jsonObject = new JSONObject(data);
             JSONObject value = jsonObject.getJSONObject("data");
             String driverId = value.getString("driverId");
+            String otp = value.getString("otp");
+            bundle.putString("otp",otp);
+            bundle.putString("driverId",driverId);
 
             ConnectionServer connectionServer = new ConnectionServer();
             connectionServer.set_url(Constants.DRIVERSHOW);
             connectionServer.requestedMethod("POST");
             connectionServer.buildParameter("driverId", driverId);
-            connectionServer.execute(new ConnectionServer.AsyncResponse() {
-                @Override
-                public void processFinish(String output) {
-                    Log.e("output", output);
-                    JsonHelper jsonHelper = new JsonHelper(output);
-                    if (jsonHelper.isValidJson()) {
-                        String response = jsonHelper.GetResult("response");
-                        if (response.equals("TRUE")) {
+            connectionServer.execute(output -> {
+                Log.e("output", output);
+                JsonHelper jsonHelper = new JsonHelper(output);
+                if (jsonHelper.isValidJson()) {
+                    String response = jsonHelper.GetResult("response");
+                    if (response.equals("TRUE")) {
 
-                            JSONArray jsonArray = jsonHelper.setChildjsonArray(jsonHelper.getCurrentJsonObj(), "data");
-                            for (int i = 0; i < jsonArray.length(); i++) {
-                                jsonHelper.setChildjsonObj(jsonArray, i);
-                                bundle.putString("driver_name" , jsonHelper.GetResult("DriverName"));
-                                bundle.putString("driver_mobile" , jsonHelper.GetResult("Mobile"));
-                            }
-
-                            RideConfiremDriverDetailsFragment rideConfiremDriverDetailsFragment = new RideConfiremDriverDetailsFragment();
-                            FragmentManager fm = ((FragmentActivity) context).getSupportFragmentManager();
-                            rideConfiremDriverDetailsFragment.setArguments(bundle);
-                            fm.beginTransaction().replace(R.id.confirmRideLoad, rideConfiremDriverDetailsFragment, CONFIRM_FRAGMENT_RID).commit();
-
-                            remove_progress_Dialog();
-
+                        JSONArray jsonArray = jsonHelper.setChildjsonArray(jsonHelper.getCurrentJsonObj(), "data");
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            jsonHelper.setChildjsonObj(jsonArray, i);
+                            bundle.putString("driver_name" , jsonHelper.GetResult("DriverName"));
+                            bundle.putString("driver_mobile" , jsonHelper.GetResult("Mobile"));
                         }
+                        RideConfiremDriverDetailsFragment rideConfiremDriverDetailsFragment = new RideConfiremDriverDetailsFragment();
+                        FragmentManager fm = ((FragmentActivity) context).getSupportFragmentManager();
+                        rideConfiremDriverDetailsFragment.setArguments(bundle);
+                        fm.beginTransaction().replace(R.id.confirmRideLoad, rideConfiremDriverDetailsFragment, CONFIRM_FRAGMENT_RID).commit();
+
+                        remove_progress_Dialog();
                     }
                 }
             });
@@ -265,7 +296,7 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.Viewhold
                 Log.e("vehicle not " , "vehcl not");
                 timer.cancel();
             }
-        },20000,20000);
+        },30000,30000);
     }
 
     public void setProgressDialog(String msg) {

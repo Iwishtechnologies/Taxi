@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="200dp"
     android:layout_height="match_parent"
-    android:gravity="bottom">
+    android:gravity="bottom"
+    android:orientation="vertical">
+
     <LinearLayout
         android:id="@+id/main_layout_linearlayout"
         android:layout_width="wrap_content"
@@ -12,90 +13,99 @@
         android:elevation="10dp"
         android:outlineSpotShadowColor="@color/blackColor"
         android:weightSum="2">
-    <LinearLayout
-        android:id="@+id/clickConfirm"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:background="@drawable/fragment_design_vehicle"
-        android:orientation="vertical"
-        android:layout_margin="10dp"
-        android:tag="aa"
-        android:elevation="5dp"
-        android:outlineSpotShadowColor="@color/blackColor"
-        android:padding="5dp">
-        <tech.iwish.taxi.extended.TextViewFont
-            android:layout_width="match_parent"
+
+        <LinearLayout
+            android:id="@+id/clickConfirm"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:paddingTop="3dp"
-            app:fonttype="font5"
-            android:textSize="15sp"
-            android:layout_gravity="center"
-            android:textColor="@color/blackColor"
-            android:text="Auto"/>
-        <tech.iwish.taxi.extended.TextViewFont
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_gravity="center"
-            app:fonttype="font5"
-            android:textColor="@color/blackColor"
-            android:text="Total Fair"
-            android:textSize="12sp"/>
-        <tech.iwish.taxi.extended.TextViewFont
-            android:id="@+id/total_rate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_gravity="center"
-            app:fonttype="font5"
-            android:textColor="@color/blackColor"
-            android:textSize="16sp"
-            android:text="79"/>
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="110dp">
-            <ImageView
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/fragment_design_vehicle"
+            android:elevation="5dp"
+            android:orientation="vertical"
+            android:outlineSpotShadowColor="@color/blackColor"
+            android:padding="5dp"
+            android:tag="aa">
+
+            <tech.iwish.taxi.extended.TextViewFont
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:src="@drawable/auto_image"/>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="2"
-                android:layout_alignParentBottom="true"
+                android:layout_gravity="center"
                 android:gravity="center"
-                android:layout_marginBottom="10dp"
-                android:layout_gravity="center">
-                <TextView
-                    android:id="@+id/total_titme"
+                android:paddingTop="3dp"
+                android:text="Auto"
+                android:textColor="@color/blackColor"
+                android:textSize="15sp"
+                app:fonttype="font5" />
+
+            <tech.iwish.taxi.extended.TextViewFont
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="Total Fair"
+                android:textColor="@color/blackColor"
+                android:textSize="12sp"
+                app:fonttype="font5" />
+
+            <tech.iwish.taxi.extended.TextViewFont
+                android:id="@+id/total_rate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="79"
+                android:textColor="@color/blackColor"
+                android:textSize="16sp"
+                app:fonttype="font5" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="110dp">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/auto_image" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="10dp"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:weightSum="2">
+
+                    <TextView
+                        android:id="@+id/total_titme"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="2" />
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/button_Conirm"
+                android:layout_width="match_parent"
+                android:layout_height="25dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="invisible">
+
+                <tech.iwish.taxi.extended.ButtonFont
+                    android:id="@+id/booking_confirm"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="2"/>
-
+                    android:background="@drawable/button_design_vehicle"
+                    android:text="@string/book_now"
+                    android:textSize="10sp"
+                    app:fonttype="font7" />
             </LinearLayout>
-
-        </RelativeLayout>
-        <LinearLayout
-            android:id="@+id/button_Conirm"
-            android:layout_width="match_parent"
-            android:layout_height="25dp"
-            android:orientation="vertical"
-            android:layout_gravity="center"
-            android:visibility="invisible"
-            android:gravity="center">
-            <tech.iwish.taxi.extended.ButtonFont
-                android:id="@+id/booking_confirm"
-                android:text="@string/book_now"
-                app:fonttype="font7"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="10sp"
-                android:background="@drawable/button_design_vehicle"/>
         </LinearLayout>
-    </LinearLayout>
-
     </LinearLayout>
 </LinearLayout>

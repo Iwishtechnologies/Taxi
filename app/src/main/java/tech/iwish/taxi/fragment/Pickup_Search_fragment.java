@@ -51,8 +51,6 @@ public class Pickup_Search_fragment extends DialogFragment{
         pickuprecycle = (RecyclerView) view.findViewById(R.id.pickuprecycle);
         placeSearchview = (SearchView)view.findViewById(R.id.placeSearchview);
 
-
-
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
         pickuprecycle.setLayoutManager(linearLayoutManager);
@@ -91,14 +89,7 @@ public class Pickup_Search_fragment extends DialogFragment{
                                 PickupLocationAdapter pickupLocationAdapter = new PickupLocationAdapter(getActivity(), pickupLocationLists);
                                 pickuprecycle.setAdapter(pickupLocationAdapter);
 
-                                pickupLocationAdapter.setOnPickupListner(new PickupLocationAdapter.onPickupListner() {
-                                    @Override
-                                    public void onListen(String location) {
-
-                                        pickuplocationName.placeName_Pickup(location);
-
-                                    }
-                                });
+                                pickupLocationAdapter.setOnPickupListner(location -> pickuplocationName.placeName_Pickup(location));
 
 
                             }

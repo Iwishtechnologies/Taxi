@@ -2,7 +2,6 @@ package tech.iwish.taxi.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -13,10 +12,12 @@ import androidx.fragment.app.Fragment;
 import android.Manifest;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.location.Address;
 import android.location.Geocoder;
@@ -29,9 +30,13 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.Button;
@@ -43,19 +48,27 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.firebase.client.Firebase;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.JointType;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.maps.model.SquareCap;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
@@ -63,7 +76,9 @@ import com.google.android.libraries.places.api.Places;
 
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.navigation.NavigationView;
+import com.kaopiz.kprogresshud.KProgressHUD;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -73,26 +88,41 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.function.Consumer;
 
 import okhttp3.WebSocketListener;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import tech.iwish.taxi.diractionAPi.Common;
 import tech.iwish.taxi.diractionAPi.IGoogleApi;
 import tech.iwish.taxi.R;
 import tech.iwish.taxi.config.SharedpreferencesUser;
+import tech.iwish.taxi.fragment.AboutFragmnet;
 import tech.iwish.taxi.fragment.ConfirmRideFragment;
 import tech.iwish.taxi.fragment.OfferFragment;
 import tech.iwish.taxi.fragment.Pickup_Search_fragment;
 import tech.iwish.taxi.fragment.RateCardFragment;
+import tech.iwish.taxi.fragment.ReferEarnFragment;
 import tech.iwish.taxi.fragment.RentalFragment;
+import tech.iwish.taxi.fragment.RentalMainFragment;
 import tech.iwish.taxi.fragment.RentalPackageFragmnet;
 import tech.iwish.taxi.fragment.RideHistoryFragment;
 import tech.iwish.taxi.fragment.Search_dropFragment;
+import tech.iwish.taxi.fragment.SupportFragmnet;
 import tech.iwish.taxi.fragment.WalletFragment;
 import tech.iwish.taxi.other.VehicleListWs;
 import tech.iwish.taxi.websocket.SocketService;
 
+import static java.lang.Math.toDegrees;
+import static tech.iwish.taxi.config.SharedpreferencesUser.DATA_WB;
+import static tech.iwish.taxi.config.SharedpreferencesUser.DRIVER_NAME;
+import static tech.iwish.taxi.config.SharedpreferencesUser.DRIVER_NUMBER;
 import static tech.iwish.taxi.config.SharedpreferencesUser.LOCATION_CHANGE;
+import static tech.iwish.taxi.config.SharedpreferencesUser.OTP;
+import static tech.iwish.taxi.config.SharedpreferencesUser.VEHICLE_DATA;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback,
         GoogleMap.OnMapClickListener,
@@ -109,6 +139,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private int STORAGE_PERMISSION_CODE = 2;
     PlacesClient placesClient;
     GoogleMap googleMaps;
+    Map data = null;
     ImageView blue_pin_icon, red_pin_icon;
     public Map<String, LatLng> AllLatLng = new HashMap<String, LatLng>();
     public Map<String, Double> latitude_logitude = new HashMap<String, Double>();
@@ -150,6 +181,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private String rentalClick = "daily";
     Toolbar toolbar;
     private Button rantalPackage;
+    private AlertDialog.Builder builder;
+    private View dialogView;
+    private KProgressHUD kProgressHUD;
+    private String rentalclick;
+
 
     @SuppressLint("WrongConstant")
     @Override
@@ -175,26 +211,55 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         rentalLayout = (LinearLayout) findViewById(R.id.rentalLayout);
         outStationLayout = (LinearLayout) findViewById(R.id.outStationLayout);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        rantalPackage = (Button)findViewById(R.id.rantalPackage);
+        rantalPackage = (Button) findViewById(R.id.rantalPackage);
         NavigationView navigationView = findViewById(R.id.nav_view);
         mToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close);
         mDrawerLayout.addDrawerListener(mToggle);
-        mToggle.syncState();
 //        toolbar  = (Toolbar)findViewById(R.id.toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        mToggle.syncState();
 
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Map data = null;
 //        setSupportActionBar(toolbar);
 
 
+        String a = getIntent().getStringExtra("checkDriverData");
+        if (a != null) {
+
+            String driver_name = getIntent().getStringExtra("driver_name");
+            String driver_number = getIntent().getStringExtra("driver_number");
+            String otp = getIntent().getStringExtra("otp");
+
+
+            builder = new android.app.AlertDialog.Builder(MainActivity.this);
+            ViewGroup viewGroup = findViewById(android.R.id.content);
+            dialogView = LayoutInflater.from(MainActivity.this).inflate(R.layout.row_driver_info_layout, viewGroup, false);
+            builder.setView(dialogView);
+            TextView call_driver = dialogView.findViewById(R.id.call_driver);
+            TextView name_drivers = dialogView.findViewById(R.id.name_drivers);
+            TextView otp_1 = dialogView.findViewById(R.id.otp_1);
+            TextView otp_2 = dialogView.findViewById(R.id.otp_2);
+            TextView otp_3 = dialogView.findViewById(R.id.otp_3);
+            TextView otp_4 = dialogView.findViewById(R.id.otp_4);
+            name_drivers.setText(driver_name);
+            call_driver.setText(driver_number);
+            char[] breack_otp = (otp).toCharArray();
+            otp_1.setText(String.valueOf(breack_otp[0]));
+            otp_2.setText(String.valueOf(breack_otp[1]));
+            otp_3.setText(String.valueOf(breack_otp[2]));
+            otp_4.setText(String.valueOf(breack_otp[3]));
+
+
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
+        }
 
         View headerNavigation = navigationView.inflateHeaderView(R.layout.header_navigation);
         View panel = headerNavigation.findViewById(R.id.header_navigationss);
-        panel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
-                startActivity(intent);
-            }
+        panel.setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
+            startActivity(intent);
         });
         setTitle("Home");
         Firebase.setAndroidContext(this);
@@ -213,11 +278,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         droplocation.setAlpha((float) 0.6);
         rantalPackage.setVisibility(View.GONE);
 
-        rantalPackage.setOnClickListener((View)->{
+        rantalPackage.setOnClickListener((View) -> {
 
-        RentalPackageFragmnet rentalPackageFragmnet = new RentalPackageFragmnet();
-        getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment ,rentalPackageFragmnet).commit();
+            setProgressDialog("Packshow");
+            Bundle bundle = new Bundle();
+
+            RentalMainFragment rentalMainFragment = new RentalMainFragment(latitude_logitude, AddressMap);
+            getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment, rentalMainFragment).commit();
+
+            remove_progress_Dialog();
         });
+
+        kProgressHUD = new KProgressHUD(this);
 
     }
 
@@ -234,42 +306,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
     }
-
-
-
-    /*
-    private void PermissionCheck() {
-        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            Toast.makeText(this, "GPS is Enabled in your devide", Toast.LENGTH_SHORT).show();
-        } else {
-            showGPSDisabledAlertToUser();
-        }
-    }
-
-    private void showGPSDisabledAlertToUser() {
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-        alertDialogBuilder.setMessage("GPS is disabled in your device. Would you like to enable it?")
-                .setCancelable(false)
-                .setPositiveButton("Goto Settings Page To Enable GPS",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                Intent callGPSSettingIntent = new Intent(
-                                        android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                                startActivity(callGPSSettingIntent);
-                            }
-                        });
-        alertDialogBuilder.setNegativeButton("Cancel",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                });
-        AlertDialog alert = alertDialogBuilder.create();
-        alert.show();
-    }
-
-
-    */
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -313,8 +349,26 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             case R.id.offer:
                 setTitle("Offer");
                 OfferFragment offerFragment = new OfferFragment();
-                getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment,offerFragment).addToBackStack("tag").commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment, offerFragment).addToBackStack("tag").commit();
                 break;
+            case R.id.refer_earn:
+                setTitle("Trfer earn");
+                ReferEarnFragment referEarnFragment = new ReferEarnFragment();
+                getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment, referEarnFragment).addToBackStack("tag").commit();
+                break;
+            case R.id.support:
+                setTitle("Support");
+                SupportFragmnet supportFragmnet = new SupportFragmnet();
+                getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment, supportFragmnet).addToBackStack("tag").commit();
+                break;
+            case R.id.about:
+                setTitle("About");
+                AboutFragmnet aboutFragmnet = new AboutFragmnet();
+                getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment, aboutFragmnet).addToBackStack("tag").commit();
+                break;
+            case R.id.logout:
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(intent);
 
         }
         mDrawerLayout.closeDrawer(GravityCompat.START);
@@ -323,14 +377,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private void fetchLastLocation() {
         Task<Location> task = fusedLocationProviderClient.getLastLocation();
-        task.addOnSuccessListener(new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-                if (location != null) {
-                    currentlocation = location;
-                    SupportMapFragment supportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-                    supportMapFragment.getMapAsync(MainActivity.this);
-                }
+        task.addOnSuccessListener(location -> {
+            if (location != null) {
+                currentlocation = location;
+                SupportMapFragment supportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+                supportMapFragment.getMapAsync(MainActivity.this);
             }
         });
     }
@@ -338,11 +389,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(final GoogleMap googleMap) {
         googleMaps = googleMap;
-//        googleMap.setTrafficEnabled(true);
-//        googleMap.setIndoorEnabled(true);
-//        googleMap.setBuildingsEnabled(true);
-
-
         googleMap.setOnMapClickListener(this);
         googleMap.setOnCameraMoveStartedListener(this);
         googleMap.setOnCameraMoveCanceledListener(this);
@@ -354,8 +400,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         if (googleMap != null) {
             googleMap.setMyLocationEnabled(true);
+
             final View locationButton = ((View) MainActivity.this.findViewById(Integer.parseInt("1")).getParent()).findViewById(Integer.parseInt("2"));
             RelativeLayout.LayoutParams rlp = (RelativeLayout.LayoutParams) locationButton.getLayoutParams();
+
             // position on right bottom
             rlp.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
             rlp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
@@ -364,7 +412,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             googleMap.getUiSettings().setMyLocationButtonEnabled(true);
 
             LatLng locationCurrent = new LatLng(currentlocation.getLatitude(), currentlocation.getLongitude());
-
 
             Geocoder geocoder = new Geocoder(this, Locale.getDefault());
             List<Address> addresses = null;
@@ -377,18 +424,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 AddressMap.put("PickupCityName", cityName);
                 AddressMap.put("PickupstateName", stateName);
                 AddressMap.put("PickupcountryName", streetName);
+
                 if (!checkinit) {
                     this.checkinit = true;
                     socketService = new SocketService(this, AllLatLng, latitude_logitude, AddressMap);
                     Intent intent = new Intent(MainActivity.this, MainActivity.class);
                     socketService.onStartCommand(intent, 1, 1);
                     startService(intent);
-//                    socketService.setdataVehicle(new SocketService.VehicleShow_Data() {
-//                        @Override
-//                        public void vehicleshow(String data) {
-//                            vehicleShow(data);
-//                        }
-//                    });
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -402,73 +444,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             googleMap.addMarker(markerOptions);
 
 
+            VehicleCheckOnline();
         }
     }
 
-    public void vehicleShow(String value) {
 
-
-        JSONObject jsondobj = null;
-        try {
-            jsondobj = new JSONObject(value);
-            JSONObject datas = jsondobj.getJSONObject("data");
-            String lat = datas.getString("lat");
-            String logit = datas.getString("long");
-            if (lat != null || logit != null) {
-                latD = Double.valueOf(lat);
-                log = Double.valueOf(logit);
-                if (latD != null || log != null) {
-//                    LatLng latLng = new LatLng(latD, log);
-                    LatLng latLng = new LatLng(26.204543, 78.190961);
-
-                    this.vehicleLatlng = latLng;
-                    showveh();
-
-//                    MarkerOptions markerOptions = new MarkerOptions().position(latLng).icon(BitmapDescriptorFactory.fromResource(R.drawable.car_icon));
-//                    googleMaps.addMarker(markerOptions);
-//                    Log.e("lat", String.valueOf(latLng));
-                }
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    public void showveh() {
-
-        if (vehicleLatlng != null) {
-            MarkerOptions markerOptionss = new MarkerOptions().position(vehicleLatlng).title("vehicle").visible(true);
-            googleMaps.addMarker(markerOptionss);
-        }
-
-
-    }
-/*
-
-    public void fetchVehicle(String value) {
-
-        try {
-            JSONObject jsondobj = new JSONObject(value);
-            JSONObject datas = null;
-            String type = jsondobj.getString("type");
-            switch (type) {
-                case "vehicleAccept":
-                    datas = jsondobj.getJSONObject("data");
-                    Log.e("vehicleAccept", "vehicleAccept");
-                    Log.e("vehicleAccept", datas.toString());
-                    break;
-                case "vehicleInfo":
-                    vehicleShow(value);
-                    break;
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        
-
-
-     */
 /*   try {
             JSONObject jsondobj = new JSONObject(value);
             JSONObject datas = jsondobj.getJSONObject("data");
@@ -491,9 +471,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 //
                 }
             }
-*//*
+*/
 
-     */
 /*
 
                             Location temp = new Location(LocationManager.GPS_PROVIDER);
@@ -512,22 +491,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 marker.setRotation(getBearing(latLng, bb));
                             }
 
-*//*
-     */
-/*
+*/
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }*//*
-
-
-     */
 /*
         marker = googleMaps.addMarker(new MarkerOptions().position(aa)
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.car_icon)));
         animateMarker(currentlocation ,marker );
-*//*
-
 
 //                googleMaps.clear();
 //                Marker marker = new Marker().remove();
@@ -536,59 +505,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
-    public void WebsocketHandel(String data) {
-
-
-        webSocketListener = new WebSocketListener() {
-
-
-            @Override
-            public void onOpen(WebSocket webSocket, Response response) {
-
-                String Json;
-                if (data != null) {
-                    Json = data;
-                } else {
-                    Json = "{ \"type\" : \"initiate\" ,\"userType\" : \"client\"  , \"userID\" : \"8871121959\" , \"PickupCityName\" : \"" + AddressMap.get("PickupCityName") + "\" , \"PickupstateName\" : \"" + AddressMap.get("PickupstateName") + "\" , \"PickupStretName\" : \"" + AddressMap.get("PickupStretName") + "\"}";
-                }
-                webSocket.send(Json);
-            }
-
-            @Override
-            public void onMessage(WebSocket webSocket, String text) {
-
-                fetchVehicle(text);
-
-
-            }
-
-            @Override
-            public void onMessage(WebSocket webSocket, ByteString bytes) {
-
-            }
-
-            @Override
-            public void onClosing(WebSocket webSocket, int code, String reason) {
-
-            }
-
-            @Override
-            public void onClosed(WebSocket webSocket, int code, String reason) {
-
-            }
-
-            @Override
-            public void onFailure(WebSocket webSocket, Throwable t, Response response) {
-
-            }
-        };
-        Request request = new Request.Builder().url("ws://173.212.226.143:8090/").build();
-        OkHttpClient showVeicle = new OkHttpClient();
-        showVeicle.newWebSocket(request, webSocketListener);
-        showVeicle.dispatcher().executorService();
-
-
-    }
 
 */
 
@@ -677,6 +593,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void RentalMethod() {
+
         droplocation.setVisibility(View.GONE);
         blue_pin_icon.setVisibility(View.VISIBLE);
         red_pin_icon.setVisibility(View.GONE);
@@ -689,8 +606,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         sharedpreferencesUser.location("pickLocations");
 
 
-
-
     }
 
     @Override
@@ -699,6 +614,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         SharedpreferencesUser sharedpreferencesUser = new SharedpreferencesUser(MainActivity.this);
         Map data = sharedpreferencesUser.getShare();
         Object clickValue = data.get(LOCATION_CHANGE);
+
+
         if (clickValue != null)
             pickupLocationNameIntent = clickValue.toString();
 
@@ -718,7 +635,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 String stateName = addresses.get(0).getAdminArea();
                 String streetName = addresses.get(0).getFeatureName();
 
-
                 pickup.setText(add);
                 latitude_logitude.put("PickLatitude", googleMaps.getCameraPosition().target.latitude);
                 latitude_logitude.put("PickLogitude", googleMaps.getCameraPosition().target.longitude);
@@ -729,8 +645,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-
         }
     }
 
@@ -809,8 +723,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 this.droplocationchecks = "some value";
                 Geocoder geocoder = new Geocoder(MainActivity.this);
                 try {
-                    List<Address> addresses = geocoder.getFromLocationName(droplocationvalue, 1);
 
+                    List<Address> addresses = geocoder.getFromLocationName(droplocationvalue, 1);
                     Address address = addresses.get(0);
                     String add = address.getAddressLine(0);
                     String cityName = addresses.get(0).getLocality();
@@ -832,21 +746,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     AddressMap.put("DropLocationcountryName", streetName);
                     confirmRideFragment = new ConfirmRideFragment(AllLatLng, latitude_logitude, AddressMap);
                     getSupportFragmentManager().beginTransaction().replace(R.id.confirRide, confirmRideFragment, CONFIR_FRAGMENT_RIDE).commit();
+
                     blue_pin_icon.setVisibility(View.GONE);
                     red_pin_icon.setVisibility(View.VISIBLE);
-                    confirmRideFragment.setdata(new ConfirmRideFragment.vehicleInter() {
-                        @Override
-                        public void websok(String value) {
+                    confirmRideFragment.setdata(value -> {
 
-                        }
                     });
-
+                    remove_progress_Dialog();
 
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
-           /* else if (pickupLocationNameIntent.equals("dropLocations")) {
+/*
+            else if (pickupLocationNameIntent.equals("dropLocations")) {
                 Geocoder geocoder = new Geocoder(MainActivity.this);
                 try {
                     List<Address> addresses = geocoder.getFromLocation(googleMaps.getCameraPosition().target.latitude, googleMaps.getCameraPosition().target.longitude, 1);
@@ -899,6 +812,63 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     }
 
+
+    public void rental(String data) {
+
+        this.rentalclick = null;
+
+        if (rentalclick == null) {
+            this.rentalclick = "rentalclicks";
+            Geocoder geocoder = new Geocoder(MainActivity.this);
+            try {
+                List<Address> addresses = geocoder.getFromLocationName(data, 1);
+                Address address = addresses.get(0);
+
+                String add = addresses.get(0).getAddressLine(0);
+                String cityName = addresses.get(0).getLocality();
+                String stateName = addresses.get(0).getAdminArea();
+                String streetName = addresses.get(0).getFeatureName();
+                LatLng pickUpLatLog = new LatLng(address.getLatitude(), address.getLongitude());
+                AllLatLng.put("pickMapValue", pickUpLatLog);
+                latitude_logitude.put("PickLatitude", googleMaps.getCameraPosition().target.latitude);
+                latitude_logitude.put("PickLogitude", googleMaps.getCameraPosition().target.longitude);
+//                    ***************************************
+                AddressMap.put("PickupCityName", cityName);
+                AddressMap.put("PickupstateName", stateName);
+                AddressMap.put("PickupStretName", streetName);
+//                    ****************************************
+                MarkerOptions markerOptions = new MarkerOptions().position(pickUpLatLog).title("I m here").visible(false);
+                googleMaps.animateCamera(CameraUpdateFactory.newLatLngZoom(pickUpLatLog, 15), 200, null);
+                googleMaps.addMarker(markerOptions);
+                pickup.setText(add);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            Geocoder geocoder = new Geocoder(MainActivity.this);
+            try {
+                List<Address> addresses = geocoder.getFromLocation(googleMaps.getCameraPosition().target.latitude, googleMaps.getCameraPosition().target.longitude, 1);
+                Address address = addresses.get(0);
+                String add = address.getAddressLine(0);
+                String cityName = addresses.get(0).getLocality();
+                String stateName = addresses.get(0).getAdminArea();
+                String streetName = addresses.get(0).getFeatureName();
+                LatLng pickUpLatLog = new LatLng(address.getLatitude(), address.getLongitude());
+                AllLatLng.put("pickMapValue", pickUpLatLog);
+                pickup.setText(add);
+                latitude_logitude.put("PickLatitude", googleMaps.getCameraPosition().target.latitude);
+                latitude_logitude.put("PickLogitude", googleMaps.getCameraPosition().target.longitude);
+                AddressMap.put("PickupCityName", cityName);
+                AddressMap.put("PickupstateName", stateName);
+                AddressMap.put("PickupStretName", streetName);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public void locationpic(View view) {
         Map data;
         SharedpreferencesUser sharedpreferencesUser = new SharedpreferencesUser(MainActivity.this);
@@ -910,7 +880,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (Objlocation != null) {
             location = Objlocation.toString();
         }
-
         String tagIdLocation = view.getTag().toString();
 
         switch (rentalClick) {
@@ -981,61 +950,52 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                         Search_dropFragment search_dropFragment = new Search_dropFragment();
                         getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment, search_dropFragment).commit();
-                        search_dropFragment.setValueDrop(new Search_dropFragment.DropValueInterFace() {
-                            @Override
-                            public void DroplocationValue(String data) {
-                                search_dropFragment.dismiss();
-                                dropLocationPlaceInt = data;
-                                droplocationmethod(dropLocationPlaceInt);
-                                blue_pin_icon.setVisibility(View.GONE);
-                                red_pin_icon.setImageResource(R.drawable.red_pin_icon);
-                                red_pin_icon.setVisibility(View.VISIBLE);
-                                droplocationchecks = null;
-                            }
+                        confirRide.setVisibility(View.VISIBLE);
+                        search_dropFragment.setValueDrop(data13 -> {
+                            remove_progress_Dialog();
+                            search_dropFragment.dismiss();
+                            dropLocationPlaceInt = data13;
+                            droplocationmethod(dropLocationPlaceInt);
+                            blue_pin_icon.setVisibility(View.GONE);
+                            red_pin_icon.setImageResource(R.drawable.red_pin_icon);
+                            red_pin_icon.setVisibility(View.VISIBLE);
+                            droplocationchecks = null;
                         });
 
 
                     } else if (location == tagIdLocation) {
-
+                        search_fragment.setVisibility(View.VISIBLE);
+                        confirRide.setVisibility(View.VISIBLE);
                         Search_dropFragment search_dropFragment = new Search_dropFragment();
                         getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment, search_dropFragment).commit();
-                        search_dropFragment.setValueDrop(new Search_dropFragment.DropValueInterFace() {
-                            @Override
-                            public void DroplocationValue(String data) {
-                                Toast.makeText(MainActivity.this, data, Toast.LENGTH_SHORT).show();
-                                search_dropFragment.dismiss();
-                                dropLocationPlaceInt = data;
-                                droplocationmethod(dropLocationPlaceInt);
-                                blue_pin_icon.setVisibility(View.GONE);
-                                red_pin_icon.setImageResource(R.drawable.red_pin_icon);
-                                red_pin_icon.setVisibility(View.VISIBLE);
-                            }
+                        search_dropFragment.setValueDrop(data12 -> {
+                            remove_progress_Dialog();
+                            search_dropFragment.dismiss();
+                            dropLocationPlaceInt = data12;
+                            droplocationmethod(dropLocationPlaceInt);
+                            blue_pin_icon.setVisibility(View.GONE);
+                            red_pin_icon.setImageResource(R.drawable.red_pin_icon);
+                            red_pin_icon.setVisibility(View.VISIBLE);
                         });
 
 
                     } else {
                         if (location.equals("pickLocations")) {
                             if (droplocation.getText().toString().equals("Enter drop location")) {
-
+                                confirRide.setVisibility(View.VISIBLE);
                                 Search_dropFragment search_dropFragment = new Search_dropFragment();
                                 getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment, search_dropFragment).commit();
 
-                                search_dropFragment.setValueDrop(new Search_dropFragment.DropValueInterFace() {
-                                    @Override
-                                    public void DroplocationValue(String data) {
-                                        Toast.makeText(MainActivity.this, data, Toast.LENGTH_SHORT).show();
-                                        search_dropFragment.dismiss();
-                                        dropLocationPlaceInt = data;
-                                        droplocationmethod(dropLocationPlaceInt);
-                                        blue_pin_icon.setVisibility(View.GONE);
-                                        red_pin_icon.setImageResource(R.drawable.red_pin_icon);
-                                        red_pin_icon.setVisibility(View.VISIBLE);
-                                    }
+                                search_dropFragment.setValueDrop(data14 -> {
+                                    remove_progress_Dialog();
+                                    search_dropFragment.dismiss();
+                                    dropLocationPlaceInt = data14;
+                                    droplocationmethod(dropLocationPlaceInt);
+                                    blue_pin_icon.setVisibility(View.GONE);
+                                    red_pin_icon.setImageResource(R.drawable.red_pin_icon);
+                                    red_pin_icon.setVisibility(View.VISIBLE);
                                 });
-
-
                             } else {
-
                                 MarkerOptions markerOptions = new MarkerOptions().position(AllLatLng.get("DropLocationMapValue")).title("I m here").visible(false);
                                 googleMaps.animateCamera(CameraUpdateFactory.newLatLngZoom(AllLatLng.get("DropLocationMapValue"), 15), 200, null);
                                 googleMaps.addMarker(markerOptions);
@@ -1044,7 +1004,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 red_pin_icon.setVisibility(View.VISIBLE);
                                 pickup.setAlpha((float) 0.6);
                                 droplocation.setAlpha(1);
-
                             }
                         }
                     }
@@ -1053,6 +1012,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             case "rental":
                 RentalFragment rentalFragment = new RentalFragment();
                 getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment, rentalFragment).commit();
+                rentalFragment.setRentalDatas(data1 -> {
+                    rental(data1);
+                    getSupportFragmentManager().beginTransaction().remove(rentalFragment).commit();
+                });
                 break;
             case "outstation":
                 break;
@@ -1064,7 +1027,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         sharedpreferencesUser.location(tagIdLocation);
         this.clikalablu = view.getTag().toString();
     }
-
 
     @Override
     public void onBackPressed() {
@@ -1093,16 +1055,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 return;
             }
             this.doubleBackToExitPressedOnce = true;
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    doubleBackToExitPressedOnce = false;
-                }
-            }, 2000);
+            new Handler().postDelayed(() -> doubleBackToExitPressedOnce = false, 2000);
         }
     }
 
-    /*
+
     public void directionUrl() {
 
         String requestUrl = "https://maps.googleapis.com/maps/api/directions/json?mode=driving&transit_routing_preference=less_driving&origin=26.238996,78.181535&destination=26.243067,78.185623&key=AIzaSyApe8T3JMiqj9OgEbqd--zTBfl3fibPeEs";
@@ -1173,7 +1130,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.car_icon)));
 
 
-                     handler = new Handler();
+                        handler = new Handler();
                         index = -1;
                         next = 1;
                         handler.postDelayed(new Runnable() {
@@ -1214,7 +1171,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         }, 3000);
 
 
-
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -1242,24 +1198,26 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             return (float) ((90 - toDegrees(Math.atan(lng / lat))) + 270);
         return -1;
     }
- */
 
+
+/*
 
     private float getBearing(LatLng begin, LatLng end) {
         double lat = Math.abs(begin.latitude - end.latitude);
         double lng = Math.abs(begin.longitude - end.longitude);
 
         if (begin.latitude < end.latitude && begin.longitude < end.longitude)
-            return (float) (Math.toDegrees(Math.atan(lng / lat)));
+            return (float) (toDegrees(Math.atan(lng / lat)));
         else if (begin.latitude >= end.latitude && begin.longitude < end.longitude)
-            return (float) ((90 - Math.toDegrees(Math.atan(lng / lat))) + 90);
+            return (float) ((90 - toDegrees(Math.atan(lng / lat))) + 90);
         else if (begin.latitude >= end.latitude && begin.longitude >= end.longitude)
-            return (float) (Math.toDegrees(Math.atan(lng / lat)) + 180);
+            return (float) (toDegrees(Math.atan(lng / lat)) + 180);
         else if (begin.latitude < end.latitude && begin.longitude >= end.longitude)
-            return (float) ((90 - Math.toDegrees(Math.atan(lng / lat))) + 270);
+            return (float) ((90 - toDegrees(Math.atan(lng / lat))) + 270);
         return -1;
     }
 
+*/
 
     private List<LatLng> decodePoly(String encoded) {
         List<LatLng> poly = new ArrayList<>();
@@ -1381,7 +1339,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
-
     private interface LatLngInterpolatorAni {
         LatLng interpolate(float fraction, LatLng a, LatLng b);
 
@@ -1401,5 +1358,65 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 //    work animation
 
+
+    public void setProgressDialog(String msg) {
+        kProgressHUD.setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
+                .setLabel(msg)
+                .setAnimationSpeed(2)
+                .setDimAmount(0.5f)
+                .show();
+
+    }
+
+    public void remove_progress_Dialog() {
+        kProgressHUD.dismiss();
+    }
+
+    public void VehicleCheckOnline() {
+
+        handler = new Handler();
+        handler.post(() -> new Timer().scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                sharedpreferencesUser = new SharedpreferencesUser(MainActivity.this);
+                data = sharedpreferencesUser.getShare();
+                Object jsondatass = data.get(VEHICLE_DATA);
+                JSONObject jsonObject = null;
+                if (jsondatass != null) {
+                    try {
+                        jsonObject = new JSONObject((String) jsondatass);
+                        JSONObject data = jsonObject.getJSONObject("data");
+
+                        String lat = data.getString("lat");
+                        String logit = data.getString("long");
+                        if (lat != null || logit != null) {
+                            latD = Double.valueOf(lat);
+                            log = Double.valueOf(logit);
+                            LatLng latLng = new LatLng(latD, log);
+                            new Thread() {
+                                public void run() {
+                                    runOnUiThread(() -> vehicleShow(latLng));
+                                }
+                            }.start();
+                        }
+                        sharedpreferencesUser.remove_vehicledata();
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                } else {
+                    Log.e("run: ", "ofline");
+                }
+            }
+        }, 30, 5000));
+    }
+
+    private void vehicleShow(LatLng latLng) {
+//        LatLng latLng = new LatLng(26.2411212, 78.1847838);
+        googleMaps.addMarker(new MarkerOptions().position(latLng).title("car").icon(BitmapDescriptorFactory.fromResource(R.drawable.car_icon)));
+
+
+    }
 
 }
