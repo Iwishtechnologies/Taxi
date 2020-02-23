@@ -1,15 +1,19 @@
 package tech.iwish.taxi.activity;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import tech.iwish.taxi.R;
 import tech.iwish.taxi.config.Constants;
@@ -21,6 +25,7 @@ public class SignupActivity extends AppCompatActivity {
     private EditText signup_name, signup_email, signup_contact, signup_password;
     private Button signup_button;
     private LinearLayout login_activity_go ;
+    boolean doubleBackToExitPressedOnce = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,19 +86,16 @@ public class SignupActivity extends AppCompatActivity {
                 connectionServer.buildParameter("email", signup_email.getText().toString());
                 connectionServer.buildParameter("contact", signup_contact.getText().toString());
                 connectionServer.buildParameter("password", signup_password.getText().toString());
-                connectionServer.execute(new ConnectionServer.AsyncResponse() {
-                    @Override
-                    public void processFinish(String output) {
-                        Log.e("output", output);
-                        JsonHelper jsonHelper = new JsonHelper(output);
-                        if (jsonHelper.isValidJson()) {
-                            String response = jsonHelper.GetResult("response");
-                            if (response.equals("TRUE")) {
-                                Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
-                                startActivity(intent);
-                            } else {
+                connectionServer.execute(output -> {
+                    Log.e("output", output);
+                    JsonHelper jsonHelper = new JsonHelper(output);
+                    if (jsonHelper.isValidJson()) {
+                        String response = jsonHelper.GetResult("response");
+                        if (response.equals("TRUE")) {
+                            Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
+                            startActivity(intent);
+                        } else {
 //                                 login fail
-                            }
                         }
                     }
                 });
@@ -101,5 +103,19 @@ public class SignupActivity extends AppCompatActivity {
         });
     }
 
-
+    @RequiresApi(api = Build.VERSION_CODES.P)
+    @Override
+    public void onBackPressed() {
+        if(doubleBackToExitPressedOnce){
+            super.onBackPressed();
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            return;
+        }
+        this.doubleBackToExitPressedOnce = true ;
+        Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+        new Handler().postDelayed(() -> doubleBackToExitPressedOnce = false, 2000);
+    }
 }

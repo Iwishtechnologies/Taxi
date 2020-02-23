@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import com.goodiebag.pinview.Pinview;
 
+import java.util.Map;
 import java.util.Random;
 
 import tech.iwish.taxi.R;
@@ -36,10 +37,12 @@ import tech.iwish.taxi.connection.ConnectionServer;
 import tech.iwish.taxi.connection.JsonHelper;
 import tech.iwish.taxi.extended.ButtonFont;
 
+import static tech.iwish.taxi.config.SharedpreferencesUser.DRIVER_OTP;
+
 
 public class RideConfiremDriverDetailsFragment extends Fragment {
 
-    private LinearLayout confirmOtp;
+    private LinearLayout confirmOtp , trip_dis;
     private Random generate_otp;
     private int otp;
     private Button info_driver;
@@ -48,32 +51,34 @@ public class RideConfiremDriverDetailsFragment extends Fragment {
     private String distance;
     private String driver_name;
     private String driver_mobile;
-    private String driverId;
-    private String otps;
-    private TextView trip_distance, trip_duration, trip_rate, call_driver;
+    private String driverId, rental , trackid;
+    private String otps, outstation , otpsdriver;
+    private TextView trip_distance, trip_duration, trip_rate, call_driver ,amts;
     private SharedpreferencesUser sharedpreferencesUser;
     private AlertDialog.Builder builder;
     private View dialogView;
+    View view;
+    private Map data  ;
 
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_ride_confirem_driver_details, null);
+        view = inflater.inflate(R.layout.fragment_ride_confirem_driver_details, null);
 
 //        confirmOtp = (LinearLayout)view.findViewById(R.id.confirmOtp);
         info_driver = (Button) view.findViewById(R.id.info_driver);
         trip_distance = (TextView) view.findViewById(R.id.trip_distance);
         trip_duration = (TextView) view.findViewById(R.id.trip_duration);
         trip_rate = (TextView) view.findViewById(R.id.trip_rate);
+        amts = (TextView) view.findViewById(R.id.amts);
+        trip_dis = (LinearLayout)view.findViewById(R.id.trip_dis);
 
 
         generate_otp = new Random();
-//        otp = generate_otp.nextInt(10000);
-//        otp = generate_otp.nextInt((10000 - 9999));
-//         otp = Integer.parseInt(String.format("%04d", generate_otp.nextInt(10000)));
         sharedpreferencesUser = new SharedpreferencesUser(getActivity());
 
+        data = sharedpreferencesUser.getShare();
 
         Bundle arguments = getArguments();
         rate = arguments.getString("rate");
@@ -83,20 +88,37 @@ public class RideConfiremDriverDetailsFragment extends Fragment {
         driver_mobile = arguments.getString("driver_mobile");
         driverId = arguments.getString("driverId");
         otps = arguments.getString("otp");
-        otp = Integer.parseInt(otps);
+        rental = arguments.getString("rental");
+        trackid = arguments.getString("trackid");
 
-        trip_distance.setText(distance);
-        trip_duration.setText(time);
-        trip_rate.setText(rate);
+        this.otpsdriver = otps ;
+
+        amts.setText(rate);
 
 
-        sharedpreferencesUser.driverInfo(driver_name, driver_mobile, rate, time, distance, otp);
+        if (rental != null) {
+            trip_dis.setVisibility(View.GONE);
+            driver ();
+        } else if (outstation != null) {
+            driver ();
+        } else {
+
+            otp = Integer.parseInt(otps);
+            trip_distance.setText(distance);
+            trip_duration.setText(time);
+            trip_rate.setText(rate);
+            driver ();
+        }
+        return view;
+    }
+    private void driver (){
+        sharedpreferencesUser.driverInfo(driver_name, driver_mobile, rate, time, distance, otpsdriver ,trackid);
 
         info_driver.setOnClickListener((View) -> {
-            char[] breack_otp = String.valueOf(otp).toCharArray();
+            char[] breack_otp = otpsdriver.toCharArray();
             builder = new AlertDialog.Builder(getActivity());
-            ViewGroup viewGroup = view.findViewById(android.R.id.content);
-            dialogView = LayoutInflater.from(view.getContext()).inflate(R.layout.row_driver_info_layout, viewGroup, false);
+//            ViewGroup viewGroup = view.findViewById(android.R.id.content);
+            dialogView = LayoutInflater.from(view.getContext()).inflate(R.layout.row_driver_info_layout, null);
             builder.setView(dialogView);
             AlertDialog alertDialog = builder.create();
             alertDialog.show();
@@ -107,7 +129,7 @@ public class RideConfiremDriverDetailsFragment extends Fragment {
             TextView otp_3 = dialogView.findViewById(R.id.otp_3);
             TextView otp_4 = dialogView.findViewById(R.id.otp_4);
             name_drivers.setText(driver_name);
-            Toast.makeText(getActivity(), "" + otp, Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getActivity(), "" + breack_otp, Toast.LENGTH_SHORT).show();
             otp_1.setText(String.valueOf(breack_otp[0]));
             otp_2.setText(String.valueOf(breack_otp[1]));
             otp_3.setText(String.valueOf(breack_otp[2]));
@@ -120,10 +142,7 @@ public class RideConfiremDriverDetailsFragment extends Fragment {
 
         });
 
-
-        return view;
     }
-
 
 }
 

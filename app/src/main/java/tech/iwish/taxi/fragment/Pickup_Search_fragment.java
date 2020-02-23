@@ -67,32 +67,29 @@ public class Pickup_Search_fragment extends DialogFragment{
                 ConnectionServer connectionServer = new ConnectionServer();
                 connectionServer.set_url(Constants.SEARCH_PLACE);
                 connectionServer.requestedMethod("POST");
-                connectionServer.buildParameter("value", s.toString());
-                connectionServer.execute(new ConnectionServer.AsyncResponse() {
-                    @Override
-                    public void processFinish(String output) {
-                        Log.e("output", output);
-                        JsonHelper jsonHelper = new JsonHelper(output);
-                        if (jsonHelper.isValidJson()) {
-                            pickupLocationLists.clear();
-                            String response = jsonHelper.GetResult("status");
-                            if (response.equals("OK")) {
-                                JSONArray jsonArray = jsonHelper.setChildjsonArray(jsonHelper.getCurrentJsonObj(), "predictions");
+                connectionServer.buildParameter("value", s);
+                connectionServer.execute(output -> {
+                    Log.e("output", output);
+                    JsonHelper jsonHelper = new JsonHelper(output);
+                    if (jsonHelper.isValidJson()) {
+                        pickupLocationLists.clear();
+                        String response = jsonHelper.GetResult("status");
+                        if (response.equals("OK")) {
+                            JSONArray jsonArray = jsonHelper.setChildjsonArray(jsonHelper.getCurrentJsonObj(), "predictions");
 
 
-                                for (int i = 0; i < jsonArray.length(); i++) {
-                                    jsonHelper.setChildjsonObj(jsonArray, i);
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                jsonHelper.setChildjsonObj(jsonArray, i);
 
-                                    pickupLocationLists.add(new PickupLocationList(jsonHelper.GetResult("description"), jsonHelper.GetResult("id"), jsonHelper.GetResult("matched_substrings"), jsonHelper.GetResult("place_id"), jsonHelper.GetResult("reference"), jsonHelper.GetResult("structured_formatting"), jsonHelper.GetResult("terms")));
-
-                                }
-                                PickupLocationAdapter pickupLocationAdapter = new PickupLocationAdapter(getActivity(), pickupLocationLists);
-                                pickuprecycle.setAdapter(pickupLocationAdapter);
-
-                                pickupLocationAdapter.setOnPickupListner(location -> pickuplocationName.placeName_Pickup(location));
-
+                                pickupLocationLists.add(new PickupLocationList(jsonHelper.GetResult("description"), jsonHelper.GetResult("id"), jsonHelper.GetResult("matched_substrings"), jsonHelper.GetResult("place_id"), jsonHelper.GetResult("reference"), jsonHelper.GetResult("structured_formatting"), jsonHelper.GetResult("terms")));
 
                             }
+                            PickupLocationAdapter pickupLocationAdapter = new PickupLocationAdapter(getActivity(), pickupLocationLists);
+                            pickuprecycle.setAdapter(pickupLocationAdapter);
+
+                            pickupLocationAdapter.setOnPickupListner(location -> pickuplocationName.placeName_Pickup(location));
+
+
                         }
                     }
                 });

@@ -136,16 +136,14 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.Viewhold
 
 //        **********************************************************
 
-        holder.clickConfirm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SharedpreferencesUser sharedpreferencesUser = new SharedpreferencesUser(context);
-                data = sharedpreferencesUser.getShare();
-                Object userContact = data.get(USER_CONTACT);
+        holder.clickConfirm.setOnClickListener(view -> {
 
-                currentSelectedPosition = position;
-                notifyDataSetChanged();
-            }
+            SharedpreferencesUser sharedpreferencesUser = new SharedpreferencesUser(context);
+            data = sharedpreferencesUser.getShare();
+            Object userContact = data.get(USER_CONTACT);
+
+            currentSelectedPosition = position;
+            notifyDataSetChanged();
         });
 
         if (currentSelectedPosition == position) {
@@ -186,20 +184,17 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.Viewhold
                         String driverData = sharedpreferencesUser.driverReturnData();
                         if (driverData != null) {
                             Log.e("driverData", driverData);
+                            latitude_logitude.put("confir_drop_location_latitude",latitude_logitude.get("dropLatitude"));
+                            latitude_logitude.put("confir_drop_location_logitude",latitude_logitude.get("dropLongitude"));
                             driverData(driverData);
                             timer.cancel();
                         }
                     }
                 }, 0, 1000);
 
-
-
                 bundle.putString("rate", vehicleList.get(position).getTotrate());
                 bundle.putString("time", vehicleList.get(position).getTottime());
                 bundle.putString("distance", vehicleList.get(position).getDistance());
-
-
-
 
             });
         } else {
@@ -250,9 +245,12 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.Viewhold
             JSONObject jsonObject = new JSONObject(data);
             JSONObject value = jsonObject.getJSONObject("data");
             String driverId = value.getString("driverId");
+            String trackid = value.getString("trackid");
             String otp = value.getString("otp");
             bundle.putString("otp",otp);
             bundle.putString("driverId",driverId);
+            bundle.putString("trackid",trackid);
+
 
             ConnectionServer connectionServer = new ConnectionServer();
             connectionServer.set_url(Constants.DRIVERSHOW);

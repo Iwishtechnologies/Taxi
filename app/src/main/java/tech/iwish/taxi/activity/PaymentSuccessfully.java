@@ -33,7 +33,7 @@ public class PaymentSuccessfully extends AppCompatActivity {
 
         Intent intent = getIntent();
         String message = intent.getStringExtra("message");
-        Toast.makeText(this, "" + message, Toast.LENGTH_SHORT).show();
+
         switch (message) {
             case "successfully":
                 successfully();

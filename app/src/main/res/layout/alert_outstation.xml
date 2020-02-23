@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center">
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:elevation="30dp">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <tech.iwish.taxi.extended.TextViewFont
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Book Rayru Outstation"
+            android:padding="10dp"
+            android:gravity="center"
+            android:textColor="@color/blackColor"
+            android:textSize="18sp"
+            android:paddingStart="1dp"
+            android:paddingEnd="10dp"
+            app:fonttype="font10"
+            android:background="@color/whiteColor"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/silverColor"
+            android:layout_marginStart="15dp"
+
+            android:layout_marginEnd="15dp"/>
+        <tech.iwish.taxi.extended.TextViewFont
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Drop location is outside city city limits."
+            android:gravity="center"
+            android:textColor="@color/blackColor"
+            android:textSize="13sp"
+            android:paddingStart="10dp"
+            app:fonttype="font5"
+            android:paddingEnd="10dp"
+            android:padding="10dp"
+            android:background="@color/whiteColor"/>
+        <tech.iwish.taxi.extended.TextViewFont
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Continue booking Outstation instead?"
+            android:gravity="center"
+            android:textColor="@color/blackColor"
+            app:fonttype="font5"
+            android:textSize="15sp"
+            android:paddingBottom="10dp"
+            android:background="@color/whiteColor"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="2">
+            <tech.iwish.taxi.extended.ButtonFont
+                android:id="@+id/changePlace"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="CHANGE DROP"
+                android:background="@color/orangeColor"
+                android:textColor="@color/whiteColor"
+                android:layout_weight="1"/>
+            <tech.iwish.taxi.extended.ButtonFont
+                android:id="@+id/continueOutstaion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="CONTINUE"
+                android:textColor="@color/whiteColor"
+                android:background="@color/orangeColor"
+                android:layout_weight="1"/>
+        </LinearLayout>
+
+    </LinearLayout>
+</LinearLayout>
+</LinearLayout>

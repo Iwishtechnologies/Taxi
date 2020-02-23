@@ -5,179 +5,61 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <!--            <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:background="@color/orangeColor"
-                    android:orientation="horizontal"
-                    android:weightSum="2"
-                    android:layout_margin="5dp"
-                    android:padding="10dp">
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:weightSum="2">
-
-                        <de.hdodenhof.circleimageview.CircleImageView
-                            xmlns:app="http://schemas.android.com/apk/res-auto"
-                            android:layout_width="60dp"
-                            android:layout_height="60dp"
-                            android:layout_weight="1"
-                            android:src="@drawable/user_photo"
-                            app:civ_border_color="@color/silverColor"
-                            app:civ_border_width="1dp" />
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="3dp"
-                            android:textColor="@color/whiteColor"
-                            android:gravity="center"
-                            android:text="name"
-                            android:textSize="16sp" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginEnd="20dp"
-                        android:layout_marginBottom="10dp"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:weightSum="2">
-
-                        <tech.iwish.taxi.extended.TextViewFont
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/button_design"
-                            android:gravity="center"
-                            android:text="Call Driver"
-                            android:padding="5dp"
-                            android:textColor="@color/blackColor"
-                            android:textSize="16sp"
-                            app:fonttype="font10" />
-
-                        <tech.iwish.taxi.extended.TextViewFont
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:layout_marginTop="3dp"
-                            android:text="Otp"
-                            android:textColor="@color/whiteColor"
-                            android:textSize="12sp"
-                            app:fonttype="font10" />
-
-                        <com.goodiebag.pinview.Pinview
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            app:cursorVisible="false"
-                            app:forceKeyboard="false"
-                            app:hint="0"
-                            app:inputType="number"
-                            app:password="false"
-                            app:pinHeight="35dp"
-                            app:pinLength="4"
-                            app:pinWidth="35dp"
-                            app:textSize="8sp" />
-                    </LinearLayout>
-                </LinearLayout>
-    -->
-
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:background="@drawable/dialog_design"
-    android:layout_margin="5dp"
-    android:padding="10dp">
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:orientation="vertical">
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_weight="1"
-            android:src="@drawable/user_photo"
-            app:civ_border_color="@color/silverColor"
-            app:civ_border_width="1dp" />
-
-        <TextView
-            android:id="@+id/name_drivers"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="3dp"
-            android:textColor="@color/whiteColor"
-            android:gravity="center"
-            android:text="name"
-            android:textSize="18sp" />
-    </LinearLayout>
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/orangeColor"
-        android:orientation="horizontal"
-        android:weightSum="2"
-        android:gravity="center"
-        android:padding="10dp">
+        android:padding="10dp"
+        android:background="@drawable/diloag_designs">
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="10dp"
-            android:layout_weight="1"
-            android:gravity="center"
             android:orientation="vertical"
-            android:weightSum="2">
-
+            android:gravity="center"
+            android:elevation="1dp">
+            <de.hdodenhof.circleimageview.CircleImageView
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/user_photo"
+                app:civ_border_color="@color/silverColor"
+                app:civ_border_width="1dp"
+                android:layout_gravity="center"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="50dp"
+            android:background="@drawable/dialog_design">
             <tech.iwish.taxi.extended.TextViewFont
-                android:id="@+id/call_driver"
+                android:id="@+id/name_drivers"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/button_design"
+                android:textColor="@color/whiteColor"
                 android:gravity="center"
-                android:visibility="gone"
-                android:text="Call Driver"
-                android:padding="5dp"
-                android:textColor="@color/blackColor"
-                android:textSize="16sp"
-                app:fonttype="font10" />
-
+                android:text="name"
+                android:layout_marginTop="60dp"
+                android:textSize="18sp" />
             <tech.iwish.taxi.extended.TextViewFont
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="@color/whiteColor"
                 android:gravity="center"
-                android:text="8871121959"
-                android:padding="5dp"
-                android:textColor="@color/blackColor"
-                android:textSize="16sp"
-                app:fonttype="font10" />
-
+                android:text="MPO7 kk 2211"
+                android:textSize="18sp" />
+            <ImageView
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:src="@drawable/car_image"
+                android:layout_margin="5dp"
+                android:layout_gravity="center"/>
             <tech.iwish.taxi.extended.TextViewFont
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:layout_marginTop="3dp"
-                android:text="Otp"
+                android:text="O t p"
                 android:textColor="@color/whiteColor"
                 android:textSize="12sp"
                 app:fonttype="font10" />
@@ -243,11 +125,22 @@
                     android:text="5"
                     android:background="@drawable/circule_otp"/>
             </LinearLayout>
-
+            <tech.iwish.taxi.extended.TextViewFont
+                android:id="@+id/call_driver"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/button_design"
+                android:gravity="center"
+                android:text="Call Driver"
+                android:padding="4dp"
+                android:textColor="@color/blackColor"
+                android:textSize="16sp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginStart="60dp"
+                android:layout_marginEnd="60dp"
+                app:fonttype="font10" />
         </LinearLayout>
-    </LinearLayout>
-
-</LinearLayout>
-
+    </RelativeLayout>
 
 </LinearLayout>

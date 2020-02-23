@@ -71,6 +71,8 @@ public class ConfirmRideFragment extends Fragment {
         Double destinationsLatitude = latitude_logitude.get("dropLatitude");
         Double destinationsLogitude = latitude_logitude.get("dropLongitude");
 
+        setProgressDialog("Vehicle Serach");
+
         ConnectionServer connectionServer = new ConnectionServer();
         connectionServer.requestedMethod("POST");
         connectionServer.set_url(Constants.Vehicle);
@@ -97,6 +99,7 @@ public class ConfirmRideFragment extends Fragment {
                     vehicle_recycle.setAdapter(vehicleAdapter);
                     vehicle_recycle.setNestedScrollingEnabled(false);
                     vehicleAdapter.Setvehicle(jsoneData -> jsodata.websok(jsoneData));
+                    remove_progress_Dialog();
                 }
             }
         });
@@ -124,6 +127,7 @@ public class ConfirmRideFragment extends Fragment {
     }
 
     public void remove_progress_Dialog() {
+
         kProgressHUD.dismiss();
     }
 

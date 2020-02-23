@@ -57,36 +57,16 @@ public class SplashActivity extends AppCompatActivity {
         sharedpreferencesUser.dropLocationIntenrt_Destrou();
         sharedpreferencesUser.removeDataWebsocket();
         sharedpreferencesUser.driverShowRemove();
-        check = data.get(TEST_CHECH);
 
+        sharedpreferencesUser.setSocketConnection(false);
+        check = data.get(TEST_CHECH);
+//        sharedpreferencesUser.remove_otpConfirmDriver();
 
         LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         driver_name = data.get(DRIVER_NAME);
         driver_number = data.get(DRIVER_NUMBER);
         otp = data.get(OTP);
-        Toast.makeText(this, ""+otp, Toast.LENGTH_SHORT).show();
 
-        if (driver_name != null) {
-
-            String driver_mob = data.get(DRIVER_NUMBER).toString();
-            String user_number = data.get(USER_CONTACT).toString();
-
-
-            ConnectionServer connectionServer = new ConnectionServer();
-            connectionServer.set_url(Constants.CHECK_RIDE_CONFIRM);
-            connectionServer.requestedMethod("POST");
-            connectionServer.execute(output -> {
-                Log.e("output", output);
-                JsonHelper jsonHelper = new JsonHelper(output);
-                if (jsonHelper.isValidJson()) {
-                    String response = jsonHelper.GetResult("response");
-                    if (response.equals("TRUE")) {
-                        sharedpreferencesUser.driverInfo_remove();
-                    }
-                }
-            });
-
-        }
 
         getConnectivityStatusString();
 //        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
@@ -122,32 +102,28 @@ public class SplashActivity extends AppCompatActivity {
 
     public void splashTime() {
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (check == null) {
-                    Intent i = new Intent(SplashActivity.this, SignupActivity.class);
+        new Handler().postDelayed(() -> {
+            if (check == null) {
+                Intent i = new Intent(SplashActivity.this, SignupActivity.class);
+                startActivity(i);
+                finish();
+            } else {
+
+                if (driver_name != null) {
+                    Intent i = new Intent(SplashActivity.this, MainActivity.class);
+                    i.putExtra("checkDriverData", "checkDriverData");
+                    i.putExtra("driver_name", driver_name.toString());
+                    i.putExtra("driver_number", driver_number.toString());
+                    i.putExtra("otp", otp.toString());
+                    startActivity(i);
+
+                } else {
+                    Intent i = new Intent(SplashActivity.this, MainActivity.class);
                     startActivity(i);
                     finish();
-                } else {
-
-                    if (driver_name != null) {
-                        Intent i = new Intent(SplashActivity.this, MainActivity.class);
-                        i.putExtra("checkDriverData", "checkDriverData");
-                        i.putExtra("driver_name", driver_name.toString());
-                        i.putExtra("driver_number", driver_number.toString());
-                        i.putExtra("otp", "5822");
-
-                        startActivity(i);
-
-
-                    } else {
-                        Intent i = new Intent(SplashActivity.this, MainActivity.class);
-                        startActivity(i);
-                        finish();
-                    }
                 }
             }
+
         }, SPLASH_SCREEN_TIME_OUT);
     }
 }

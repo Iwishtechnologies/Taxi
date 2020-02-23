@@ -35,6 +35,7 @@
                     app:fonttype="font10" />
 
                 <LinearLayout
+                    android:id="@+id/trip_dis"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
@@ -225,6 +226,7 @@
                     </LinearLayout>
 
                     <TextView
+                        android:id="@+id/amts"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"

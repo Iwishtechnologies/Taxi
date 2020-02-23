@@ -16,6 +16,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.kaopiz.kprogresshud.KProgressHUD;
+
 import org.json.JSONArray;
 
 import java.util.ArrayList;
@@ -37,11 +39,12 @@ public class RentalPackageFragmnet extends Fragment {
     private List<PackageVehicle> packageVehicles = new ArrayList<>();
     public Map<String, Double> latitude_logitude;
     Map<String, String> AddressMap;
+    private KProgressHUD kProgressHUD;
 
 
     public RentalPackageFragmnet(Map<String, Double> latitude_logitude, Map<String, String> addressMap) {
         this.latitude_logitude = latitude_logitude;
-        this.AddressMap = addressMap ;
+        this.AddressMap = addressMap;
     }
 
     @Nullable
@@ -55,7 +58,9 @@ public class RentalPackageFragmnet extends Fragment {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
         pakagerecycleview.setLayoutManager(linearLayoutManager);
+        kProgressHUD = new KProgressHUD(getContext());
 
+        setProgressDialog("Package Search");
 
         ConnectionServer connectionServer = new ConnectionServer();
         connectionServer.set_url(Constants.PACKAGEVEHICLE);
@@ -75,14 +80,28 @@ public class RentalPackageFragmnet extends Fragment {
                         packageVehicles.add(new PackageVehicle(jsonHelper.GetResult("packid"), jsonHelper.GetResult("package_type"), jsonHelper.GetResult("vahicle_cat_id"), jsonHelper.GetResult("amount")));
 
                     }
-                    PackageAdapter packageAdapter = new PackageAdapter(getActivity(), packageVehicles , latitude_logitude , AddressMap);
+                    PackageAdapter packageAdapter = new PackageAdapter(getActivity(), packageVehicles, latitude_logitude, AddressMap);
                     pakagerecycleview.setAdapter(packageAdapter);
-
-
+                    remove_progress_Dialog();
                 }
             }
         });
 
         return view;
+    }
+
+
+    public void setProgressDialog(String msg) {
+        kProgressHUD.setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
+                .setLabel(msg)
+                .setAnimationSpeed(2)
+                .setDimAmount(0.5f)
+                .show();
+
+    }
+
+    public void remove_progress_Dialog() {
+
+        kProgressHUD.dismiss();
     }
 }

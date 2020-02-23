@@ -29,7 +29,14 @@ public class Constants {
     public static String OTP_DRIVER_UPDATE= URL+"user/otpupdate";
     public static String CHECK_RIDE_CONFIRM= URL+"user/check_ride_confirm";
     public static String WALLET_MONEY_UPDATE= URL+"user/wallet/update";
-    public static String RATE_CARD= URL+"ratecard";
+    public static String RATE_CARD= URL+"api/ratecard";
+    public static String RIDE_HISTROY= URL+"user/ridehistory";
+    public static String OUTSTATIONVEHICLE= URL+"user/outstationvehicle";
+    public static String WALEET_MONEY_GET= URL+"user/moneyget";
+    public static String CONFIRM_RIDE_HIS= URL+"user/confirm_ride_histriy";
+    public static String TRACKING_CHECK= URL+"api/trackingidmatch";
+
+
     public static String PICKUPLOCATIONREQUEST= URL+"user/pickupLocationRequest";
 
 

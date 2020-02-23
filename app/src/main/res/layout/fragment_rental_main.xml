@@ -35,15 +35,16 @@
             <tech.iwish.taxi.extended.TextViewFont
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="BOOK YOU RIDE"
+                android:text="pick_up_location"
                 android:paddingTop="8dp"
                 android:textColor="@color/orangeColor"
                 app:fonttype="font10"
                 android:textSize="12sp"/>
             <tech.iwish.taxi.extended.TextViewFont
+                android:id="@+id/pickupsetlocation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="BOOK YOU RIDE"
+                android:text="@string/pick_up_location"
                 android:paddingTop="2dp"
                 app:fonttype="font10"
                 android:textSize="12sp"/>

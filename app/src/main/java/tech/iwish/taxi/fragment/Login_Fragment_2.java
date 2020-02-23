@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.goodiebag.pinview.Pinview;
+import com.kaopiz.kprogresshud.KProgressHUD;
 
 import org.json.JSONArray;
 
@@ -42,6 +43,7 @@ public class Login_Fragment_2 extends Fragment {
     private List<User_DetailsList> user_detailsLists = new ArrayList<>() ;
     private Pinview pinview ;
     private TextView mobNumber;
+    private KProgressHUD kProgressHUD;
 
 
     @Nullable
@@ -52,6 +54,11 @@ public class Login_Fragment_2 extends Fragment {
         otp_button = (Button)view.findViewById(R.id.otp_button);
         pinview = (Pinview)view.findViewById(R.id.pinview);
         mobNumber = (TextView)view.findViewById(R.id.mobNumber);
+
+        kProgressHUD = new KProgressHUD(getActivity());
+
+
+
         pinview.setPinHeight(100);
         pinview.setPinWidth(100);
         pinview.setPinBackgroundRes(R.drawable.pin_design);
@@ -70,6 +77,9 @@ public class Login_Fragment_2 extends Fragment {
 
 
         otp_button.setOnClickListener(view1 -> {
+
+            setProgressDialog("Otp Verify");
+
             ConnectionServer connectionServer = new ConnectionServer();
             connectionServer.set_url(Constants.USER_OTP);
             connectionServer.requestedMethod("POST");
@@ -97,6 +107,8 @@ public class Login_Fragment_2 extends Fragment {
                         SharedpreferencesUser sharedpreferencesUser = new SharedpreferencesUser(getActivity());
                         sharedpreferencesUser.user_detail(name , email , contact );
 
+                        remove_progress_Dialog();
+
                         Intent intent = new Intent(getActivity() , MainActivity.class);
                         startActivity(intent);
 
@@ -111,5 +123,18 @@ public class Login_Fragment_2 extends Fragment {
 
 
         return view ;
+    }
+
+    public void setProgressDialog(String msg) {
+        kProgressHUD.setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
+                .setLabel(msg)
+                .setAnimationSpeed(2)
+                .setDimAmount(0.5f)
+                .show();
+
+    }
+
+    public void remove_progress_Dialog() {
+        kProgressHUD.dismiss();
     }
 }

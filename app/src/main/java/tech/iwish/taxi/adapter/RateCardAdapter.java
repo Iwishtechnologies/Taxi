@@ -28,7 +28,7 @@ public class RateCardAdapter extends RecyclerView.Adapter<RateCardAdapter.Viewho
     @NonNull
     @Override
     public Viewholder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.fragment_about_fragmnet,parent,false);
+        View view = LayoutInflater.from(context).inflate(R.layout.row_ratecard,parent,false);
         Viewholder viewholder = new Viewholder(view);
         return viewholder;
     }

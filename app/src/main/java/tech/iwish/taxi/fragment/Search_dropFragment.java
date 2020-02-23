@@ -68,29 +68,27 @@ public class Search_dropFragment extends DialogFragment  {
                 ConnectionServer connectionServer = new ConnectionServer();
                 connectionServer.set_url(Constants.SEARCH_PLACE_DROP);
                 connectionServer.requestedMethod("POST");
-                connectionServer.buildParameter("value" , s.toString());
-                connectionServer.execute(new ConnectionServer.AsyncResponse() {
-                    @Override
-                    public void processFinish(String output) {
-                        Log.e("output" , output);
-                        JsonHelper jsonHelper = new JsonHelper(output);
-                        if(jsonHelper.isValidJson()){
-                            String response = jsonHelper.GetResult("status");
-                            if(response.equals("OK")){
-                                JSONArray jsonArray = jsonHelper.setChildjsonArray(jsonHelper.getCurrentJsonObj(), "predictions");
+                connectionServer.buildParameter("value" , s);
+                connectionServer.readTimeout(400);
+                connectionServer.execute(output -> {
+                    Log.e("output" , output);
+                    JsonHelper jsonHelper = new JsonHelper(output);
+                    if(jsonHelper.isValidJson()){
+                        String response = jsonHelper.GetResult("status");
+                        if(response.equals("OK")){
+                            dropLocationListMap.clear();
+                            JSONArray jsonArray = jsonHelper.setChildjsonArray(jsonHelper.getCurrentJsonObj(), "predictions");
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                jsonHelper.setChildjsonObj(jsonArray, i);
 
-                                for (int i = 0; i < jsonArray.length(); i++) {
-                                    jsonHelper.setChildjsonObj(jsonArray, i);
-
-                                    dropLocationListMap.add(new DropLocationList(jsonHelper.GetResult("description"), jsonHelper.GetResult("id"), jsonHelper.GetResult("matched_substrings"), jsonHelper.GetResult("place_id"), jsonHelper.GetResult("reference"), jsonHelper.GetResult("structured_formatting"), jsonHelper.GetResult("terms")));
-
-                                }
-
-                                SearchDropAdapter searchDropAdapter = new SearchDropAdapter(getActivity() , dropLocationListMap);
-                                search_drop_recycle.setAdapter(searchDropAdapter);
-                                searchDropAdapter.setdropLOcationValue(data -> valuedrop.DroplocationValue(data));
+                                dropLocationListMap.add(new DropLocationList(jsonHelper.GetResult("description"), jsonHelper.GetResult("id"), jsonHelper.GetResult("matched_substrings"), jsonHelper.GetResult("place_id"), jsonHelper.GetResult("reference"), jsonHelper.GetResult("structured_formatting"), jsonHelper.GetResult("terms")));
 
                             }
+
+                            SearchDropAdapter searchDropAdapter = new SearchDropAdapter(getActivity() , dropLocationListMap);
+                            search_drop_recycle.setAdapter(searchDropAdapter);
+                            searchDropAdapter.setdropLOcationValue(data -> valuedrop.DroplocationValue(data));
+
                         }
                     }
                 });
@@ -129,6 +127,7 @@ public class Search_dropFragment extends DialogFragment  {
     public void remove_progress_Dialog() {
         kProgressHUD.dismiss();
     }
+
 
 
 }

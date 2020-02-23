@@ -12,6 +12,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.TextView;
+
+import com.kaopiz.kprogresshud.KProgressHUD;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,6 +26,8 @@ public class RentalMainFragment extends Fragment {
     public FrameLayout rental_frame;
     public Map<String, Double> latitude_logitude;
     Map<String, String> AddressMap;
+    private KProgressHUD kProgressHUD;
+    private TextView pickupsetlocation;
 
 
     public RentalMainFragment(Map<String, Double> latitude_logitude, Map<String, String> addressMap) {
@@ -37,10 +42,32 @@ public class RentalMainFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_rental_main, null);
 
         rental_frame = (FrameLayout) view.findViewById(R.id.rental_frame);
+        pickupsetlocation = (TextView)view.findViewById(R.id.pickupsetlocation);
+
+        pickupsetlocation.setText(AddressMap.get("Pickupfulladress"));
+
+        kProgressHUD = new KProgressHUD(getContext());
+
 
         RentalPackageFragmnet rentalPackageFragmnet = new RentalPackageFragmnet(latitude_logitude , AddressMap);
         getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.rental_frame, rentalPackageFragmnet).commit();
         return view;
 
     }
+
+
+    public void setProgressDialog(String msg) {
+        kProgressHUD.setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
+                .setLabel(msg)
+                .setAnimationSpeed(2)
+                .setDimAmount(0.5f)
+                .show();
+
+    }
+
+    public void remove_progress_Dialog() {
+
+        kProgressHUD.dismiss();
+    }
+
 }

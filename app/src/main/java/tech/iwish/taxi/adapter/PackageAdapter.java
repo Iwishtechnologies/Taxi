@@ -2,6 +2,7 @@ package tech.iwish.taxi.adapter;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,11 +15,22 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.kaopiz.kprogresshud.KProgressHUD;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import tech.iwish.taxi.R;
+import tech.iwish.taxi.config.Constants;
 import tech.iwish.taxi.config.SharedpreferencesUser;
+import tech.iwish.taxi.connection.ConnectionServer;
+import tech.iwish.taxi.connection.JsonHelper;
 import tech.iwish.taxi.fragment.Package_vehicle;
 import tech.iwish.taxi.fragment.RideConfiremDriverDetailsFragment;
 import tech.iwish.taxi.other.PackageVehicle;
@@ -33,6 +45,8 @@ public class PackageAdapter extends RecyclerView.Adapter<PackageAdapter.Viewhold
     public Map<String, Double> latitude_logitude;
     Map<String, String> AddressMap;
     Map data ;
+    private Bundle bundle ;
+    private KProgressHUD kProgressHUD;
 
     public PackageAdapter(FragmentActivity activity, List<PackageVehicle> packageVehicles, Map<String, Double> latitude_logitude, Map<String, String> addressMap) {
         this.context = activity ;
@@ -53,13 +67,32 @@ public class PackageAdapter extends RecyclerView.Adapter<PackageAdapter.Viewhold
     public void onBindViewHolder(@NonNull Viewholder holder, int position) {
 
         holder.packageshow.setText(packageVehicles.get(position).getPackage_type());
+        kProgressHUD = new KProgressHUD(context);
         holder.clickPackage.setOnClickListener(view -> {
             SharedpreferencesUser sharedpreferencesUser = new SharedpreferencesUser(context);
             data = sharedpreferencesUser.getShare();
             Object mobile = data.get(USER_CONTACT);
-
-            JSONDATA = "{ \"type\" : \"Rental\" , \"request\" :\"rental\" ,\"pickUpLat\" : \"" + latitude_logitude.get("PickLatitude") + "\"  ,\"pickUpLong\" : \"" + latitude_logitude.get("PickLogitude") + "\"  , \"userType\" : \"client\"  , \"userID\" : \"" + mobile.toString() + "\" , \"PickupCityName\" : \"" + AddressMap.get("PickupCityName") + " \"}";
+            setProgressDialog("");
+            JSONDATA = "{ \"type\" : \"Rental\" , \"request\" :\"rental\", \"TimeDuration\" :\""+packageVehicles.get(position).getPackage_type()+"\" ,\"pickUpLat\" : \"" + latitude_logitude.get("PickLatitude") + "\"  ,\"pickUpLong\" : \"" + latitude_logitude.get("PickLogitude") + "\"  , \"userType\" : \"client\"  , \"userID\" : \"" + mobile.toString() + "\" , \"PickupCityName\" : \"" + AddressMap.get("PickupCityName") + " \"}";
             sharedpreferencesUser.getDatasWebsocket(JSONDATA);
+
+            bundle = new Bundle();
+            Timer timer = new Timer();
+            timer.scheduleAtFixedRate(new TimerTask() {
+
+//                        private String driverShow;
+
+                @Override
+                public void run() {
+                    String driverData = sharedpreferencesUser.driverReturnData();
+                    if (driverData != null) {
+                        Log.e("driverData", driverData);
+                        rentaldriverData(driverData);
+                        timer.cancel();
+                    }
+                }
+            }, 0, 1000);
+
 /*
             Bundle bundle = new Bundle();
             bundle.putString("time",packageVehicles.get(position).getPackage_type());
@@ -71,6 +104,53 @@ public class PackageAdapter extends RecyclerView.Adapter<PackageAdapter.Viewhold
 
 
         });
+    }
+
+    private void rentaldriverData(String data) {
+
+        try {
+            JSONObject jsonObject = new JSONObject(data);
+            JSONObject value = jsonObject.getJSONObject("data");
+            String driverId = value.getString("driverId");
+            String otp = value.getString("otp");
+            String trackid = value.getString("trackid");
+
+            bundle.putString("otp",otp);
+            bundle.putString("driverId",driverId);
+            bundle.putString("rental","rental");
+            bundle.putString("trackid",trackid);
+
+            ConnectionServer connectionServer = new ConnectionServer();
+            connectionServer.set_url(Constants.DRIVERSHOW);
+            connectionServer.requestedMethod("POST");
+            connectionServer.buildParameter("driverId", driverId);
+            connectionServer.execute(output -> {
+                Log.e("output", output);
+                JsonHelper jsonHelper = new JsonHelper(output);
+                if (jsonHelper.isValidJson()) {
+                    String response = jsonHelper.GetResult("response");
+                    if (response.equals("TRUE")) {
+
+                        JSONArray jsonArray = jsonHelper.setChildjsonArray(jsonHelper.getCurrentJsonObj(), "data");
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            jsonHelper.setChildjsonObj(jsonArray, i);
+                            bundle.putString("driver_name" , jsonHelper.GetResult("DriverName"));
+                            bundle.putString("driver_mobile" , jsonHelper.GetResult("Mobile"));
+                        }
+                        RideConfiremDriverDetailsFragment rideConfiremDriverDetailsFragment = new RideConfiremDriverDetailsFragment();
+                        FragmentManager fm = ((FragmentActivity) context).getSupportFragmentManager();
+                        rideConfiremDriverDetailsFragment.setArguments(bundle);
+                        fm.beginTransaction().replace(R.id.confirmRideLoad, rideConfiremDriverDetailsFragment).commit();
+
+
+                        remove_progress_Dialog();
+                    }
+                }
+            });
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -87,5 +167,21 @@ public class PackageAdapter extends RecyclerView.Adapter<PackageAdapter.Viewhold
             packageshow = (TextView)itemView.findViewById(R.id.packageshow);
             clickPackage = (LinearLayout)itemView.findViewById(R.id.clickPackage);
         }
+
     }
+
+
+    public void setProgressDialog(String msg) {
+        kProgressHUD.setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
+                .setLabel(msg)
+                .setAnimationSpeed(2)
+                .setDimAmount(0.5f)
+                .show();
+
+    }
+
+    public void remove_progress_Dialog() {
+        kProgressHUD.dismiss();
+    }
+
 }

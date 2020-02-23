@@ -39,11 +39,11 @@ public class RateCardFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.row_ratecard, null);
+        View view = inflater.inflate(R.layout.fragment_rate_card, null);
 
         ratecardRecycleview = (RecyclerView)view.findViewById(R.id.ratecardRecycleview);
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
         ratecardRecycleview.setLayoutManager(linearLayoutManager);
 
@@ -57,12 +57,19 @@ public class RateCardFragment extends Fragment {
                 String response = jsonHelper.GetResult("response");
                 if (response.equals("TRUE")) {
                     JSONArray jsonArray = jsonHelper.setChildjsonArray(jsonHelper.getCurrentJsonObj(), "data");
+
+//                    if(jsonArray.length() > 0){
+//                        Toast.makeText(getActivity(), "data", Toast.LENGTH_SHORT).show();
+//                    }else{
+//                        Toast.makeText(getActivity(), "data not", Toast.LENGTH_SHORT).show();
+//                    }
+
                     for (int i = 0; i < jsonArray.length(); i++) {
+
                         jsonHelper.setChildjsonObj(jsonArray, i);
                         rateCardLists.add(new RateCardLists(jsonHelper.GetResult("catagory_id"), jsonHelper.GetResult("catagory_name"), jsonHelper.GetResult("MinRate"), jsonHelper.GetResult("Rate_Km"), jsonHelper.GetResult("waitingRate_m"), jsonHelper.GetResult("rtc_m"), jsonHelper.GetResult("img")));
 
                     }
-
                     RateCardAdapter rateCardAdapter = new RateCardAdapter(getActivity(),rateCardLists);
                     ratecardRecycleview.setAdapter(rateCardAdapter);
 
@@ -70,7 +77,6 @@ public class RateCardFragment extends Fragment {
                 }
             }
         });
-
 
         return view;
     }

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".fragment.OutstationVehicleshowFragment"
+    android:orientation="vertical"
+    android:background="@color/whiteColor">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dp">
+        <tech.iwish.taxi.extended.TextViewFont
+            android:id="@+id/pick"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="pickup "
+            android:textSize="15sp"
+            app:fonttype="font7"
+            android:layout_weight="1"
+            android:textColor="@color/blackColor"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dp"
+        android:background="@drawable/payment_design">
+        <tech.iwish.taxi.extended.TextViewFont
+            android:id="@+id/drop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="pickup "
+            android:textSize="15sp"
+            app:fonttype="font7"
+            android:layout_weight="1"
+            android:textColor="@color/blackColor"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="2"
+        android:padding="10dp">
+        <tech.iwish.taxi.extended.TextViewFont
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Leave On"
+            android:textSize="15sp"
+            app:fonttype="font7"
+            android:layout_weight="1"
+            android:textColor="@color/blackColor"/>
+
+        <tech.iwish.taxi.extended.TextViewFont
+            android:id="@+id/leaveDateTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:gravity="end"
+            android:textSize="14sp"
+            app:fonttype="font10"
+            android:layout_marginEnd="10dp"
+            android:layout_weight="1"
+            android:textColor="@color/blueColor"/>
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="2"
+        android:background="@drawable/payment_design"
+        android:padding="10dp">
+        <tech.iwish.taxi.extended.TextViewFont
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Return by"
+            android:textSize="15sp"
+            app:fonttype="font7"
+            android:textStyle="bold"
+            android:layout_weight="1"
+            android:textColor="@color/blackColor"/>
+        <tech.iwish.taxi.extended.TextViewFont
+            android:id="@+id/returnTimeDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SELECT"
+            android:textStyle="bold"
+            android:gravity="end"
+            android:textSize="14sp"
+            app:fonttype="font10"
+            android:layout_marginEnd="10dp"
+            android:layout_weight="1"
+            android:textColor="@color/blackColor"/>
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/lightColor">
+        <tech.iwish.taxi.extended.TextViewFont
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select Vehicle type"
+            android:textSize="17sp"
+            app:fonttype="font7"
+            android:padding="5dp"
+            android:textColor="@color/orangeColor"/>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/vehicleOutstationshe"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+            </androidx.recyclerview.widget.RecyclerView>
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -26,7 +26,9 @@ import okhttp3.Response;
 import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
 import okio.ByteString;
+import tech.iwish.taxi.activity.BillActivity;
 import tech.iwish.taxi.activity.MainActivity;
+import tech.iwish.taxi.activity.PaymentOptionActivity;
 import tech.iwish.taxi.config.SharedpreferencesUser;
 import tech.iwish.taxi.fragment.ConfirmRideFragment;
 
@@ -52,8 +54,8 @@ public class SocketService extends Service {
     private Map data;
 
 
-
-    public SocketService(Context context, Map<String, LatLng> allLatLng, Map<String, Double> latitude_logitude, Map<String, String> addressMap) {
+    public SocketService() { }
+    public void SocketService(Context context, Map<String, LatLng> allLatLng, Map<String, Double> latitude_logitude, Map<String, String> addressMap) {
         this.context = context;
         sharedpreferencesUser = new SharedpreferencesUser(context);
         this.allLatLng = allLatLng;
@@ -76,7 +78,6 @@ public class SocketService extends Service {
             @Override
             public void onOpen(WebSocket webSocket, Response response) {
                 super.onOpen(webSocket, response);
-//                String JSON_STRING = "{ \"type\" : \"initiate\"}";
                 String Json = "{ \"type\" : \"initiate\" ,\"userType\" : \"client\"  , \"userID\" : \"8871121959\" , \"PickupCityName\" : \"" + AddressMap.get("PickupCityName") + "\" , \"PickupstateName\" : \"" + AddressMap.get("PickupstateName") + "\" , \"PickupStretName\" : \"" + AddressMap.get("PickupStretName") + "\"}";
                 webSocket.send(Json);
                 socketconnection = true;
@@ -96,7 +97,6 @@ public class SocketService extends Service {
                             Log.e("text", text);
 //                            checkehi(text);
                             sharedpreferencesUser.vehicledata(text);
-
                             break;
                         case "vehicleAccept":
                             Log.e("text", text);
@@ -105,10 +105,21 @@ public class SocketService extends Service {
                             break;
                         case "otpconfirm":
                             Log.e("text", text);
-//                            sharedpreferencesUser.driverShowRemove();
-//                            sharedpreferencesUser.driverShow(text);
+                            sharedpreferencesUser.remove_otpConfirmDriver();
+                            sharedpreferencesUser.otpConfirmDriver(text);
+                            Intent intent1 = new Intent(context, MainActivity.class);
+                            intent1.putExtra("otpconfirmRide","otpconfirmRide");
+                            context.startActivity(intent1);
                             break;
-
+                        case "RideConfirm":
+                            Log.e("text", text);
+                            if (text != null) {
+                                sharedpreferencesUser.remove_otpConfirmDriver();
+                                Intent intent = new Intent(context, BillActivity.class);
+                                intent.putExtra("confirmRide", text);
+                                context.startActivity(intent);
+                            }
+                            break;
                         default:
                             break;
                     }
@@ -135,7 +146,7 @@ public class SocketService extends Service {
 
             @Override
             public void onFailure(WebSocket webSocket, Throwable t, Response response) {
-                   onOpen(webSocket,response);
+                onOpen(webSocket, response);
                 socketconnection = false;
             }
         };
@@ -200,8 +211,6 @@ public class SocketService extends Service {
 
         return START_NOT_STICKY;
     }
-
-
 
 
     @Nullable

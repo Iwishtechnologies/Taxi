@@ -1,0 +1,233 @@
+package tech.iwish.taxi.activity;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RelativeLayout;
+import android.widget.Switch;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.razorpay.Checkout;
+import com.razorpay.PaymentResultListener;
+
+import org.json.JSONArray;
+
+import java.util.Map;
+
+import tech.iwish.taxi.R;
+import tech.iwish.taxi.config.Constants;
+import tech.iwish.taxi.config.SharedpreferencesUser;
+import tech.iwish.taxi.connection.ConnectionServer;
+import tech.iwish.taxi.connection.JsonHelper;
+import tech.iwish.taxi.other.User_DetailsList;
+import tech.iwish.taxi.paymentgatway.Wallet;
+
+import static tech.iwish.taxi.config.SharedpreferencesUser.USER_CONTACT;
+import static tech.iwish.taxi.config.SharedpreferencesUser.WALLET_AMOUNT;
+
+public class PaymentOptionActivity extends AppCompatActivity implements PaymentResultListener {
+
+    private RelativeLayout rayru_wallet, online_payment, cases;
+    private RadioButton rayruWallet, onlinePayments, caseRadios;
+    private Button paymentButton;
+    String Checker, real_amoun;
+    private Map data;
+    SharedpreferencesUser sharedpreferencesUser;
+    LinearLayout paymentAvailable;
+    TextView edit_amount;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_payment_option);
+        getSupportActionBar().hide();
+
+        rayru_wallet = (RelativeLayout) findViewById(R.id.rayru_wallet);
+        online_payment = (RelativeLayout) findViewById(R.id.online_payment);
+        cases = (RelativeLayout) findViewById(R.id.cases);
+
+        rayruWallet = (RadioButton) findViewById(R.id.rayruWallet);
+        onlinePayments = (RadioButton) findViewById(R.id.onlinePayments);
+        caseRadios = (RadioButton) findViewById(R.id.caseRadios);
+
+        paymentButton = (Button) findViewById(R.id.paymentButton);
+        paymentAvailable = (LinearLayout) findViewById(R.id.paymentAvailable);
+
+        edit_amount = (TextView) findViewById(R.id.amount);
+
+        Intent intent = getIntent();
+        real_amoun = intent.getStringExtra("amount");
+
+        String rating = intent.getStringExtra("ration");
+
+
+        sharedpreferencesUser = new SharedpreferencesUser(this);
+        data = sharedpreferencesUser.getShare();
+
+        Object number = data.get(USER_CONTACT);
+
+        ConnectionServer connectionServer = new ConnectionServer();
+        connectionServer.set_url(Constants.WALEET_MONEY_GET);
+        connectionServer.requestedMethod("POST");
+        connectionServer.buildParameter("mobile", number.toString());
+        connectionServer.execute(output -> {
+            Log.e("output", output);
+            JsonHelper jsonHelper = new JsonHelper(output);
+            if (jsonHelper.isValidJson()) {
+                String response = jsonHelper.GetResult("response");
+                if (response.equals("TRUE")) {
+                    JSONArray jsonArray = jsonHelper.setChildjsonArray(jsonHelper.getCurrentJsonObj(), "data");
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        jsonHelper.setChildjsonObj(jsonArray, i);
+                        String amounts = jsonHelper.GetResult("wallet");
+                        sharedpreferencesUser.walletAdd(amounts);
+                    }
+                }
+            }
+        });
+
+
+        Object walletamount = data.get(WALLET_AMOUNT);
+        if (walletamount != null)
+
+
+            paymentAvailable.setVisibility(View.GONE);
+
+        paymentButton.setOnClickListener(view1 -> {
+            if (Checker != null) {
+                switch (Checker) {
+                    case "rayru_wallet":
+                        break;
+                    case "online_payment":
+                        paymentonline();
+                        break;
+                    case "cases":
+                        cash();
+                        break;
+                }
+
+            } else {
+                Toast.makeText(this, "Select Payment mode", Toast.LENGTH_SHORT).show();
+            }
+
+        });
+
+
+    }
+
+    private void paymentonline() {
+        Checkout.preload(PaymentOptionActivity.this);
+        Wallet wallet = new Wallet(PaymentOptionActivity.this);
+        wallet.PaymentDetails(real_amoun);
+    }
+
+    public void clickerCheckMethod(View view) {
+        int id = view.getId();
+        switch (id) {
+            case R.id.rayru_wallet:
+                this.Checker = "rayru_wallet";
+                rayruWallet.setChecked(true);
+                onlinePayments.setChecked(false);
+                caseRadios.setChecked(false);
+                paymentAvailable.setVisibility(View.VISIBLE);
+                caluclu_amount();
+                break;
+            case R.id.online_payment:
+                this.Checker = "online_payment";
+                onlinePayments.setChecked(true);
+                rayruWallet.setChecked(false);
+                caseRadios.setChecked(false);
+                paymentAvailable.setVisibility(View.GONE);
+                break;
+            case R.id.cases:
+                this.Checker = "cases";
+                caseRadios.setChecked(true);
+                rayruWallet.setChecked(false);
+                onlinePayments.setChecked(false);
+                paymentAvailable.setVisibility(View.GONE);
+                break;
+        }
+
+    }
+
+    private void cash() {
+//        View view = LayoutInflater.from(this).inflate(R.layout.row_successfully_payment , null);
+        Intent intent = new Intent(PaymentOptionActivity.this, MainActivity.class);
+        startActivity(intent);
+    }
+
+    private void caluclu_amount() {
+        String wallet_amount = data.get(WALLET_AMOUNT).toString();
+        int wallet_amt = Integer.parseInt(wallet_amount);
+        int amount = Integer.parseInt(real_amoun);
+        int amt = wallet_amt - amount;
+        if (amt > wallet_amt) {
+//            amount add wallet
+        } else if (amt < wallet_amt) {
+//            amount wallet successfully
+            String show_amt = String.valueOf(amt);
+            edit_amount.setText(getResources().getString(R.string.rs_symbol) + show_amt);
+
+        }
+
+    }
+
+
+    @Override
+    public void onPaymentSuccess(String s) {
+        switch (Checker) {
+            case "rayru_wallet":
+                break;
+            case "online_payment":
+                break;
+        }
+    }
+
+    @Override
+    public void onPaymentError(int i, String s) {
+
+    }
+
+
+//    @Override
+//    public void onBackPressed() {
+////        super.onBackPressed();
+//        Intent intent = new Intent(PaymentOptionActivity.this , MainActivity.class);
+//        startActivity(intent);
+//
+//    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

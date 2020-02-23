@@ -19,6 +19,8 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.kaopiz.kprogresshud.KProgressHUD;
+
 import tech.iwish.taxi.R;
 import tech.iwish.taxi.activity.LoginActivity;
 import tech.iwish.taxi.config.Constants;
@@ -32,6 +34,7 @@ public class LoginFragment_1 extends Fragment {
     private EditText mobile_number;
     private Button login_button;
     private ProgressBar login_progress;
+    private KProgressHUD kProgressHUD;
 
     @Nullable
     @Override
@@ -42,10 +45,12 @@ public class LoginFragment_1 extends Fragment {
         mobile_number = (EditText) view.findViewById(R.id.mobile_number);
         login_button = (Button) view.findViewById(R.id.login_button);
         login_progress = (ProgressBar)view.findViewById(R.id.login_progress);
-
+        kProgressHUD = new KProgressHUD(getActivity());
 
 
         login_button.setOnClickListener(view1 -> {
+
+            setProgressDialog("Number Verify");
 
             ConnectionServer connectionServer = new ConnectionServer();
             connectionServer.set_url(Constants.USER_LOGIN);
@@ -67,7 +72,7 @@ public class LoginFragment_1 extends Fragment {
                         transaction.setCustomAnimations(R.anim.enter_fragment1, R.anim.exit_fragment1, R.anim.enter_fragment1, R.anim.exit_fragment1);
                         transaction.addToBackStack(null);
                         transaction.replace(R.id.Login_fragmentLayout, login_fragment_2, "BLANK_FRAGMENT").commit();
-
+                        remove_progress_Dialog();
                     } else {
                         Toast.makeText(getActivity(), "Mobile Number Not Match", Toast.LENGTH_SHORT).show();
                     }
@@ -77,5 +82,18 @@ public class LoginFragment_1 extends Fragment {
 
 
         return view;
+    }
+
+    public void setProgressDialog(String msg) {
+        kProgressHUD.setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
+                .setLabel(msg)
+                .setAnimationSpeed(2)
+                .setDimAmount(0.5f)
+                .show();
+
+    }
+
+    public void remove_progress_Dialog() {
+        kProgressHUD.dismiss();
     }
 }

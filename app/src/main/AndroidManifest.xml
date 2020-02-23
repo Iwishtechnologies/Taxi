@@ -9,19 +9,24 @@
     <application
         android:allowBackup="true"
         android:hardwareAccelerated="false"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/ray_ru_logo"
         android:label="@string/app_name"
         android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".activity.PaymentSuccessfully"></activity>
+        <activity android:name=".activity.PaymentOptionActivity">
+
+        </activity>
+        <activity android:name=".activity.PaymentSuccessfully" />
         <activity android:name=".activity.MoneyAddWalletActivity" />
         <activity android:name=".activity.GpsActivity" />
         <activity android:name=".activity.InternetActivity" />
         <activity android:name=".activity.ProfileActivity" />
-        <activity android:name=".activity.BillActivity" />
+        <activity android:name=".activity.BillActivity" >
+
+        </activity>
         <activity android:name=".activity.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
