@@ -2,18 +2,26 @@ package tech.iwish.taxi.activity;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import tech.iwish.taxi.R;
 import tech.iwish.taxi.config.Constants;
@@ -26,6 +34,9 @@ public class SignupActivity extends AppCompatActivity {
     private Button signup_button;
     private LinearLayout login_activity_go ;
     boolean doubleBackToExitPressedOnce = false;
+    private Spinner spinner;
+    private String spinner_value;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,13 +49,39 @@ public class SignupActivity extends AppCompatActivity {
         signup_password = (EditText) findViewById(R.id.signup_password);
         signup_button = (Button) findViewById(R.id.signup_button);
         login_activity_go = (LinearLayout) findViewById(R.id.login_activity_go);
+        spinner = (Spinner)findViewById(R.id.spinner);
 
-        login_activity_go.setOnClickListener(new View.OnClickListener() {
+
+        final List<String> categories = new ArrayList<String>();
+
+        categories.add("Select");
+        categories.add("Delhi");
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, categories);
+        spinner.setAdapter(dataAdapter);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(SignupActivity.this , LoginActivity.class);
-                startActivity(intent);
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                ((TextView)parent.getChildAt(0)).setTextColor(Color.rgb(249, 249, 249));
+//                ((TextView)view).setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(SignupActivity.this, R.drawable.user_icon_login), null, null, null);
+//                ((TextView) view).setCompoundDrawablePadding(20);
+                spinner_value = categories.get(position);
+//                Toast.makeText(SignupActivity.this, "Selected : "+ categories.get(position), Toast.LENGTH_SHORT).show();
             }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+
+
+        login_activity_go.setOnClickListener(view -> {
+            Intent intent = new Intent(SignupActivity.this , LoginActivity.class);
+            startActivity(intent);
         });
 
         signup_button.setOnClickListener(new View.OnClickListener() {
@@ -72,7 +109,10 @@ public class SignupActivity extends AppCompatActivity {
 //                    signup_email.setError("Please Enter Valid Number ");
 //                    return false ;
 //                }
-
+                if(spinner_value.equals("Select")){
+                    Toast.makeText(SignupActivity.this, "Select City", Toast.LENGTH_SHORT).show();
+                    return false;
+                }
 
                 return true;
             }
@@ -86,6 +126,7 @@ public class SignupActivity extends AppCompatActivity {
                 connectionServer.buildParameter("email", signup_email.getText().toString());
                 connectionServer.buildParameter("contact", signup_contact.getText().toString());
                 connectionServer.buildParameter("password", signup_password.getText().toString());
+                connectionServer.buildParameter("city", spinner_value);
                 connectionServer.execute(output -> {
                     Log.e("output", output);
                     JsonHelper jsonHelper = new JsonHelper(output);
@@ -118,4 +159,5 @@ public class SignupActivity extends AppCompatActivity {
         Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
         new Handler().postDelayed(() -> doubleBackToExitPressedOnce = false, 2000);
     }
+
 }

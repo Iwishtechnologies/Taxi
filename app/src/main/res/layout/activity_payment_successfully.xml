@@ -39,6 +39,14 @@
             android:gravity="center">
 
             <tech.iwish.taxi.extended.TextViewFont
+                android:id="@+id/fail_payment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Payment Fail"
+                android:textColor="@color/redColor"
+                android:textSize="16sp"/>
+
+            <tech.iwish.taxi.extended.TextViewFont
                 android:id="@+id/amount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

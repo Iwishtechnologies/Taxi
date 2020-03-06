@@ -5,8 +5,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
@@ -21,7 +24,7 @@ import tech.iwish.taxi.R;
 import tech.iwish.taxi.fragment.ConfirmRideFragment;
 import tech.iwish.taxi.other.DropLocationList;
 
-public class SearchDropAdapter extends RecyclerView.Adapter<SearchDropAdapter.Viewholder> {
+public class SearchDropAdapter extends RecyclerView.Adapter<SearchDropAdapter.Viewholder> implements Filterable {
 
     private List<DropLocationList>dropLocationLists ;
     private Context context;
@@ -49,11 +52,15 @@ public class SearchDropAdapter extends RecyclerView.Adapter<SearchDropAdapter.Vi
 
         holder.placeLayout.setOnClickListener(view -> {
 
+            setProgressDialog("");
+
+//            keyboad open code
             InputMethodManager input = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
             input.hideSoftInputFromWindow(view.getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
 
             dropInterFace.droplocationInterFace(dropLocationLists.get(position).getDescription());
 
+            remove_progress_Dialog();
 /*
             ConfirmRideFragment confirmRideFragment = new ConfirmRideFragment(null , null , null);
             FragmentManager fm = ((FragmentActivity) context).getSupportFragmentManager();
@@ -68,6 +75,22 @@ public class SearchDropAdapter extends RecyclerView.Adapter<SearchDropAdapter.Vi
     @Override
     public int getItemCount() {
         return dropLocationLists.size();
+    }
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+                Toast.makeText(context, ""+charSequence.toString(), Toast.LENGTH_SHORT).show();
+                return null;
+            }
+
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                Toast.makeText(context, ""+charSequence.toString(), Toast.LENGTH_SHORT).show();
+            }
+        };
     }
 
     public class Viewholder extends RecyclerView.ViewHolder {

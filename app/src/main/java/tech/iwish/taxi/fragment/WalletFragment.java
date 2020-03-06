@@ -1,5 +1,6 @@
 package tech.iwish.taxi.fragment;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -38,6 +39,7 @@ public class WalletFragment extends Fragment {
     private LinearLayout wallet_click;
     private Map data;
     private TextView wallet_money;
+    private JsonHelper jsonHelper ;
 
 
     @Nullable
@@ -49,28 +51,9 @@ public class WalletFragment extends Fragment {
         wallet_click = (LinearLayout)view.findViewById(R.id.wallet_click);
         wallet_money = (TextView)view.findViewById(R.id.wallet_money);
 
-        SharedpreferencesUser sharedpreferencesUser = new SharedpreferencesUser(getActivity());
-        data = sharedpreferencesUser.getShare();
-        String mob = data.get(USER_CONTACT).toString();
-        ConnectionServer connectionServer = new ConnectionServer();
-        connectionServer.set_url(Constants.WALLET);
-        connectionServer.requestedMethod("POST");
-        connectionServer.buildParameter("mobile" , mob);
-        connectionServer.execute(output -> {
-            Log.e("output" , output);
-            JsonHelper jsonHelper = new JsonHelper(output);
-            if(jsonHelper.isValidJson()){
-                String response = jsonHelper.GetResult("response");
-                if(response.equals("TRUE")){
-                    JSONArray jsonArray = jsonHelper.setChildjsonArray(jsonHelper.getCurrentJsonObj(), "data");
-                    for (int i = 0; i < jsonArray.length(); i++) {
-                        jsonHelper.setChildjsonObj(jsonArray, i);
-                        wallet_money.setText(jsonHelper.GetResult("wallet"));
-                        sharedpreferencesUser.walletAdd(jsonHelper.GetResult("wallet"));
-                    }
-                }
-            }
-        });
+        WalletRef(getActivity());
+
+
         wallet_click.setOnClickListener(view1 -> {
             Intent intent = new Intent(getActivity() , MoneyAddWalletActivity.class);
             intent.putExtra("money",wallet_money.getText().toString().trim());
@@ -80,4 +63,58 @@ public class WalletFragment extends Fragment {
 
         return view ;
     }
+
+    public void WalletRef(Context context){
+
+        SharedpreferencesUser sharedpreferencesUser = new SharedpreferencesUser(context);
+        data = sharedpreferencesUser.getShare();
+        String mob = data.get(USER_CONTACT).toString();
+
+        ConnectionServer connectionServer = new ConnectionServer();
+        connectionServer.set_url(Constants.WALLET);
+        connectionServer.requestedMethod("POST");
+        connectionServer.buildParameter("mobile" , mob);
+        connectionServer.execute(output -> {
+            Log.e("output" , output);
+             jsonHelper = new JsonHelper(output);
+            if(jsonHelper.isValidJson()){
+                String response = jsonHelper.GetResult("response");
+                if(response.equals("TRUE")){
+                    JSONArray jsonArray = jsonHelper.setChildjsonArray(jsonHelper.getCurrentJsonObj(), "data");
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        jsonHelper.setChildjsonObj(jsonArray, i);
+                        sharedpreferencesUser.walletAdd(jsonHelper.GetResult("wallet"));
+                        if(context == getActivity()){
+                            wallet_money.setText(jsonHelper.GetResult("wallet"));
+                        }
+                    }
+                }
+            }
+        });
+
+
+    }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

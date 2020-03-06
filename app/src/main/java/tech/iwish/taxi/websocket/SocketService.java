@@ -33,6 +33,7 @@ import tech.iwish.taxi.config.SharedpreferencesUser;
 import tech.iwish.taxi.fragment.ConfirmRideFragment;
 
 import static tech.iwish.taxi.config.SharedpreferencesUser.DATA_WB;
+import static tech.iwish.taxi.config.SharedpreferencesUser.USER_CONTACT;
 
 
 public class SocketService extends Service {
@@ -78,7 +79,7 @@ public class SocketService extends Service {
             @Override
             public void onOpen(WebSocket webSocket, Response response) {
                 super.onOpen(webSocket, response);
-                String Json = "{ \"type\" : \"initiate\" ,\"userType\" : \"client\"  , \"userID\" : \"8871121959\" , \"PickupCityName\" : \"" + AddressMap.get("PickupCityName") + "\" , \"PickupstateName\" : \"" + AddressMap.get("PickupstateName") + "\" , \"PickupStretName\" : \"" + AddressMap.get("PickupStretName") + "\"}";
+                String Json = "{ \"type\" : \"initiate\" ,\"userType\" : \"client\"  , \"userID\" : \""+data.get(USER_CONTACT).toString()+"\" , \"PickupCityName\" : \"" + AddressMap.get("PickupCityName") + "\" , \"PickupstateName\" : \"" + AddressMap.get("PickupstateName") + "\" , \"PickupStretName\" : \"" + AddressMap.get("PickupStretName") + "\"}";
                 webSocket.send(Json);
                 socketconnection = true;
                 sharedpreferencesUser.setSocketConnection(true);
@@ -189,24 +190,19 @@ public class SocketService extends Service {
 */
 
         handler = new Handler();
-        handler.post(new Runnable() {
+        handler.post(() -> new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                new Timer().scheduleAtFixedRate(new TimerTask() {
-                    @Override
-                    public void run() {
-                        data = sharedpreferencesUser.getShare();
-                        Object jsondatass = data.get(DATA_WB);
-                        if (jsondatass != null) {
-                            String jsondata = jsondatass.toString();
-                            ws.send(jsondata);
-                            Log.e("data", jsondata);
-                            sharedpreferencesUser.removeDataWebsocket();
-                        }
-                    }
-                }, 30, 1000);
+                data = sharedpreferencesUser.getShare();
+                Object jsondatass = data.get(DATA_WB);
+                if (jsondatass != null) {
+                    String jsondata = jsondatass.toString();
+                    ws.send(jsondata);
+                    Log.e("data", jsondata);
+                    sharedpreferencesUser.removeDataWebsocket();
+                }
             }
-        });
+        }, 30, 1000));
 
 
         return START_NOT_STICKY;

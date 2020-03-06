@@ -10,8 +10,8 @@
     tools:context=".activity.SignupActivity">
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:layout_gravity="center"
         android:src="@drawable/taxi_logo" />
 
@@ -19,7 +19,7 @@
         android:id="@+id/signup_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="30dp"
         android:background="@drawable/login_edit_design"
         android:drawableLeft="@drawable/user_icon_login"
         android:drawablePadding="15dp"
@@ -69,6 +69,15 @@
         android:textColorHint="@color/white"
         app:fonttype="font5" />
 
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/login_edit_design"
+        android:padding="13dp"/>
+
+
     <tech.iwish.taxi.extended.EditTextFont
         android:id="@+id/signup_password"
         android:layout_width="match_parent"
@@ -78,55 +87,58 @@
         android:drawableLeft="@drawable/password_icon"
         android:drawablePadding="15dp"
         android:hint="Password"
-        android:visibility="gone"
         android:inputType="textPassword"
         android:paddingLeft="8dp"
-        app:fonttype="font5"
         android:paddingTop="3dp"
         android:paddingRight="20dp"
         android:paddingBottom="3dp"
         android:textColor="@color/white"
-        android:textColorHint="@color/white" />
+        android:textColorHint="@color/white"
+        android:visibility="gone"
+        app:fonttype="font5" />
 
     <tech.iwish.taxi.extended.ButtonFont
         android:id="@+id/signup_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        app:fonttype="font10"
         android:background="@drawable/login_edit_button_design"
-        android:text="SIGN Up" />
+        android:text="SIGN Up"
+        app:fonttype="font10" />
 
     <LinearLayout
 
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:gravity="center"
+        android:orientation="horizontal"
         android:weightSum="2">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/login_activity"
+            android:layout_weight="1"
             android:gravity="right"
             android:padding="5dp"
-            android:layout_weight="1"
+            android:text="@string/login_activity"
             android:textColor="@color/white"
-            android:textSize="12sp"/>
+            android:textSize="12sp" />
+
         <LinearLayout
             android:id="@+id/login_activity_go"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/login_here"
-                android:padding="10dp"
                 android:layout_weight="1"
+                android:padding="10dp"
+                android:text="@string/login_here"
                 android:textColor="@color/orangeColor"
-                android:textSize="12sp"/>
+                android:textSize="12sp" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

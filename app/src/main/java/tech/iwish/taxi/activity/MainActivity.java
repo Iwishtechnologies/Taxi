@@ -117,6 +117,7 @@ import static java.lang.Math.toDegrees;
 import static tech.iwish.taxi.config.SharedpreferencesUser.LOCATION_CHANGE;
 import static tech.iwish.taxi.config.SharedpreferencesUser.OTP_CONFIRM_DRIVER;
 import static tech.iwish.taxi.config.SharedpreferencesUser.TRACK_ID;
+import static tech.iwish.taxi.config.SharedpreferencesUser.USER_CONTACT;
 import static tech.iwish.taxi.config.SharedpreferencesUser.VEHICLE_DATA;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback,
@@ -128,9 +129,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         GoogleMap.OnCameraMoveListener {
 
 
-    public TextView pickup;
+    public TextView pickup , pic;
     public TextView droplocation;
-    public TextView rentail;
+    public TextView rentail , drop;
     public String driverOfflineCheck;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private Location currentlocation;
@@ -221,11 +222,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mToggle.syncState();
         bottom = (LinearLayout) findViewById(R.id.bottom);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        drop = (TextView)findViewById(R.id.drop);
+        pic = (TextView)findViewById(R.id.pic);
+
+//        View headerLayout = navigationView.getHeaderView(0);
+//        TextView headermobile = View.findViewById(R.id.headermobile);
 
 
         sharedpreferencesUser = new SharedpreferencesUser(this);
         data = sharedpreferencesUser.getShare();
-
+//        headermobile.setText(data.get(USER_CONTACT).toString());
         navigation_Button.setVisibility(View.GONE);
 
         setTitle("Home");
@@ -266,6 +272,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             dailyButton.setVisibility(View.GONE);
             bottom.setVisibility(View.GONE);
             navigation_Button.setVisibility(View.VISIBLE);
+            drop.setVisibility(View.GONE);
+            pic.setVisibility(View.GONE);
         }
 
         View headerNavigation = navigationView.inflateHeaderView(R.layout.header_navigation);
@@ -346,6 +354,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         kProgressHUD = new KProgressHUD(this);
         String otpconfirmRide = getIntent().getStringExtra("otpconfirmRide");
         if (otpconfirmRide != null) {
+
             pickup.setVisibility(View.GONE);
             droplocation.setVisibility(View.GONE);
             aa.setVisibility(View.VISIBLE);
@@ -358,6 +367,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
         navigation_Button.setOnClickListener(view -> {
+
+
             String trackingid = data.get(TRACK_ID).toString();
             ConnectionServer connectionServer = new ConnectionServer();
             connectionServer.set_url(Constants.TRACKING_CHECK);
@@ -481,6 +492,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 startActivity(intent);
 
         }
+
+        pickup.setVisibility(View.GONE);
+        droplocation.setVisibility(View.GONE);
+        dailyButton.setVisibility(View.GONE);
+        outstationButton.setVisibility(View.GONE);
+        rantalPackage.setVisibility(View.GONE);
+        navigation_Button.setVisibility(View.GONE);
+
+        this.backValid = false;
+
+
         bottom.setVisibility(View.GONE);
         googleMaps.getUiSettings().setScrollGesturesEnabled(false);
 
@@ -500,7 +522,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
-    private void gpsretry(Location location){
+    private void GpsRetry(Location location){
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -726,10 +748,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 break;
             case R.id.rentalLayout:
                 this.rentalClick = "rental";
-
                 dailyButton.setVisibility(View.GONE);
                 rantalPackage.setVisibility(View.VISIBLE);
                 outstationButton.setVisibility(View.GONE);
+                drop.setVisibility(View.GONE);
                 rentalLayout.setBackground(getDrawable(R.drawable.bottom_design));
                 RentalMethod();
                 this.rentalClickAble = view.getTag().toString();
@@ -1162,7 +1184,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             bottom.setVisibility(View.VISIBLE);
         } else if (search_fragmentss != null) {
             if(backValid){
-
                 Intent intent = new Intent(Intent.ACTION_MAIN);
                 intent.addCategory(Intent.CATEGORY_HOME);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -1173,6 +1194,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             setTitle("Home");
             googleMaps.getUiSettings().setScrollGesturesEnabled(true);
             bottom.setVisibility(View.VISIBLE);
+
+            pickup.setVisibility(View.VISIBLE);
+            droplocation.setVisibility(View.VISIBLE);
+            dailyButton.setVisibility(View.VISIBLE);
+            outstationButton.setVisibility(View.VISIBLE);
+            rantalPackage.setVisibility(View.VISIBLE);
+//            navigation_Button.setVisibility(View.VISIBLE);
+
+
         } else {
             if (doubleBackToExitPressedOnce) {
                 super.onBackPressed();
@@ -1647,7 +1677,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void dropLocationSearch() {
-        search_dropFragment = new Search_dropFragment();
+        search_dropFragment = new Search_dropFragment(latitude_logitude);
         getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment, search_dropFragment).commit();
         confirRide.setVisibility(View.VISIBLE);
         search_dropFragment.setValueDrop(data13 -> {

@@ -57,7 +57,7 @@ public class RideHistoryFragment extends Fragment {
         String user_contact = data.get(USER_CONTACT).toString();
 
         kProgressHUD = new KProgressHUD(getActivity());
-        setProgressDialog("Select Ride Histroy");
+        setProgressDialog("Ride Histroy");
 
         ConnectionServer connectionServer = new ConnectionServer();
         connectionServer.set_url(Constants.RIDE_HISTROY);

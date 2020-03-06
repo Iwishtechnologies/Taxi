@@ -56,22 +56,23 @@ public class MoneyAddWalletActivity extends AppCompatActivity implements Payment
 
     @Override
     public void onPaymentSuccess(String s) {
-        Toast.makeText(this, "succ", Toast.LENGTH_SHORT).show();
+
         Intent intent = new Intent(MoneyAddWalletActivity.this, PaymentSuccessfully.class);
         intent.putExtra("message", "successfully");
         intent.putExtra("edit_wallet_amount", amount.getText().toString().trim());
+        intent.putExtra("before_wallet_amount", getIntent().getStringExtra("money"));
         startActivity(intent);
     }
 
     @Override
     public void onPaymentError(int i, String s) {
-        paymenterror();
-    }
 
-    private void paymenterror() {
         Intent intent = new Intent(this, PaymentSuccessfully.class);
         intent.putExtra("message", "fail");
+        intent.putExtra("edit_wallet_amount", amount.getText().toString().trim());
         startActivity(intent);
+
     }
+
 
 }

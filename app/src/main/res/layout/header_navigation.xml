@@ -43,9 +43,10 @@
                 android:textColor="@color/blackColor"
                 android:textSize="17sp" />
             <tech.iwish.taxi.extended.TextViewFont
+                android:id="@+id/headermobile"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="8871121959"
+                android:text=""
                 android:layout_weight="1"
                 app:fonttype="font5"
                 android:textColor="@color/blackColor"

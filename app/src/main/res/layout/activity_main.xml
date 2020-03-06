@@ -43,6 +43,16 @@
             android:tag="pickLocations"
             android:textColor="@color/blackColor"
             app:fonttype="font5" />
+        <tech.iwish.taxi.extended.TextViewFont
+            android:id="@+id/pic"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/search_place_design_main"
+            android:padding="10dp"
+            android:paddingEnd="20dp" />
 
         <tech.iwish.taxi.extended.TextViewFont
             android:id="@+id/droplocation"
@@ -67,6 +77,18 @@
             android:text="Enter drop location"
             android:textColor="@color/blackColor"
             app:fonttype="font5" />
+        <tech.iwish.taxi.extended.TextViewFont
+            android:id="@+id/drop"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/pickup"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/search_place_design_main"
+            android:padding="10dp"
+            android:paddingLeft="15dp" />
+
 
         <ImageView
             android:id="@+id/blue_pin_icon"

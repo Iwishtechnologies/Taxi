@@ -8,67 +8,80 @@
         android:id="@+id/placeLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="10dp"
-        android:background="@drawable/drop_search_design"
-        android:outlineSpotShadowColor="@color/blackColor"
-        android:shadowDx="10"
-        android:shadowDy="5"
-        android:elevation="16dp"
-        android:weightSum="2">
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="5dp"
-            android:layout_gravity="center"
-            android:gravity="center">
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/search_icon"
-                android:paddingTop="5dp"
-                android:paddingLeft="5dp"
-                android:paddingRight="15dp"
-                android:paddingBottom="5dp"
-                />
-        </LinearLayout>
+        android:orientation="vertical">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="horizontal"
+            android:padding="10dp"
+            android:outlineSpotShadowColor="@color/blackColor"
+            android:shadowDx="10"
+            android:shadowDy="5"
+            android:elevation="16dp"
+            android:background="@color/whiteColor"
+            android:weightSum="2">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:layout_gravity="center"
+                android:gravity="center">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/search_icon"
+                    android:paddingTop="5dp"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="15dp"
+                    android:paddingBottom="5dp"
+                    />
+            </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:weightSum="2"
-                android:orientation="horizontal">
-                <TextView
+                android:orientation="vertical">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:weightSum="2"
+                    android:orientation="horizontal">
+                    <TextView
 
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textSize="15sp"
-                    android:text=""/>
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textSize="15sp"
+                        android:text=""/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="15sp"
+                        android:layout_weight="1"
+                        android:text=""/>
+                </LinearLayout>
                 <TextView
+                    android:id="@+id/place"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="15sp"
-                    android:layout_weight="1"
-                    android:text=""/>
+                    android:text="sddsdsdsvdsfvdfbhb"
+                    android:layout_gravity="center"
+                    android:maxLines="1"
+                    android:maxHeight="1dp"
+                    android:inputType="text"
+                    android:ellipsize="end"
+                    android:padding="1dp"
+                    android:textColor="@color/blackColor"/>
+
             </LinearLayout>
-            <TextView
-                android:id="@+id/place"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="sddsdsdsvdsfvdfbhb"
-                android:layout_gravity="center"
-                android:maxLines="1"
-                android:maxHeight="1dp"
-                android:inputType="text"
-                android:ellipsize="end"
-                android:padding="1dp"
-                android:textColor="@color/blackColor"/>
 
         </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:background="@color/silverColor"/>
     </LinearLayout>
+
 
 </LinearLayout>

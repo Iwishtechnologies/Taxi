@@ -23,6 +23,24 @@
         android:background="@drawable/search_design"/>
 </androidx.appcompat.widget.Toolbar>
 
+<androidx.appcompat.widget.Toolbar
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/orangeColor"
+    android:visibility="gone">
+    <EditText
+        android:id="@+id/EditviewSearchview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:iconifiedByDefault="false"
+        android:layout_margin="10dp"
+        android:hint="Search drop place"
+        android:padding="10dp"
+        android:background="@drawable/search_design"/>
+</androidx.appcompat.widget.Toolbar>
+
+
+
 
 
     <androidx.recyclerview.widget.RecyclerView
