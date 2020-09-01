@@ -9,8 +9,20 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.Map;
 
+import okhttp3.Call;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import tech.iwish.taxi.R;
 import tech.iwish.taxi.config.Constants;
 import tech.iwish.taxi.config.SharedpreferencesUser;
@@ -65,7 +77,7 @@ public class PaymentSuccessfully extends AppCompatActivity {
 
     private void fail() {
         fail_payment.setVisibility(View.VISIBLE);
-        amount.setTextColor(R.color.redColor);
+        amount.setTextColor(getResources().getColor(R.color.redColor));
 
     }
 
@@ -74,7 +86,47 @@ public class PaymentSuccessfully extends AppCompatActivity {
         Object number = data.get(USER_CONTACT);
         if (number != null) {
 
-            ConnectionServer connectionServer = new ConnectionServer();
+
+            OkHttpClient okHttpClient = new OkHttpClient();
+            MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+            JSONObject jsonObject = new JSONObject();
+            try {
+                jsonObject.put("amount", amount_edit);
+                jsonObject.put("mobile", number.toString());
+                jsonObject.put("before_wallet_amount", before_wallet_amount);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            RequestBody body = RequestBody.create(JSON, jsonObject.toString());
+            Request request1 = new Request.Builder().url(Constants.WALLET_MONEY_UPDATE).post(body).build();
+
+
+            okHttpClient.newCall(request1).enqueue(new okhttp3.Callback() {
+                @Override
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                    e.printStackTrace();
+                }
+
+                @Override
+                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                    if (response.isSuccessful()) {
+                        String result = response.body().string();
+                        Log.e("result", result);
+                        JsonHelper jsonHelper = new JsonHelper(result);
+                        if (jsonHelper.isValidJson()) {
+                            String responses = jsonHelper.GetResult("response");
+                            if (responses.equals("TRUE")) {
+                                walletFragment.WalletRef(PaymentSuccessfully.this);
+                            }
+                        }
+                    }
+                }
+            });
+
+
+
+//            *******************************************
+            /*ConnectionServer connectionServer = new ConnectionServer();
             connectionServer.set_url(Constants.WALLET_MONEY_UPDATE);
             connectionServer.requestedMethod("POST");
             connectionServer.buildParameter("amount", amount_edit);
@@ -90,6 +142,8 @@ public class PaymentSuccessfully extends AppCompatActivity {
                     }
                 }
             });
+
+            */
         }
 
     }

@@ -1,121 +1,170 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".fragment.OutstationVehicleshowFragment"
+    android:background="@color/whiteColor"
     android:orientation="vertical"
-    android:background="@color/whiteColor">
+    tools:context=".fragment.OutstationVehicleshowFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Pickup location"
+            android:textColor="@color/blackColor"
+            android:textSize="14sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/silverColor" />
+
         <tech.iwish.taxi.extended.TextViewFont
             android:id="@+id/pick"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="pickup "
-            android:textSize="15sp"
-            app:fonttype="font7"
             android:layout_weight="1"
-            android:textColor="@color/blackColor"/>
+            android:maxLines="2"
+            android:text="pickup "
+            android:textColor="@color/blackColor"
+            android:textSize="15sp"
+            app:fonttype="font7" />
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/payment_design"
         android:orientation="vertical"
-        android:padding="10dp"
-        android:background="@drawable/payment_design">
+        android:padding="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Droplocation"
+            android:textColor="@color/blackColor"
+            android:textSize="14sp" />
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/silverColor" />
+
         <tech.iwish.taxi.extended.TextViewFont
             android:id="@+id/drop"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="pickup "
-            android:textSize="15sp"
-            app:fonttype="font7"
             android:layout_weight="1"
-            android:textColor="@color/blackColor"/>
+            android:maxLines="2"
+            android:text="pickup "
+            android:textColor="@color/blackColor"
+            android:textSize="15sp"
+            app:fonttype="font7" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:weightSum="2"
-        android:padding="10dp">
+        android:padding="10dp"
+        android:weightSum="2">
+
         <tech.iwish.taxi.extended.TextViewFont
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Leave On"
-            android:textSize="15sp"
-            app:fonttype="font7"
             android:layout_weight="1"
-            android:textColor="@color/blackColor"/>
+            android:text="Leave On"
+            android:textColor="@color/blackColor"
+            android:textSize="15sp"
+            app:fonttype="font7" />
 
         <tech.iwish.taxi.extended.TextViewFont
             android:id="@+id/leaveDateTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=""
-            android:gravity="end"
-            android:textSize="14sp"
-            app:fonttype="font10"
             android:layout_marginEnd="10dp"
             android:layout_weight="1"
-            android:textColor="@color/blueColor"/>
+            android:gravity="end"
+            android:text=""
+            android:textColor="@color/blueColor"
+            android:textSize="14sp"
+            app:fonttype="font10" />
 
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:weightSum="2"
+        android:padding="10dp"
+        android:weightSum="2">
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:background="@drawable/payment_design"
-        android:padding="10dp">
+        android:orientation="horizontal"
+        android:padding="10dp"
+        android:visibility="gone"
+        android:weightSum="2">
+
         <tech.iwish.taxi.extended.TextViewFont
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Return by"
-            android:textSize="15sp"
-            app:fonttype="font7"
-            android:textStyle="bold"
             android:layout_weight="1"
-            android:textColor="@color/blackColor"/>
+            android:text="Return by"
+            android:textColor="@color/blackColor"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            app:fonttype="font7" />
+
         <tech.iwish.taxi.extended.TextViewFont
             android:id="@+id/returnTimeDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="SELECT"
-            android:textStyle="bold"
-            android:gravity="end"
-            android:textSize="14sp"
-            app:fonttype="font10"
             android:layout_marginEnd="10dp"
             android:layout_weight="1"
-            android:textColor="@color/blackColor"/>
+            android:gravity="end"
+            android:text="SELECT"
+            android:textColor="@color/blackColor"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:fonttype="font10" />
 
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@color/lightColor">
+        android:background="@color/lightColor"
+        android:orientation="vertical">
+
         <tech.iwish.taxi.extended.TextViewFont
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Select Vehicle type"
-            android:textSize="17sp"
-            app:fonttype="font7"
             android:padding="5dp"
-            android:textColor="@color/orangeColor"/>
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/vehicleOutstationshe"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-            </androidx.recyclerview.widget.RecyclerView>
+            android:text="Select Vehicle type"
+            android:textColor="@color/orangeColor"
+            android:textSize="17sp"
+            app:fonttype="font7" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/vehicleOutstationshe"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
     </LinearLayout>
 

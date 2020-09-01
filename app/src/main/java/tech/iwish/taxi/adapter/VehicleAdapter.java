@@ -1,5 +1,6 @@
 package tech.iwish.taxi.adapter;
 
+import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.ComponentName;
 import android.content.Context;
@@ -26,10 +27,12 @@ import com.google.android.gms.maps.model.LatLng;
 import com.kaopiz.kprogresshud.KProgressHUD;
 
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +40,12 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import okhttp3.Call;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import tech.iwish.taxi.R;
 
 import tech.iwish.taxi.activity.MainActivity;
@@ -96,6 +105,7 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.Viewhold
 
         holder.total_rate.setText(vehicleList.get(position).getTotrate());
         holder.total_titme.setText(vehicleList.get(position).getTottime());
+        holder.vehicle.setText(vehicleList.get(position).getCatagory_name());
 
         kProgressHUD = new KProgressHUD(context);
         bundle = new Bundle();
@@ -154,7 +164,7 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.Viewhold
             holder.booking_confirm.setOnClickListener(view -> {
 
 
-                //=================================web socket============================================
+                //================================= web socket  ============================================
 
 
 //                    progress bar start
@@ -169,10 +179,8 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.Viewhold
                 AddressMap.get("PickupstateName");
                 AddressMap.get("PickupcountryName");
 
-
-                JSONDATA = "{ \"type\" : \"vehicleCall\",\"totalRate\" : \"" + vehicleList.get(currentSelectedPosition).getTotrate() + "\",\"totalTime\" : \"" + vehicleList.get(currentSelectedPosition).getTottime() + "\" , \"request\" :\""+vehicleList.get(currentSelectedPosition).getCatagory_name()+"\" ,\"pickUpLat\" : \"" + latitude_logitude.get("PickLatitude") + "\"  ,\"pickUpLong\" : \"" + latitude_logitude.get("PickLogitude") + "\" ,\"DropLocationLatitude\" : \"" + latitude_logitude.get("dropLatitude") + "\",\"DropLocationLogitude\" : \"" + latitude_logitude.get("dropLongitude") + "\"  , \"userType\" : \"client\"  , \"userID\" : \"" + mobile.toString() + "\" , \"PickupCityName\" : \"" + AddressMap.get("PickupCityName") + "\" , \"PickupstateName\" : \"" + AddressMap.get("PickupstateName") + "\" , \"PickupStretName\" : \"" + AddressMap.get("PickupStretName") + "\"}";
+                JSONDATA = "{ \"type\" : \"vehicleCall\",\"totalRate\" : \"" + vehicleList.get(currentSelectedPosition).getTotrate() + "\",\"totalTime\" : \"" + vehicleList.get(currentSelectedPosition).getTottime() + "\" , \"request\" :\"" + vehicleList.get(currentSelectedPosition).getCatagory_name() + "\" ,\"pickUpLat\" : \"" + latitude_logitude.get("PickLatitude") + "\"  ,\"pickUpLong\" : \"" + latitude_logitude.get("PickLogitude") + "\" ,\"DropLocationLatitude\" : \"" + latitude_logitude.get("dropLatitude") + "\",\"DropLocationLogitude\" : \"" + latitude_logitude.get("dropLongitude") + "\"  , \"userType\" : \"client\"  , \"userID\" : \"" + mobile.toString() + "\" , \"PickupCityName\" : \"" + AddressMap.get("PickupCityName") + "\" , \"PickupstateName\" : \"" + AddressMap.get("PickupstateName") + "\" , \"PickupStretName\" : \"" + AddressMap.get("PickupStretName") + "\"}";
                 sharedpreferencesUser.getDatasWebsocket(JSONDATA);
-
 
                 Timer timer = new Timer();
                 timer.scheduleAtFixedRate(new TimerTask() {
@@ -184,8 +192,8 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.Viewhold
                         String driverData = sharedpreferencesUser.driverReturnData();
                         if (driverData != null) {
                             Log.e("driverData", driverData);
-                            latitude_logitude.put("confir_drop_location_latitude",latitude_logitude.get("dropLatitude"));
-                            latitude_logitude.put("confir_drop_location_logitude",latitude_logitude.get("dropLongitude"));
+                            latitude_logitude.put("confir_drop_location_latitude", latitude_logitude.get("dropLatitude"));
+                            latitude_logitude.put("confir_drop_location_logitude", latitude_logitude.get("dropLongitude"));
                             driverData(driverData);
                             timer.cancel();
                         }
@@ -214,7 +222,7 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.Viewhold
         LinearLayout clickConfirm;
         LinearLayout button_Conirm;
         Button booking_confirm;
-        TextView total_rate, total_titme;
+        TextView total_rate, total_titme, vehicle;
 
         public Viewholder(@NonNull View itemView) {
             super(itemView);
@@ -223,6 +231,7 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.Viewhold
             booking_confirm = (Button) itemView.findViewById(R.id.booking_confirm);
             total_rate = (TextView) itemView.findViewById(R.id.total_rate);
             total_titme = (TextView) itemView.findViewById(R.id.total_titme);
+            vehicle = (TextView) itemView.findViewById(R.id.vehicle);
         }
     }
 
@@ -239,7 +248,7 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.Viewhold
     };
 
 
-    public void driverData(String data){
+    public void driverData(String data) {
 
         try {
             JSONObject jsonObject = new JSONObject(data);
@@ -247,11 +256,12 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.Viewhold
             String driverId = value.getString("driverId");
             String trackid = value.getString("trackid");
             String otp = value.getString("otp");
-            bundle.putString("otp",otp);
-            bundle.putString("driverId",driverId);
-            bundle.putString("trackid",trackid);
+            bundle.putString("otp", otp);
+            bundle.putString("driverId", driverId);
+            bundle.putString("trackid", trackid);
 
 
+/*
             ConnectionServer connectionServer = new ConnectionServer();
             connectionServer.set_url(Constants.DRIVERSHOW);
             connectionServer.requestedMethod("POST");
@@ -266,8 +276,8 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.Viewhold
                         JSONArray jsonArray = jsonHelper.setChildjsonArray(jsonHelper.getCurrentJsonObj(), "data");
                         for (int i = 0; i < jsonArray.length(); i++) {
                             jsonHelper.setChildjsonObj(jsonArray, i);
-                            bundle.putString("driver_name" , jsonHelper.GetResult("DriverName"));
-                            bundle.putString("driver_mobile" , jsonHelper.GetResult("Mobile"));
+                            bundle.putString("driver_name", jsonHelper.GetResult("DriverName"));
+                            bundle.putString("driver_mobile", jsonHelper.GetResult("Mobile"));
                         }
                         RideConfiremDriverDetailsFragment rideConfiremDriverDetailsFragment = new RideConfiremDriverDetailsFragment();
                         FragmentManager fm = ((FragmentActivity) context).getSupportFragmentManager();
@@ -279,22 +289,90 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.Viewhold
                 }
             });
 
+*/
+
+//            **************************************************
+
+            OkHttpClient okHttpClient = new OkHttpClient();
+            MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+            JSONObject jsonObjects = new JSONObject();
+            try {
+                jsonObjects.put("driverId", driverId);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            RequestBody body = RequestBody.create(JSON, jsonObjects.toString());
+            Request request1 = new Request.Builder().url(Constants.DRIVERSHOW).post(body).build();
+
+
+            okHttpClient.newCall(request1).enqueue(new okhttp3.Callback() {
+                @Override
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                    e.printStackTrace();
+                }
+
+                @Override
+                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                    if (response.isSuccessful()) {
+                        String result = response.body().string();
+                        Log.e("result", result);
+                        JsonHelper jsonHelper = new JsonHelper(result);
+                        if (jsonHelper.isValidJson()) {
+                            String responses = jsonHelper.GetResult("response");
+                            if (responses.equals("TRUE")) {
+
+                                JSONArray jsonArray = jsonHelper.setChildjsonArray(jsonHelper.getCurrentJsonObj(), "data");
+                                for (int i = 0; i < jsonArray.length(); i++) {
+                                    jsonHelper.setChildjsonObj(jsonArray, i);
+                                    bundle.putString("driver_name", jsonHelper.GetResult("DriverName"));
+                                    bundle.putString("driver_mobile", jsonHelper.GetResult("Mobile"));
+                                }
+                                ((Activity)context).runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        RideConfiremDriverDetailsFragment rideConfiremDriverDetailsFragment = new RideConfiremDriverDetailsFragment();
+                                        FragmentManager fm = ((FragmentActivity) context).getSupportFragmentManager();
+                                        rideConfiremDriverDetailsFragment.setArguments(bundle);
+                                        fm.beginTransaction().replace(R.id.confirmRideLoad, rideConfiremDriverDetailsFragment, CONFIRM_FRAGMENT_RID).commit();
+                                        remove_progress_Dialog();
+
+                                    }
+                                });
+                            }
+                        }
+                    }
+                }
+            });
+
+//            **************************************************
+
+
         } catch (JSONException e) {
             e.printStackTrace();
+            if (context != null) {
+
+                ((Activity)context).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(context, "Driver Offline", Toast.LENGTH_SHORT).show();
+                        remove_progress_Dialog();
+                    }
+                });
         }
     }
+}
 
 
-    private void autoDismissProgressbar(){
+    private void autoDismissProgressbar() {
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 remove_progress_Dialog();
-                Log.e("vehicle not " , "vehcl not");
+                Log.e("vehicle not ", "vehcl not");
                 timer.cancel();
             }
-        },30000,30000);
+        }, 30000, 30000);
     }
 
     public void setProgressDialog(String msg) {
@@ -314,8 +392,8 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.Viewhold
         this.vehicleLatLongWebSocket = vehicleLatLon;
     }
 
-    public interface VehicleLatLon {
-        public void vehicaleLatlong(String jsoneData);
-    }
+public interface VehicleLatLon {
+    void vehicaleLatlong(String jsoneData);
+}
 
 }

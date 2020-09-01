@@ -13,15 +13,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.kaopiz.kprogresshud.KProgressHUD;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import tech.iwish.taxi.Interface.RentalVehicleInterface;
 import tech.iwish.taxi.R;
+import tech.iwish.taxi.other.PackageVehicle;
 
-public class RentalMainFragment extends Fragment {
+public class RentalMainFragment extends Fragment implements RentalVehicleInterface {
 
     public FrameLayout rental_frame;
     public Map<String, Double> latitude_logitude;
@@ -49,8 +53,9 @@ public class RentalMainFragment extends Fragment {
         kProgressHUD = new KProgressHUD(getContext());
 
 
-        RentalPackageFragmnet rentalPackageFragmnet = new RentalPackageFragmnet(latitude_logitude , AddressMap);
+        RentalPackageFragmnet rentalPackageFragmnet = new RentalPackageFragmnet(latitude_logitude , AddressMap , this);
         getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.rental_frame, rentalPackageFragmnet).commit();
+
         return view;
 
     }
@@ -70,4 +75,27 @@ public class RentalMainFragment extends Fragment {
         kProgressHUD.dismiss();
     }
 
+    @Override
+    public void rentalvehicalInterface(String package_select, List<PackageVehicle> packageVehicles) {
+
+        Toast.makeText(getContext(), ""+package_select, Toast.LENGTH_SHORT).show();
+
+
+
+        RentalVehicleFragment rentalVehicleFragment = new RentalVehicleFragment(latitude_logitude , AddressMap ,package_select);
+        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.rental_frame, rentalVehicleFragment).commit();
+
+
+    }
 }
+
+
+
+
+
+
+
+
+
+
+

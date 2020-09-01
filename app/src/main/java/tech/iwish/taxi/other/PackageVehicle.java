@@ -5,14 +5,18 @@ public class PackageVehicle {
     private String  package_type;
     private String  vahicle_cat_id;
     private String  amount;
+    private String  vahicle;
+    private String  packageAmt;
 
-    public PackageVehicle(String packid, String package_type, String vahicle_cat_id, String amount) {
+
+    public PackageVehicle(String packid, String package_type, String vahicle_cat_id, String amount, String vahicle, String packageAmt) {
         this.packid = packid;
         this.package_type = package_type;
         this.vahicle_cat_id = vahicle_cat_id;
         this.amount = amount;
+        this.vahicle = vahicle;
+        this.packageAmt = packageAmt;
     }
-
 
     public String getPackid() {
         return packid;
@@ -44,5 +48,21 @@ public class PackageVehicle {
 
     public void setAmount(String amount) {
         this.amount = amount;
+    }
+
+    public String getVahicle() {
+        return vahicle;
+    }
+
+    public void setVahicle(String vahicle) {
+        this.vahicle = vahicle;
+    }
+
+    public String getPackageAmt() {
+        return packageAmt;
+    }
+
+    public void setPackageAmt(String packageAmt) {
+        this.packageAmt = packageAmt;
     }
 }

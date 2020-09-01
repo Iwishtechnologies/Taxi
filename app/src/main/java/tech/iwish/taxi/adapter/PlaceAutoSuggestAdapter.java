@@ -12,7 +12,8 @@ import java.util.ArrayList;
 
 import tech.iwish.taxi.models.PlaceApi;
 
-public class PlaceAutoSuggestAdapter extends ArrayAdapter implements Filterable {
+public class
+PlaceAutoSuggestAdapter extends ArrayAdapter implements Filterable {
 
     ArrayList<String> results ;
     int resource ;

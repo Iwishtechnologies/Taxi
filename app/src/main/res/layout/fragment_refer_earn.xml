@@ -1,15 +1,146 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragment.ReferEarnFragment"
-    android:background="@color/whiteColor">
+    android:background="@color/whiteColor"
+    android:orientation="vertical"
+    tools:context=".fragment.ReferEarnFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/refer_image" />
+    </LinearLayout>
+
+    <tech.iwish.taxi.extended.TextViewFont
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:gravity="center"
+        android:text="Invite Your friends and"
+        android:textColor="@color/blackColor"
+        android:textSize="20sp" />
+
+    <tech.iwish.taxi.extended.TextViewFont
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="get Rs. 50 each"
+        android:textColor="@color/blackColor"
+        android:textSize="17sp" />
+
+    <tech.iwish.taxi.extended.TextViewFont
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="30dp"
+        android:gravity="center"
+        android:text="Share the code below or ask them to enter if after they sign up. Your coupon wil appear after their first ride ."
+        android:textSize="12sp" />
+
+    <tech.iwish.taxi.extended.TextViewFont
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="30dp"
+        android:gravity="center"
+        android:text="For your friend to receive their coupon ensure that they use your referral before their first ride and within 10 days of signup"
+        android:textSize="12sp" />
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:gravity="bottom"
+        android:orientation="vertical"
+        android:paddingBottom="10dp">
 
-</FrameLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_marginBottom="50dp"
+            android:orientation="horizontal"
+            android:weightSum="2">
+
+            <tech.iwish.taxi.extended.TextViewFont
+                android:id="@+id/code"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@color/silverColor"
+                android:gravity="center"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp"
+                android:textColor="@color/orangeColor"
+                android:text="2Fnsdsm"
+                android:textSize="20sp" />
+
+            <tech.iwish.taxi.extended.TextViewFont
+                android:id="@+id/copy_code"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="4dp"
+                android:layout_weight="1"
+                android:drawableRight="@drawable/copy_icon"
+                android:drawablePadding="10dp"
+                android:gravity="center"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <tech.iwish.taxi.extended.TextViewFont
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="50dp"
+            android:drawablePadding="5dp"
+            android:drawableRight="@drawable/copy_icon"
+            android:visibility="gone"
+            android:text="Copy Code"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/invite_money"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="50dp"
+            android:layout_marginEnd="50dp"
+            android:background="@drawable/rafer_earn_design"
+            android:text="invite friends"
+            android:textColor="@color/whiteColor" />
+    </LinearLayout>
+</LinearLayout>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

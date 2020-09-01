@@ -52,14 +52,13 @@ public class ConnectionServer extends AsyncTask <String,String,String> {
 
     public ConnectionServer(){
 
-
     }
 
     public void execute(AsyncResponse delegate)
     {
         this.execute("");
-
         this.delegate = delegate;
+
     }
 
 
@@ -82,6 +81,7 @@ public class ConnectionServer extends AsyncTask <String,String,String> {
             this.conn.setRequestProperty("Cache-Control", "no-cache");
             this.conn.setRequestProperty("ENCTYPE", "multipart/form-data");
             this.conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
+
 
 
             request = new DataOutputStream(this.conn.getOutputStream());

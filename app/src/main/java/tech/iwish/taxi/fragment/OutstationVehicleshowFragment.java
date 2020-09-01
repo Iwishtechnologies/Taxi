@@ -37,6 +37,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import tech.iwish.taxi.R;
 import tech.iwish.taxi.adapter.OutStationVehicleAdapter;
@@ -57,11 +58,10 @@ public class OutstationVehicleshowFragment extends Fragment {
     public Map<String, Double> latitude_logitude;
     public Map<String, String> AddressMap;
     RecyclerView vehicleOutstationshe;
-    private DatePickerDialog.OnDateSetListener mleave , dropcal ;
+    private DatePickerDialog.OnDateSetListener mleave, dropcal;
     private KProgressHUD kProgressHUD;
-    String dropCalt ;
+    String dropCalt;
     List<OutStationVehicleList> outStationVehicleLists = new ArrayList<>();
-
 
 
     public OutstationVehicleshowFragment(Map<String, LatLng> allLatLng, Map<String, Double> latitude_logitude, Map<String, String> addressMap) {
@@ -84,7 +84,7 @@ public class OutstationVehicleshowFragment extends Fragment {
         returnTimeDate = (TextView) view.findViewById(R.id.returnTimeDate);
         pick = (TextView) view.findViewById(R.id.pick);
         drop = (TextView) view.findViewById(R.id.drop);
-        vehicleOutstationshe = (RecyclerView)view.findViewById(R.id.vehicleOutstationshe);
+        vehicleOutstationshe = (RecyclerView) view.findViewById(R.id.vehicleOutstationshe);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
@@ -102,45 +102,51 @@ public class OutstationVehicleshowFragment extends Fragment {
 
         leaveDateTime.setText(formattedDate);
 
+        pick.setText(AddressMap.get("Pickupfulladress").toString());
+        drop.setText(AddressMap.get("Address_DropLocation").toString());
+
+
+
+
         returnTimeDate.setOnClickListener(view1 -> {
             Calendar cal = Calendar.getInstance();
             int year = cal.get(Calendar.YEAR);
             int month = cal.get(Calendar.MONTH);
             int day = cal.get(Calendar.DAY_OF_MONTH);
 
-            DatePickerDialog dialog = new DatePickerDialog(getActivity(),android.R.style.Theme_Holo_Dialog_MinWidth,mleave,year,month,day);
-            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            DatePickerDialog dialog = new DatePickerDialog(getActivity(), android.R.style.Theme_Holo_Dialog_MinWidth, mleave, year, month, day);
+            Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             dialog.show();
 
         });
 
         mleave = (datePicker, ye, i1, dy) -> {
             Calendar calss = Calendar.getInstance();
-            calss.set(Calendar.YEAR,ye);
-            calss.set(Calendar.MONTH,i1);
-            calss.set(Calendar.DAY_OF_MONTH,dy);
+            calss.set(Calendar.YEAR, ye);
+            calss.set(Calendar.MONTH, i1);
+            calss.set(Calendar.DAY_OF_MONTH, dy);
             dropCalt = DateFormat.getDateInstance(DateFormat.FULL).format(calss.getTime());
             returnTimeDate.setText(dropCalt);
         };
 
 
-        leaveDateTime.setOnClickListener(View->{
+        leaveDateTime.setOnClickListener(View -> {
 
             Calendar cal = Calendar.getInstance();
             int year = cal.get(Calendar.YEAR);
             int month = cal.get(Calendar.MONTH);
             int day = cal.get(Calendar.DAY_OF_MONTH);
 
-            DatePickerDialog dialog = new DatePickerDialog(getActivity(),android.R.style.Theme_Holo_Dialog_MinWidth,dropcal,year,month,day);
+            DatePickerDialog dialog = new DatePickerDialog(getActivity(), android.R.style.Theme_Holo_Dialog_MinWidth, dropcal, year, month, day);
             dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             dialog.show();
         });
 
         dropcal = (datePicker, ye, i1, dy) -> {
             Calendar calss = Calendar.getInstance();
-            calss.set(Calendar.YEAR,ye);
-            calss.set(Calendar.MONTH,i1);
-            calss.set(Calendar.DAY_OF_MONTH,dy);
+            calss.set(Calendar.YEAR, ye);
+            calss.set(Calendar.MONTH, i1);
+            calss.set(Calendar.DAY_OF_MONTH, dy);
             String da = DateFormat.getDateInstance(DateFormat.FULL).format(calss.getTime());
             leaveDateTime.setText(da);
         };
@@ -161,19 +167,19 @@ public class OutstationVehicleshowFragment extends Fragment {
 //        connectionServer.buildParameter("destinationsLogitude" ,destinationsLogitude.toString());
         connectionServer.requestedMethod("POST");
         connectionServer.execute(output -> {
-            Log.e("output",output);
+            Log.e("output", output);
             JsonHelper jsonHelper = new JsonHelper(output);
-            if(jsonHelper.isValidJson()){
+            if (jsonHelper.isValidJson()) {
                 String response = jsonHelper.GetResult("response");
-                if(response.equals("TRUE")){
+                if (response.equals("TRUE")) {
                     JSONArray jsonArray = jsonHelper.setChildjsonArray(jsonHelper.getCurrentJsonObj(), "data");
 
                     for (int i = 0; i < jsonArray.length(); i++) {
                         jsonHelper.setChildjsonObj(jsonArray, i);
 //                        user_detailsLists.add(new User_DetailsList(jsonHelper.GetResult("name"),jsonHelper.GetResult("email"),jsonHelper.GetResult("constact")));
-                        outStationVehicleLists.add(new OutStationVehicleList());
+                        outStationVehicleLists.add(new OutStationVehicleList(jsonHelper.GetResult("catagory_id"), jsonHelper.GetResult("catagory_name"), jsonHelper.GetResult("MinRate"), jsonHelper.GetResult("Rate_Km"), jsonHelper.GetResult("waitingRate_m"), jsonHelper.GetResult("rtc_m"), jsonHelper.GetResult("img"), jsonHelper.GetResult("vahicle_cat")));
                     }
-                    OutStationVehicleAdapter outStationVehicleAdapter = new OutStationVehicleAdapter(getActivity(),outStationVehicleLists ,AllLatLng ,latitude_logitude , AddressMap );
+                    OutStationVehicleAdapter outStationVehicleAdapter = new OutStationVehicleAdapter(getActivity(), outStationVehicleLists, AllLatLng, latitude_logitude, AddressMap);
                     vehicleOutstationshe.setAdapter(outStationVehicleAdapter);
 
                     remove_progress_Dialog();
@@ -184,8 +190,6 @@ public class OutstationVehicleshowFragment extends Fragment {
         return view;
 
     }
-
-
 
 
     public void setProgressDialog(String msg) {

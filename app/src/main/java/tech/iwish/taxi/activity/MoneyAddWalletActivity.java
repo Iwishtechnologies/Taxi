@@ -27,6 +27,7 @@ public class MoneyAddWalletActivity extends AppCompatActivity implements Payment
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_money_add_wallet);
+
         Checkout.preload(MoneyAddWalletActivity.this);
 
 

@@ -36,6 +36,7 @@ public class BillActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bill);
+
         getSupportActionBar().hide();
 
         sharedpreferencesUser = new SharedpreferencesUser(this);

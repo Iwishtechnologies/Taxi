@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.kaopiz.kprogresshud.KProgressHUD;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -50,9 +51,11 @@ public class SocketService extends Service {
     String type = "blank";
     Map<String, LatLng> allLatLng;
     Map<String, Double> latitude_logitude;
+    private KProgressHUD kProgressHUD;
     Map<String, String> AddressMap;
     //    private VehicleShow_Data dataVehi;
     private Map data;
+    WebSocketListener webSocketListener;
 
 
     public SocketService() { }
@@ -63,6 +66,7 @@ public class SocketService extends Service {
         this.latitude_logitude = latitude_logitude;
         this.AddressMap = addressMap;
         mainActivity = new MainActivity();
+        data = sharedpreferencesUser.getShare();
     }
 
 
@@ -75,10 +79,11 @@ public class SocketService extends Service {
 
 //        Toast.makeText(mainActivity, ""+intent, Toast.LENGTH_SHORT).show();
 
-        WebSocketListener webSocketListener = new WebSocketListener() {
+         webSocketListener = new WebSocketListener() {
             @Override
             public void onOpen(WebSocket webSocket, Response response) {
-                super.onOpen(webSocket, response);
+//                super.onOpen(webSocket, response);
+
                 String Json = "{ \"type\" : \"initiate\" ,\"userType\" : \"client\"  , \"userID\" : \""+data.get(USER_CONTACT).toString()+"\" , \"PickupCityName\" : \"" + AddressMap.get("PickupCityName") + "\" , \"PickupstateName\" : \"" + AddressMap.get("PickupstateName") + "\" , \"PickupStretName\" : \"" + AddressMap.get("PickupStretName") + "\"}";
                 webSocket.send(Json);
                 socketconnection = true;
@@ -88,7 +93,9 @@ public class SocketService extends Service {
 
             @Override
             public void onMessage(WebSocket webSocket, String text) {
+
 //                super.onMessage(webSocket, text);
+                sharedpreferencesUser.remove_vehicledata();
                 Log.e("data websocket", text);
                 try {
                     JSONObject jsonObject = new JSONObject(text);
@@ -122,6 +129,9 @@ public class SocketService extends Service {
                             }
                             break;
                         default:
+                            Log.e("fail","no veicle");
+//                            sharedpreferencesUser.vehicledata("NO_VEICLE");
+                            sharedpreferencesUser.driverShow(text);
                             break;
                     }
 
@@ -142,22 +152,20 @@ public class SocketService extends Service {
 
             @Override
             public void onClosed(WebSocket webSocket, int code, String reason) {
-
+                Log.e("onClosed: ","" );
+                startSocket();
             }
 
             @Override
             public void onFailure(WebSocket webSocket, Throwable t, Response response) {
                 onOpen(webSocket, response);
                 socketconnection = false;
+                startSocket();
             }
         };
 
-        client = new OkHttpClient();
-        Request request = new Request.Builder().url("ws://173.212.226.143:8090/").build();
-        ws = client.newWebSocket(request, webSocketListener);
-        client.dispatcher().executorService();
 
-
+         startSocket();
 
 /*
 
@@ -204,10 +212,25 @@ public class SocketService extends Service {
             }
         }, 30, 1000));
 
-
         return START_NOT_STICKY;
     }
 
+    public void remove_progress_Dialog() {
+        kProgressHUD.dismiss();
+    }
+
+    public void startSocket(){
+
+
+        client = new OkHttpClient();
+//        Request request = new Request.Builder().url("ws://144.91.94.202:8090/").build();
+        Request request = new Request.Builder().url("ws://173.212.226.143:8090/").build();
+        ws = client.newWebSocket(request, webSocketListener);
+        client.dispatcher().executorService();
+
+
+
+    }
 
     @Nullable
     @Override

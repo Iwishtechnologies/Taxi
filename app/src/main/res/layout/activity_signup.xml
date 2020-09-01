@@ -6,7 +6,10 @@
     android:layout_height="match_parent"
     android:background="@drawable/background_login"
     android:orientation="vertical"
-    android:padding="50dp"
+    android:paddingEnd="50dp"
+    android:id="@+id/mainLayout"
+    android:paddingStart="50dp"
+    android:paddingTop="50dp"
     tools:context=".activity.SignupActivity">
 
     <ImageView
@@ -61,6 +64,7 @@
         android:drawablePadding="15dp"
         android:hint="Contact"
         android:inputType="number"
+        android:maxLength="10"
         android:paddingLeft="8dp"
         android:paddingTop="3dp"
         android:paddingRight="20dp"
@@ -75,8 +79,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:background="@drawable/login_edit_design"
-        android:padding="13dp"/>
-
+        android:padding="10dp"/>
 
     <tech.iwish.taxi.extended.EditTextFont
         android:id="@+id/signup_password"
@@ -135,12 +138,45 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:padding="10dp"
+                android:padding="5dp"
                 android:text="@string/login_here"
                 android:textColor="@color/orangeColor"
                 android:textSize="12sp" />
         </LinearLayout>
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/refer_code_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="2dp"
+        android:weightSum="2"
+        android:gravity="center">
+        <tech.iwish.taxi.extended.TextViewFont
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Have a"
+            android:textColor="@color/whiteColor"
+            android:textSize="12sp"/>
+        <tech.iwish.taxi.extended.TextViewFont
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="#2496F9"
+            android:text=" referral code?"
+            android:textSize="12sp"/>
+    </LinearLayout>
+
+    <tech.iwish.taxi.extended.TextViewFont
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Code Applied"
+        android:textColor="@color/whiteColor"
+        android:textSize="12sp"/>
+
 </LinearLayout>
 
 

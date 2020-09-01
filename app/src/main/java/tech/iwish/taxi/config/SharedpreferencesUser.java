@@ -19,6 +19,7 @@ public class SharedpreferencesUser {
     public static final String WEBSOCKET = "websocket";
     public static final String USER_NAME = "user_name";
     public static final String USER_CONTACT = "user_contact";
+    public static final String REFER_CODE = "refer_code";
 
     public static final String USER_LOGIN = "login";
     public static final String TEST_CHECH = "0";
@@ -44,6 +45,7 @@ public class SharedpreferencesUser {
     public static final String OTP = "5484";
     public static final String DRIVER_OTP = "otp_share_driver";
     public static final String TRACK_ID = "track_id";
+    public static final String REFER_CODE_LINK_CHECK = "refer_link_check";
 
     SharedPreferences.Editor editor;
 
@@ -57,11 +59,12 @@ public class SharedpreferencesUser {
         editor = Preferences.edit();
     }
 
-    public void user_detail(String user_name, String user_email, String contact) {
+    public void user_detail(String user_name, String user_email, String contact , String refer_code) {
 
         editor.putString(USER_NAME, user_name);
         editor.putString(USER_EMAIL, user_email);
         editor.putString(USER_CONTACT, contact);
+        editor.putString(REFER_CODE, refer_code);
         editor.putString(TEST_CHECH, "1");
         editor.commit();
 
@@ -178,7 +181,36 @@ public class SharedpreferencesUser {
         editor.remove(OTP_CONFIRM_DRIVER).commit();
     }
 
+    public void refer_code_chech(String refercode){
+        editor.putString(REFER_CODE_LINK_CHECK,refercode).commit();
 
+    }
+    public void remove_refer_code_chech(){
+        editor.remove(REFER_CODE_LINK_CHECK).commit();
+    }
 
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

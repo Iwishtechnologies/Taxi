@@ -18,10 +18,20 @@ import android.widget.Toast;
 import com.razorpay.Checkout;
 import com.razorpay.PaymentResultListener;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.Map;
 
+import okhttp3.Call;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import tech.iwish.taxi.R;
 import tech.iwish.taxi.config.Constants;
 import tech.iwish.taxi.config.SharedpreferencesUser;
@@ -75,6 +85,56 @@ public class PaymentOptionActivity extends AppCompatActivity implements PaymentR
 
         Object number = data.get(USER_CONTACT);
 
+
+        OkHttpClient okHttpClient = new OkHttpClient();
+        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("mobile", number.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody body = RequestBody.create(JSON, jsonObject.toString());
+        Request request1 = new Request.Builder().url(Constants.WALEET_MONEY_GET).post(body).build();
+
+
+        okHttpClient.newCall(request1).enqueue(new okhttp3.Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String result = response.body().string();
+                    Log.e("result", result);
+                    JsonHelper jsonHelper = new JsonHelper(result);
+                    if (jsonHelper.isValidJson()) {
+                        String responses = jsonHelper.GetResult("response");
+                        if (responses.equals("TRUE")) {
+                            JSONArray jsonArray = jsonHelper.setChildjsonArray(jsonHelper.getCurrentJsonObj(), "data");
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                jsonHelper.setChildjsonObj(jsonArray, i);
+                                String amounts = jsonHelper.GetResult("wallet");
+                                PaymentOptionActivity.this.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        sharedpreferencesUser.walletAdd(amounts);
+                                    }
+                                });
+
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+
+
+
+/*
         ConnectionServer connectionServer = new ConnectionServer();
         connectionServer.set_url(Constants.WALEET_MONEY_GET);
         connectionServer.requestedMethod("POST");
@@ -83,8 +143,8 @@ public class PaymentOptionActivity extends AppCompatActivity implements PaymentR
             Log.e("output", output);
             JsonHelper jsonHelper = new JsonHelper(output);
             if (jsonHelper.isValidJson()) {
-                String response = jsonHelper.GetResult("response");
-                if (response.equals("TRUE")) {
+                String responses = jsonHelper.GetResult("response");
+                if (responses.equals("TRUE")) {
                     JSONArray jsonArray = jsonHelper.setChildjsonArray(jsonHelper.getCurrentJsonObj(), "data");
                     for (int i = 0; i < jsonArray.length(); i++) {
                         jsonHelper.setChildjsonObj(jsonArray, i);
@@ -94,6 +154,7 @@ public class PaymentOptionActivity extends AppCompatActivity implements PaymentR
                 }
             }
         });
+*/
 
 
         Object walletamount = data.get(WALLET_AMOUNT);
@@ -166,19 +227,23 @@ public class PaymentOptionActivity extends AppCompatActivity implements PaymentR
     }
 
     private void caluclu_amount() {
-        String wallet_amount = data.get(WALLET_AMOUNT).toString();
-        int wallet_amt = Integer.parseInt(wallet_amount);
-        int amount = Integer.parseInt(real_amoun);
-        int amt = wallet_amt - amount;
-        if (amt > wallet_amt) {
+        if (data.get(WALLET_AMOUNT) != null) {
+
+
+            String wallet_amount = data.get(WALLET_AMOUNT).toString();
+            int wallet_amt = Integer.parseInt(wallet_amount);
+            int amount = Integer.parseInt(real_amoun);
+            int amt = wallet_amt - amount;
+            if (amt > wallet_amt) {
 //            amount add wallet
-        } else if (amt < wallet_amt) {
+            } else if (amt < wallet_amt) {
 //            amount wallet successfully
-            String show_amt = String.valueOf(amt);
-            edit_amount.setText(getResources().getString(R.string.rs_symbol) + show_amt);
+                String show_amt = String.valueOf(amt);
+                edit_amount.setText(getResources().getString(R.string.rs_symbol) + show_amt);
+
+            }
 
         }
-
     }
 
 

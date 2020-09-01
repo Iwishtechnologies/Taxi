@@ -26,9 +26,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Interpolator;
@@ -73,6 +75,7 @@ import com.mapbox.api.directions.v5.models.DirectionsRoute;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -86,10 +89,16 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.WebSocketListener;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import tech.iwish.taxi.Interface.DropLocationInterface;
+import tech.iwish.taxi.Interface.PickupLocationInterface;
 import tech.iwish.taxi.config.Constants;
 import tech.iwish.taxi.connection.ConnectionServer;
 import tech.iwish.taxi.connection.JsonHelper;
@@ -129,9 +138,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         GoogleMap.OnCameraMoveListener {
 
 
-    public TextView pickup , pic;
+    public TextView pickup, pic;
     public TextView droplocation;
-    public TextView rentail , drop;
+    public TextView rentail, drop;
     public String driverOfflineCheck;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private Location currentlocation;
@@ -155,10 +164,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private DirectionsRoute currentRoute;
     private String dropLocationPlaceInt;
     private LocationManager locationManager;
+    DropLocationInterface dropLocationInterface;
     private final int FIVE_SECONDS = 1;
     private final int ONE_SECONDS = 5000;
     private List<VehicleListWs> vehicleListWs = new ArrayList<>();
     private IGoogleApi mService;
+    Pickup_Search_fragment pickup_search_fragment;
     private List<LatLng> polylineList;
     private Handler handler;
     private Polyline blackPolyline, greyPolyline;
@@ -189,6 +200,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final String TAG = "MainActivity";
     private boolean socketcheck = true;
     private boolean backValid = false;
+    PickupLocationInterface pickupLocationInterface;
+    private GestureDetector mDetector;
 
 
     @SuppressLint("WrongConstant")
@@ -222,11 +235,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mToggle.syncState();
         bottom = (LinearLayout) findViewById(R.id.bottom);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        drop = (TextView)findViewById(R.id.drop);
-        pic = (TextView)findViewById(R.id.pic);
-
-//        View headerLayout = navigationView.getHeaderView(0);
-//        TextView headermobile = View.findViewById(R.id.headermobile);
+        drop = (TextView) findViewById(R.id.drop);
+        pic = (TextView) findViewById(R.id.pic);
 
 
         sharedpreferencesUser = new SharedpreferencesUser(this);
@@ -278,10 +288,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         View headerNavigation = navigationView.inflateHeaderView(R.layout.header_navigation);
         View panel = headerNavigation.findViewById(R.id.header_navigationss);
+        TextView headermobile = headerNavigation.findViewById(R.id.headermobile);
+        headermobile.setText(data.get(USER_CONTACT).toString());
         panel.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
             startActivity(intent);
         });
+
         Firebase.setAndroidContext(this);
         if (!Places.isInitialized()) {
             Places.initialize(getApplicationContext(), "AIzaSyApe8T3JMiqj9OgEbqd--zTBfl3fibPeEs");
@@ -365,46 +378,142 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         }
 
+        pickupLocationInterface = new PickupLocationInterface() {
+            @Override
+            public void pickuplocationInterface(String val) {
+                Toast.makeText(MainActivity.this, ""+val, Toast.LENGTH_SHORT).show();
+                pickup_search_fragment.dismiss();
+                pickupPlaceNameInt = val;
+                Pickupmethod(pickupPlaceNameInt);
+                blue_pin_icon.setVisibility(View.VISIBLE);
+                red_pin_icon.setVisibility(View.GONE);
+
+            }
+        };
+
+
+        dropLocationInterface = new DropLocationInterface() {
+            @Override
+            public void drop_loaction_Interface(String drop_location) {
+
+                remove_progress_Dialog();
+                search_dropFragment.dismiss();
+
+                dropLocationPlaceInt = drop_location;
+                droplocationmethod(dropLocationPlaceInt);
+                blue_pin_icon.setVisibility(View.GONE);
+                red_pin_icon.setImageResource(R.drawable.red_pin_icon);
+                red_pin_icon.setVisibility(View.VISIBLE);
+                droplocationchecks = null;
+
+            }
+        };
+
 
         navigation_Button.setOnClickListener(view -> {
-
-
             String trackingid = data.get(TRACK_ID).toString();
+            OkHttpClient okHttpClient = new OkHttpClient();
+            MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+            JSONObject jsonObject = new JSONObject();
+            try {
+                jsonObject.put("trackingId",trackingid );
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            RequestBody body = RequestBody.create(JSON, jsonObject.toString());
+            Request request1 = new Request.Builder().url(Constants.TRACKING_CHECK).post(body).build();
+
+
+            okHttpClient.newCall(request1).enqueue(new okhttp3.Callback() {
+                @Override
+                public void onFailure(@NotNull okhttp3.Call call, @NotNull IOException e) {
+                    e.printStackTrace();
+                }
+
+                @Override
+                public void onResponse(@NotNull okhttp3.Call call, @NotNull okhttp3.Response response) throws IOException {
+                    if (response.isSuccessful()) {
+                        String result = response.body().string();
+                        Log.e("result", result);
+                        JsonHelper jsonHelper = new JsonHelper(result);
+                        if (jsonHelper.isValidJson()) {
+                            String responses = jsonHelper.GetResult("response");
+                            if (responses.equals("TRUE")) {
+                                JSONArray jsonArray = jsonHelper.setChildjsonArray(jsonHelper.getCurrentJsonObj(), "data");
+                                for (int i = 0; i < jsonArray.length(); i++) {
+                                    jsonHelper.setChildjsonObj(jsonArray, i);
+                                    Intent intent = new Intent(MainActivity.this, BillActivity.class);
+                                    intent.putExtra("booking_confirm", "booking_confirm");
+
+                                    String picadd = jsonHelper.GetResult("pickup_city_name");
+                                    String dropadd = jsonHelper.GetResult("drop_city_name");
+                                    String amt = jsonHelper.GetResult("amount");
+
+                                    Log.e("pic", picadd);
+                                    Log.e("pic", dropadd);
+
+                                    intent.putExtra("pickaddress", picadd);
+                                    intent.putExtra("dropaddress", dropadd);
+                                    intent.putExtra("amount", amt);
+
+                                    startActivity(intent);
+                                }
+                            } else {
+                                MainActivity.this.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(MainActivity.this, "Ride not Complete", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+
+                            }
+                        }
+                    }
+                }
+            });
+
+
+
+//            *************************
+
+
+/*
             ConnectionServer connectionServer = new ConnectionServer();
             connectionServer.set_url(Constants.TRACKING_CHECK);
             connectionServer.requestedMethod("POST");
-            connectionServer.buildParameter("trackingId",trackingid);
-            Log.e("trackingId",trackingid);
+            connectionServer.buildParameter("trackingId", trackingid);
+            Log.e("trackingId", trackingid);
             connectionServer.execute(output -> {
-                Log.e("output",output);
+                Log.e("output", output);
                 JsonHelper jsonHelper = new JsonHelper(output);
-                if(jsonHelper.isValidJson()){
+                if (jsonHelper.isValidJson()) {
                     String response = jsonHelper.GetResult("response");
-                    if(response.equals("TRUE")){
+                    if (response.equals("TRUE")) {
                         JSONArray jsonArray = jsonHelper.setChildjsonArray(jsonHelper.getCurrentJsonObj(), "data");
                         for (int i = 0; i < jsonArray.length(); i++) {
                             jsonHelper.setChildjsonObj(jsonArray, i);
-                            Intent intent = new Intent(MainActivity.this , BillActivity.class);
-                            intent.putExtra("booking_confirm","booking_confirm");
+                            Intent intent = new Intent(MainActivity.this, BillActivity.class);
+                            intent.putExtra("booking_confirm", "booking_confirm");
 
                             String picadd = jsonHelper.GetResult("pickup_city_name");
                             String dropadd = jsonHelper.GetResult("drop_city_name");
                             String amt = jsonHelper.GetResult("amount");
 
-                            Log.e("pic",picadd);
-                            Log.e("pic",dropadd);
+                            Log.e("pic", picadd);
+                            Log.e("pic", dropadd);
 
-                            intent.putExtra("pickaddress",picadd);
-                            intent.putExtra("dropaddress",dropadd);
-                            intent.putExtra("amount",amt);
+                            intent.putExtra("pickaddress", picadd);
+                            intent.putExtra("dropaddress", dropadd);
+                            intent.putExtra("amount", amt);
 
                             startActivity(intent);
                         }
-                    }else{
+                    } else {
                         Toast.makeText(this, "Ride not Complete", Toast.LENGTH_SHORT).show();
                     }
                 }
             });
+*/
 
 
 //            Intent intent = new Intent(MainActivity.this , BillActivity.class);
@@ -412,6 +521,140 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 //            startActivity(intent);
 
         });
+
+        mDetector = new GestureDetector(this, new GestureDetector.OnGestureListener() {
+            @Override
+            public boolean onDown(MotionEvent e) {
+                return false;
+            }
+
+            @Override
+            public void onShowPress(MotionEvent e) {
+
+            }
+
+            @Override
+            public boolean onSingleTapUp(MotionEvent e) {
+                return false;
+            }
+
+            @Override
+            public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+                return false;
+            }
+
+            @Override
+            public void onLongPress(MotionEvent e) {
+
+            }
+
+            @Override
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                return false;
+            }
+        });
+
+        mDetector.setOnDoubleTapListener(new GestureDetector.OnDoubleTapListener() {
+            @Override
+            public boolean onSingleTapConfirmed(MotionEvent e) {
+                return false;
+            }
+
+            @Override
+            public boolean onDoubleTap(MotionEvent e) {
+                return false;
+            }
+
+            @Override
+            public boolean onDoubleTapEvent(MotionEvent e) {
+                return false;
+            }
+        });
+
+
+    }
+
+
+
+    public void locationpic(View view) {
+
+        data = sharedpreferencesUser.getShare();
+        droplocationchecks = null;
+        pickupclickvalueget = null;
+        String location = null;
+        Object Objlocation = data.get(LOCATION_CHANGE);
+        if (Objlocation != null) {
+            location = Objlocation.toString();
+        }
+        String tagIdLocation = view.getTag().toString();
+
+        switch (rentalClick) {
+            case "daily":
+            case "outstation":
+                if (tagIdLocation.equals("pickLocations")) {
+                    if (location == null) {
+
+                        PickUpLocationSearch();
+                    } else if (location == tagIdLocation) {
+                        PickUpLocationSearch();
+                    } else {
+                        if (location.equals("dropLocations")) {
+                            if (pickupPlaceNameInt != null) {
+//                                MarkerOptions markerOptions = new MarkerOptions().position(AllLatLng.get("pickMapValue")).title("I m here").visible(false);
+                                googleMaps.animateCamera(CameraUpdateFactory.newLatLngZoom(AllLatLng.get("pickMapValue"), 15), 200, null);
+//                                googleMaps.addMarker(markerOptions);
+                                blue_pin_icon.setVisibility(View.VISIBLE);
+                                red_pin_icon.setVisibility(View.GONE);
+                                pickup.setAlpha(1);
+                                droplocation.setAlpha((float) 0.6);
+                            } else {
+                                PickUpLocationSearch();
+                            }
+                        }
+                    }
+                }
+                if (tagIdLocation.equals("dropLocations")) {
+                    if (location == null) {
+                        dropLocationSearch();
+
+                    } else if (location == tagIdLocation) {
+                        search_fragment.setVisibility(View.VISIBLE);
+                        confirRide.setVisibility(View.VISIBLE);
+                        dropLocationSearch();
+                    } else {
+                        if (location.equals("pickLocations")) {
+                            if (droplocation.getText().toString().equals("Enter drop location")) {
+                                confirRide.setVisibility(View.VISIBLE);
+                                dropLocationSearch();
+                            } else {
+                                MarkerOptions markerOptions = new MarkerOptions().position(AllLatLng.get("DropLocationMapValue")).title("I m here").visible(false);
+                                googleMaps.animateCamera(CameraUpdateFactory.newLatLngZoom(AllLatLng.get("DropLocationMapValue"), 15), 200, null);
+                                googleMaps.addMarker(markerOptions);
+                                blue_pin_icon.setVisibility(View.GONE);
+                                red_pin_icon.setImageResource(R.drawable.red_pin_icon);
+                                red_pin_icon.setVisibility(View.VISIBLE);
+                                pickup.setAlpha((float) 0.6);
+                                droplocation.setAlpha(1);
+                            }
+                        }
+                    }
+                }
+                break;
+            case "rental":
+                RentalFragment rentalFragment = new RentalFragment();
+                getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment, rentalFragment).commit();
+                rentalFragment.setRentalDatas(data1 -> {
+                    rental(data1);
+                    getSupportFragmentManager().beginTransaction().remove(rentalFragment).commit();
+                });
+                break;
+            default:
+                break;
+        }
+
+
+        sharedpreferencesUser.location(tagIdLocation);
+        this.clikalablu = view.getTag().toString();
     }
 
 
@@ -444,42 +687,37 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         int id = menuItem.getItemId();
+        Fragment fragment = null;
 
         switch (id) {
             case R.id.nav_ride_history:
                 setTitle("Ride History");
                 confirRide.setVisibility(View.VISIBLE);
                 search_fragment.setVisibility(View.VISIBLE);
-                RideHistoryFragment rideHistoryFragment = new RideHistoryFragment();
-                getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment, rideHistoryFragment).commit();
+                fragment = new RideHistoryFragment();
                 break;
             case R.id.nav_rate_card:
                 setTitle("Rate Card");
                 confirRide.setVisibility(View.VISIBLE);
                 search_fragment.setVisibility(View.VISIBLE);
-
-                RateCardFragment rateCardFragment = new RateCardFragment();
-                getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment, rateCardFragment, TAG_FRAGMENT).addToBackStack("tag").commit();
+                fragment = new RateCardFragment();
                 break;
             case R.id.wallet:
                 setTitle("Wallet");
-                WalletFragment walletFragment = new WalletFragment();
-                getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment, walletFragment, TAG_FRAGMENT).addToBackStack("tag").commit();
+                fragment = new WalletFragment();
                 break;
 //            case R.id.offer:
 //                setTitle("Offer");
 //                OfferFragment offerFragment = new OfferFragment();
 //                getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment, offerFragment).addToBackStack("tag").commit();
 //                break;
-//            case R.id.refer_earn:
-//                setTitle("Trfer earn");
-//                ReferEarnFragment referEarnFragment = new ReferEarnFragment();
-//                getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment, referEarnFragment).addToBackStack("tag").commit();
-//                break;
+            case R.id.refer_earn:
+                setTitle("Refer Earn");
+                fragment = new ReferEarnFragment();
+                break;
             case R.id.support:
                 setTitle("Support");
-                SupportFragmnet supportFragmnet = new SupportFragmnet();
-                getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment, supportFragmnet).addToBackStack("tag").commit();
+                fragment = new SupportFragmnet();
                 break;
 //            case R.id.about:
 //                setTitle("About");
@@ -493,6 +731,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         }
 
+
         pickup.setVisibility(View.GONE);
         droplocation.setVisibility(View.GONE);
         dailyButton.setVisibility(View.GONE);
@@ -501,13 +740,23 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         navigation_Button.setVisibility(View.GONE);
 
         this.backValid = false;
-
-
         bottom.setVisibility(View.GONE);
         googleMaps.getUiSettings().setScrollGesturesEnabled(false);
-
         mDrawerLayout.closeDrawer(GravityCompat.START);
-        return true;
+        return loadfragment(fragment) ;
+    }
+
+
+    private boolean loadfragment(Fragment fragment){
+        if(fragment != null){
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.search_fragment, fragment)
+                    .addToBackStack("tag")
+                    .commit();
+            return true;
+        }
+        return false ;
     }
 
     private void fetchLastLocation() {
@@ -522,7 +771,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
-    private void GpsRetry(Location location){
+    private void GpsRetry(Location location) {
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -532,15 +781,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     SupportMapFragment supportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
                     supportMapFragment.getMapAsync(MainActivity.this);
                     timer.cancel();
-                }  else{
+                } else {
                     fetchLastLocation();
                 }
             }
-        },0,1000);
+        }, 0, 1000);
     }
-
-
-
 
 
     @Override
@@ -583,14 +829,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 AddressMap.put("PickupstateName", stateName);
                 AddressMap.put("PickupcountryName", streetName);
                 AddressMap.put("Pickupfulladress", add);
-
+                Log.e("",data.get(USER_CONTACT).toString());
+                Log.e("",data.get(USER_CONTACT).toString());
                 if (!checkinit) {
                     this.checkinit = true;
                     boolean boll = sharedpreferencesUser.getSocketConnection();
                     if (!boll) {
                         this.socketcheck = false;
                         socketService = new SocketService();
-                        socketService.  SocketService(this, AllLatLng, latitude_logitude, AddressMap);
+                        socketService.SocketService(this, AllLatLng, latitude_logitude, AddressMap);
                         Intent intent = new Intent(MainActivity.this, MainActivity.class);
                         socketService.onStartCommand(intent, 1, 1);
                         startService(intent);
@@ -620,66 +867,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             VehicleCheckOnline();
         }
     }
-
-
-/*   try {
-            JSONObject jsondobj = new JSONObject(value);
-            JSONObject datas = jsondobj.getJSONObject("data");
-            String type = jsondobj.getString("type");
-
-            String lat = datas.getString("lat");
-            String logit = datas.getString("long");
-            if (lat != null || logit != null) {
-                latD = Double.valueOf(lat);
-                log = Double.valueOf(logit);
-                if (latD != null || log != null) {
-                    LatLng latLng = new LatLng(latD, log);
-
-                    MarkerOptions markerOptions = new MarkerOptions().position(latLng).icon(BitmapDescriptorFactory.fromResource(R.drawable.car_icon));
-                    googleMaps.addMarker(markerOptions);
-
-//                    MarkerOptions markerOptions = new MarkerOptions().position(bb).title("I m here");
-//                    googleMaps.animateCamera(CameraUpdateFactory.newLatLngZoom(bb, 15), 200, null);
-//                    googleMaps.addMarker(markerOptions);
-//
-                }
-            }
-*/
-
-/*
-
-                            Location temp = new Location(LocationManager.GPS_PROVIDER);
-                            temp.setLatitude(latD);
-                            temp.setLongitude(log);
-                            LatLng bb = new LatLng(26.203417, 78.189470);
-                            if (marker == null) {
-                                marker = googleMaps.addMarker(new MarkerOptions().position(latLng)
-                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.car_icon)));
-//                                      MarkerAnimation.animateMarkerToGB(marker, aa, new LatLngInterpolator.Spherical());
-                                animateMarker(temp, marker);
-                                marker.setRotation(getBearing(latLng, bb));
-
-                            } else {
-                                MarkerAnimation.animateMarkerToICS(marker, latLng, new LatLngInterpolator.Spherical());
-                                marker.setRotation(getBearing(latLng, bb));
-                            }
-
-*/
-
-/*
-        marker = googleMaps.addMarker(new MarkerOptions().position(aa)
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.car_icon)));
-        animateMarker(currentlocation ,marker );
-
-//                googleMaps.clear();
-//                Marker marker = new Marker().remove();
-
-
-    }
-
-
-
-*/
 
     public void permisanLocation() {
         if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
@@ -993,153 +1180,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    private void outstatiopndroplocation(String droplocationvalue) {
-//        SharedpreferencesUser sharedpreferencesUser = new SharedpreferencesUser(MainActivity.this);
-        Map data = sharedpreferencesUser.getShare();
-        Object clickValue = data.get(LOCATION_CHANGE);
-        if (clickValue != null)
-            pickupLocationNameIntent = clickValue.toString();
-        if (droplocationvalue != null) {
-            if (droplocationchecks == null) {
-                this.droplocationchecks = "some value";
-                Geocoder geocoder = new Geocoder(MainActivity.this);
-                try {
 
-                    List<Address> addresses = geocoder.getFromLocationName(droplocationvalue, 1);
-                    Address address = addresses.get(0);
-                    String add = address.getAddressLine(0);
-                    String cityName = addresses.get(0).getLocality();
-                    String stateName = addresses.get(0).getAdminArea();
-                    String streetName = addresses.get(0).getFeatureName();
-
-                    LatLng dropLocatinsUpLatLog = new LatLng(address.getLatitude(), address.getLongitude());
-                    AllLatLng.put("DropLocationMapValue", dropLocatinsUpLatLog);
-                    MarkerOptions markerOptions = new MarkerOptions().position(dropLocatinsUpLatLog).title("I m here").visible(false);
-                    googleMaps.animateCamera(CameraUpdateFactory.newLatLngZoom(dropLocatinsUpLatLog, 15), 200, null);
-                    googleMaps.addMarker(markerOptions);
-                    droplocation.setText(add);
-                    latitude_logitude.put("dropLatitude", dropLocatinsUpLatLog.latitude);
-                    latitude_logitude.put("dropLongitude", dropLocatinsUpLatLog.longitude);
-                    AddressMap.put("DropLocationCityName", cityName);
-                    AddressMap.put("DropLocationstateName", stateName);
-                    AddressMap.put("DropLocationcountryName", streetName);
-                    blue_pin_icon.setVisibility(View.GONE);
-                    red_pin_icon.setVisibility(View.VISIBLE);
-                    directionUrl();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            } else if (pickupLocationNameIntent.equals("dropLocations")) {
-                Geocoder geocoder = new Geocoder(MainActivity.this);
-                try {
-                    List<Address> addresses = geocoder.getFromLocation(googleMaps.getCameraPosition().target.latitude, googleMaps.getCameraPosition().target.longitude, 1);
-                    Address address = addresses.get(0);
-                    String add = address.getAddressLine(0);
-                    LatLng dropLocatinsUpLatLog = new LatLng(address.getLatitude(), address.getLongitude());
-                    AllLatLng.put("DropLocationMapValue", dropLocatinsUpLatLog);
-                    googleMaps.animateCamera(CameraUpdateFactory.newLatLngZoom(dropLocatinsUpLatLog, 15), 200, null);
-                    droplocation.setText(add);
-                    String cityName = addresses.get(0).getLocality();
-                    String stateName = addresses.get(0).getAdminArea();
-                    String streetName = addresses.get(0).getFeatureName();
-                    AddressMap.put("DropLocationCityName", cityName);
-                    AddressMap.put("DropLocationstateName", stateName);
-                    AddressMap.put("DropLocationcountryName", streetName);
-                    droplocation.setText(add);
-                    latitude_logitude.put("dropLatitude", googleMaps.getCameraPosition().target.latitude);
-                    latitude_logitude.put("dropLongitude", googleMaps.getCameraPosition().target.longitude);
-                    confirRide.setVisibility(View.VISIBLE);
-                    search_fragment.setVisibility(View.VISIBLE);
-                    directionUrl();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-    }
-
-
-    public void locationpic(View view) {
-
-        data = sharedpreferencesUser.getShare();
-        droplocationchecks = null;
-        pickupclickvalueget = null;
-        String location = null;
-        Object Objlocation = data.get(LOCATION_CHANGE);
-        if (Objlocation != null) {
-            location = Objlocation.toString();
-        }
-        String tagIdLocation = view.getTag().toString();
-
-        switch (rentalClick) {
-            case "daily":
-            case "outstation":
-                if (tagIdLocation.equals("pickLocations")) {
-                    if (location == null) {
-
-                        PickUpLocationSearch();
-                    } else if (location == tagIdLocation) {
-                        PickUpLocationSearch();
-                    } else {
-                        if (location.equals("dropLocations")) {
-                            if (pickupPlaceNameInt != null) {
-//                                MarkerOptions markerOptions = new MarkerOptions().position(AllLatLng.get("pickMapValue")).title("I m here").visible(false);
-                                googleMaps.animateCamera(CameraUpdateFactory.newLatLngZoom(AllLatLng.get("pickMapValue"), 15), 200, null);
-//                                googleMaps.addMarker(markerOptions);
-                                blue_pin_icon.setVisibility(View.VISIBLE);
-                                red_pin_icon.setVisibility(View.GONE);
-                                pickup.setAlpha(1);
-                                droplocation.setAlpha((float) 0.6);
-                            } else {
-                                PickUpLocationSearch();
-                            }
-                        }
-                    }
-                }
-                if (tagIdLocation.equals("dropLocations")) {
-                    if (location == null) {
-                        dropLocationSearch();
-
-                    } else if (location == tagIdLocation) {
-                        search_fragment.setVisibility(View.VISIBLE);
-                        confirRide.setVisibility(View.VISIBLE);
-                        dropLocationSearch();
-                    } else {
-                        if (location.equals("pickLocations")) {
-                            if (droplocation.getText().toString().equals("Enter drop location")) {
-                                confirRide.setVisibility(View.VISIBLE);
-                                dropLocationSearch();
-                            } else {
-                                MarkerOptions markerOptions = new MarkerOptions().position(AllLatLng.get("DropLocationMapValue")).title("I m here").visible(false);
-                                googleMaps.animateCamera(CameraUpdateFactory.newLatLngZoom(AllLatLng.get("DropLocationMapValue"), 15), 200, null);
-                                googleMaps.addMarker(markerOptions);
-                                blue_pin_icon.setVisibility(View.GONE);
-                                red_pin_icon.setImageResource(R.drawable.red_pin_icon);
-                                red_pin_icon.setVisibility(View.VISIBLE);
-                                pickup.setAlpha((float) 0.6);
-                                droplocation.setAlpha(1);
-                            }
-                        }
-                    }
-                }
-                break;
-            case "rental":
-                RentalFragment rentalFragment = new RentalFragment();
-                getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment, rentalFragment).commit();
-                rentalFragment.setRentalDatas(data1 -> {
-                    rental(data1);
-                    getSupportFragmentManager().beginTransaction().remove(rentalFragment).commit();
-                });
-                break;
-            default:
-                break;
-        }
-
-
-        sharedpreferencesUser.location(tagIdLocation);
-        this.clikalablu = view.getTag().toString();
-    }
 
     private void currentKocationGet() {
 
@@ -1183,13 +1224,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             googleMaps.getUiSettings().setScrollGesturesEnabled(true);
             bottom.setVisibility(View.VISIBLE);
         } else if (search_fragmentss != null) {
-            if(backValid){
+            if (backValid) {
                 Intent intent = new Intent(Intent.ACTION_MAIN);
                 intent.addCategory(Intent.CATEGORY_HOME);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }
-            this.backValid = true ;
+            this.backValid = true;
             getSupportFragmentManager().beginTransaction().remove(search_fragmentss).commit();
             setTitle("Home");
             googleMaps.getUiSettings().setScrollGesturesEnabled(true);
@@ -1284,8 +1325,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 .bearing(10)
                                 .tilt(90)
                                 .build();
-                        googleMaps.animateCamera( CameraUpdateFactory.zoomTo( 17.0f ) );
-                        googleMaps.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 17,null);
+                        googleMaps.animateCamera(CameraUpdateFactory.zoomTo(17.0f));
+                        googleMaps.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 17, null);
 
 
                     }
@@ -1300,6 +1341,314 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
     }
+
+    private List<LatLng> decodePoly(String encoded) {
+        List<LatLng> poly = new ArrayList<>();
+        int index = 0, len = encoded.length();
+        int lat = 0, lng = 0;
+
+        while (index < len) {
+            int b, shift = 0, result = 0;
+            do {
+                b = encoded.charAt(index++) - 63;
+                result |= (b & 0x1f) << shift;
+                shift += 5;
+            } while (b >= 0x20);
+            int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+            lat += dlat;
+
+            shift = 0;
+            result = 0;
+            do {
+                b = encoded.charAt(index++) - 63;
+                result |= (b & 0x1f) << shift;
+                shift += 5;
+            } while (b >= 0x20);
+            int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+            lng += dlng;
+
+            LatLng p = new LatLng((((double) lat / 1E5)),
+                    (((double) lng / 1E5)));
+            poly.add(p);
+        }
+
+        return poly;
+
+    }
+
+    private static float computeRotation(float fraction, float start, float end) {
+        float normalizeEnd = end - start; // rotate start to 0
+        float normalizedEndAbs = (normalizeEnd + 360) % 360;
+
+        float direction = (normalizedEndAbs > 180) ? -1 : 1; // -1 = anticlockwise, 1 = clockwise
+        float rotation;
+        if (direction > 0) {
+            rotation = normalizedEndAbs;
+        } else {
+            rotation = normalizedEndAbs - 360;
+        }
+
+        float result = fraction * rotation + start;
+        return (result + 360) % 360;
+    }
+
+
+    private interface LatLngInterpolatorAni {
+        LatLng interpolate(float fraction, LatLng a, LatLng b);
+
+        class LinearFixed implements LatLngInterpolatorAni {
+            @Override
+            public LatLng interpolate(float fraction, LatLng a, LatLng b) {
+                double lat = (b.latitude - a.latitude) * fraction + a.latitude;
+                double lngDelta = b.longitude - a.longitude;
+                // Take the shortest path across the 180th meridian.
+                if (Math.abs(lngDelta) > 180) {
+                    lngDelta -= Math.signum(lngDelta) * 360;
+                }
+                double lng = lngDelta * fraction + a.longitude;
+                return new LatLng(lat, lng);
+            }
+        }
+    }
+//    work animation
+
+
+    public void setProgressDialog(String msg) {
+        kProgressHUD.setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
+                .setLabel(msg)
+                .setAnimationSpeed(2)
+                .setDimAmount(0.5f)
+                .show();
+
+    }
+
+    public void remove_progress_Dialog() {
+        kProgressHUD.dismiss();
+    }
+
+    public void VehicleCheckOnline() {
+
+        handler = new Handler();
+        handler.post(() -> new Timer().scheduleAtFixedRate(new TimerTask() {
+
+
+            @Override
+            public void run() {
+//                sharedpreferencesUser = new SharedpreferencesUser(MainActivity.this);
+                data = sharedpreferencesUser.getShare();
+                Object jsondatass = data.get(VEHICLE_DATA);
+                JSONObject jsonObject = null;
+                if (jsondatass != null) {
+                    try {
+                        jsonObject = new JSONObject((String) jsondatass);
+                        JSONObject data = jsonObject.getJSONObject("data");
+
+                        String lat = data.getString("lat");
+                        String logit = data.getString("long");
+                        if (lat != null || logit != null) {
+                            latD = Double.valueOf(lat);
+                            log = Double.valueOf(logit);
+                            LatLng latLng = new LatLng(latD, log);
+                            new Thread() {
+                                public void run() {
+                                    runOnUiThread(() -> vehicleShow(latLng));
+                                }
+                            }.start();
+                        }
+                        sharedpreferencesUser.remove_vehicledata();
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                } else {
+                    Log.e("run: ", "ofline");
+                    offlineDriver();
+//                    new Thread() {
+//                        public void run() {
+//                            runOnUiThread(() -> rantalPackage.setEnabled(false));
+//                        }
+//                    }.start();
+                }
+            }
+        }, 30, 5000));
+
+
+    }
+
+    private void offlineDriver() {
+        this.driverOfflineCheck = "offline";
+    }
+
+    private void vehicleShow(LatLng latLng) {
+        this.driverOfflineCheck = "online";
+        googleMaps.addMarker(new MarkerOptions().position(latLng).title("car").icon(BitmapDescriptorFactory.fromResource(R.drawable.car_icon)));
+    }
+
+    private void dropLocationSearch() {
+
+        search_dropFragment = new Search_dropFragment(latitude_logitude,dropLocationInterface);
+        getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment, search_dropFragment).commit();
+        confirRide.setVisibility(View.VISIBLE);
+//        search_dropFragment.setValueDrop(data13 -> {
+//            remove_progress_Dialog();
+//            search_dropFragment.dismiss();
+//            dropLocationPlaceInt = data13;
+//            droplocationmethod(dropLocationPlaceInt);
+//            blue_pin_icon.setVisibility(View.GONE);
+//            red_pin_icon.setImageResource(R.drawable.red_pin_icon);
+//            red_pin_icon.setVisibility(View.VISIBLE);
+//            droplocationchecks = null;
+//        });
+
+    }
+
+    private void PickUpLocationSearch() {
+
+         pickup_search_fragment = new Pickup_Search_fragment(latitude_logitude ,pickupLocationInterface);
+            getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment, pickup_search_fragment).commit();
+        pickup_search_fragment.valuePickup(location14 -> {
+//            pickup_search_fragment.dismiss();
+//            pickupPlaceNameInt = location14;
+//            Pickupmethod(pickupPlaceNameInt);
+//            blue_pin_icon.setVisibility(View.VISIBLE);
+//            red_pin_icon.setVisibility(View.GONE);
+        });
+    }
+
+//    private void confirnRideNavigationon() {
+//        directionUrl();
+//    }
+
+
+
+/*   try {
+            JSONObject jsondobj = new JSONObject(value);
+            JSONObject datas = jsondobj.getJSONObject("data");
+            String type = jsondobj.getString("type");
+
+            String lat = datas.getString("lat");
+            String logit = datas.getString("long");
+            if (lat != null || logit != null) {
+                latD = Double.valueOf(lat);
+                log = Double.valueOf(logit);
+                if (latD != null || log != null) {
+                    LatLng latLng = new LatLng(latD, log);
+
+                    MarkerOptions markerOptions = new MarkerOptions().position(latLng).icon(BitmapDescriptorFactory.fromResource(R.drawable.car_icon));
+                    googleMaps.addMarker(markerOptions);
+
+//                    MarkerOptions markerOptions = new MarkerOptions().position(bb).title("I m here");
+//                    googleMaps.animateCamera(CameraUpdateFactory.newLatLngZoom(bb, 15), 200, null);
+//                    googleMaps.addMarker(markerOptions);
+//
+                }
+            }
+*/
+
+/*
+
+                            Location temp = new Location(LocationManager.GPS_PROVIDER);
+                            temp.setLatitude(latD);
+                            temp.setLongitude(log);
+                            LatLng bb = new LatLng(26.203417, 78.189470);
+                            if (marker == null) {
+                                marker = googleMaps.addMarker(new MarkerOptions().position(latLng)
+                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.car_icon)));
+//                                      MarkerAnimation.animateMarkerToGB(marker, aa, new LatLngInterpolator.Spherical());
+                                animateMarker(temp, marker);
+                                marker.setRotation(getBearing(latLng, bb));
+
+                            } else {
+                                MarkerAnimation.animateMarkerToICS(marker, latLng, new LatLngInterpolator.Spherical());
+                                marker.setRotation(getBearing(latLng, bb));
+                            }
+
+*/
+
+/*
+        marker = googleMaps.addMarker(new MarkerOptions().position(aa)
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.car_icon)));
+        animateMarker(currentlocation ,marker );
+
+//                googleMaps.clear();
+//                Marker marker = new Marker().remove();
+
+
+    }
+
+
+
+*/
+
+
+    private void outstatiopndroplocation(String droplocationvalue) {
+//        SharedpreferencesUser sharedpreferencesUser = new SharedpreferencesUser(MainActivity.this);
+        Map data = sharedpreferencesUser.getShare();
+        Object clickValue = data.get(LOCATION_CHANGE);
+        if (clickValue != null)
+            pickupLocationNameIntent = clickValue.toString();
+        if (droplocationvalue != null) {
+            if (droplocationchecks == null) {
+                this.droplocationchecks = "some value";
+                Geocoder geocoder = new Geocoder(MainActivity.this);
+                try {
+
+                    List<Address> addresses = geocoder.getFromLocationName(droplocationvalue, 1);
+                    Address address = addresses.get(0);
+                    String add = address.getAddressLine(0);
+                    String cityName = addresses.get(0).getLocality();
+                    String stateName = addresses.get(0).getAdminArea();
+                    String streetName = addresses.get(0).getFeatureName();
+
+                    LatLng dropLocatinsUpLatLog = new LatLng(address.getLatitude(), address.getLongitude());
+                    AllLatLng.put("DropLocationMapValue", dropLocatinsUpLatLog);
+                    MarkerOptions markerOptions = new MarkerOptions().position(dropLocatinsUpLatLog).title("I m here").visible(false);
+                    googleMaps.animateCamera(CameraUpdateFactory.newLatLngZoom(dropLocatinsUpLatLog, 15), 200, null);
+                    googleMaps.addMarker(markerOptions);
+                    droplocation.setText(add);
+                    latitude_logitude.put("dropLatitude", dropLocatinsUpLatLog.latitude);
+                    latitude_logitude.put("dropLongitude", dropLocatinsUpLatLog.longitude);
+                    AddressMap.put("DropLocationCityName", cityName);
+                    AddressMap.put("DropLocationstateName", stateName);
+                    AddressMap.put("DropLocationcountryName", streetName);
+                    blue_pin_icon.setVisibility(View.GONE);
+                    red_pin_icon.setVisibility(View.VISIBLE);
+                    directionUrl();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else if (pickupLocationNameIntent.equals("dropLocations")) {
+                Geocoder geocoder = new Geocoder(MainActivity.this);
+                try {
+                    List<Address> addresses = geocoder.getFromLocation(googleMaps.getCameraPosition().target.latitude, googleMaps.getCameraPosition().target.longitude, 1);
+                    Address address = addresses.get(0);
+                    String add = address.getAddressLine(0);
+                    LatLng dropLocatinsUpLatLog = new LatLng(address.getLatitude(), address.getLongitude());
+                    AllLatLng.put("DropLocationMapValue", dropLocatinsUpLatLog);
+                    googleMaps.animateCamera(CameraUpdateFactory.newLatLngZoom(dropLocatinsUpLatLog, 15), 200, null);
+                    droplocation.setText(add);
+                    String cityName = addresses.get(0).getLocality();
+                    String stateName = addresses.get(0).getAdminArea();
+                    String streetName = addresses.get(0).getFeatureName();
+                    AddressMap.put("DropLocationCityName", cityName);
+                    AddressMap.put("DropLocationstateName", stateName);
+                    AddressMap.put("DropLocationcountryName", streetName);
+                    droplocation.setText(add);
+                    latitude_logitude.put("dropLatitude", googleMaps.getCameraPosition().target.latitude);
+                    latitude_logitude.put("dropLongitude", googleMaps.getCameraPosition().target.longitude);
+                    confirRide.setVisibility(View.VISIBLE);
+                    search_fragment.setVisibility(View.VISIBLE);
+                    directionUrl();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+    }
+
+
 /*
     public void directionUrl() {
 
@@ -1444,7 +1793,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         return -1;
     }
 
-
 /*
 
     private float getBearing(LatLng begin, LatLng end) {
@@ -1463,40 +1811,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 */
-
-    private List<LatLng> decodePoly(String encoded) {
-        List<LatLng> poly = new ArrayList<>();
-        int index = 0, len = encoded.length();
-        int lat = 0, lng = 0;
-
-        while (index < len) {
-            int b, shift = 0, result = 0;
-            do {
-                b = encoded.charAt(index++) - 63;
-                result |= (b & 0x1f) << shift;
-                shift += 5;
-            } while (b >= 0x20);
-            int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
-            lat += dlat;
-
-            shift = 0;
-            result = 0;
-            do {
-                b = encoded.charAt(index++) - 63;
-                result |= (b & 0x1f) << shift;
-                shift += 5;
-            } while (b >= 0x20);
-            int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
-            lng += dlng;
-
-            LatLng p = new LatLng((((double) lat / 1E5)),
-                    (((double) lng / 1E5)));
-            poly.add(p);
-        }
-
-        return poly;
-
-    }
 
     public void animateMarker(final Marker marker, final LatLng toPosition,
                               final boolean hideMarker) {
@@ -1534,10 +1848,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
     }
-
-
 //    work animation
-
     public static void animateMarker(Location destination, Marker marker) {
         if (marker != null) {
             LatLng startPosition = marker.getPosition();
@@ -1567,146 +1878,5 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    private static float computeRotation(float fraction, float start, float end) {
-        float normalizeEnd = end - start; // rotate start to 0
-        float normalizedEndAbs = (normalizeEnd + 360) % 360;
-
-        float direction = (normalizedEndAbs > 180) ? -1 : 1; // -1 = anticlockwise, 1 = clockwise
-        float rotation;
-        if (direction > 0) {
-            rotation = normalizedEndAbs;
-        } else {
-            rotation = normalizedEndAbs - 360;
-        }
-
-        float result = fraction * rotation + start;
-        return (result + 360) % 360;
-    }
-
-
-    private interface LatLngInterpolatorAni {
-        LatLng interpolate(float fraction, LatLng a, LatLng b);
-
-        class LinearFixed implements LatLngInterpolatorAni {
-            @Override
-            public LatLng interpolate(float fraction, LatLng a, LatLng b) {
-                double lat = (b.latitude - a.latitude) * fraction + a.latitude;
-                double lngDelta = b.longitude - a.longitude;
-                // Take the shortest path across the 180th meridian.
-                if (Math.abs(lngDelta) > 180) {
-                    lngDelta -= Math.signum(lngDelta) * 360;
-                }
-                double lng = lngDelta * fraction + a.longitude;
-                return new LatLng(lat, lng);
-            }
-        }
-    }
-//    work animation
-
-
-    public void setProgressDialog(String msg) {
-        kProgressHUD.setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
-                .setLabel(msg)
-                .setAnimationSpeed(2)
-                .setDimAmount(0.5f)
-                .show();
-
-    }
-
-    public void remove_progress_Dialog() {
-        kProgressHUD.dismiss();
-    }
-
-    public void VehicleCheckOnline() {
-
-        handler = new Handler();
-        handler.post(() -> new Timer().scheduleAtFixedRate(new TimerTask() {
-
-
-            @Override
-            public void run() {
-//                sharedpreferencesUser = new SharedpreferencesUser(MainActivity.this);
-                data = sharedpreferencesUser.getShare();
-                Object jsondatass = data.get(VEHICLE_DATA);
-                JSONObject jsonObject = null;
-                if (jsondatass != null) {
-                    try {
-                        jsonObject = new JSONObject((String) jsondatass);
-                        JSONObject data = jsonObject.getJSONObject("data");
-
-                        String lat = data.getString("lat");
-                        String logit = data.getString("long");
-                        if (lat != null || logit != null) {
-                            latD = Double.valueOf(lat);
-                            log = Double.valueOf(logit);
-                            LatLng latLng = new LatLng(latD, log);
-                            new Thread() {
-                                public void run() {
-                                    runOnUiThread(() -> vehicleShow(latLng));
-                                }
-                            }.start();
-                        }
-                        sharedpreferencesUser.remove_vehicledata();
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-                } else {
-                    Log.e("run: ", "ofline");
-                    offlineDriver();
-//                    new Thread() {
-//                        public void run() {
-//                            runOnUiThread(() -> rantalPackage.setEnabled(false));
-//                        }
-//                    }.start();
-                }
-            }
-        }, 30, 5000));
-
-
-    }
-
-    private void offlineDriver() {
-        this.driverOfflineCheck = "offline";
-    }
-
-    private void vehicleShow(LatLng latLng) {
-        this.driverOfflineCheck = "online";
-        googleMaps.addMarker(new MarkerOptions().position(latLng).title("car").icon(BitmapDescriptorFactory.fromResource(R.drawable.car_icon)));
-    }
-
-    private void dropLocationSearch() {
-        search_dropFragment = new Search_dropFragment(latitude_logitude);
-        getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment, search_dropFragment).commit();
-        confirRide.setVisibility(View.VISIBLE);
-        search_dropFragment.setValueDrop(data13 -> {
-            remove_progress_Dialog();
-            search_dropFragment.dismiss();
-            dropLocationPlaceInt = data13;
-            droplocationmethod(dropLocationPlaceInt);
-            blue_pin_icon.setVisibility(View.GONE);
-            red_pin_icon.setImageResource(R.drawable.red_pin_icon);
-            red_pin_icon.setVisibility(View.VISIBLE);
-            droplocationchecks = null;
-        });
-
-    }
-
-    private void PickUpLocationSearch() {
-        Pickup_Search_fragment pickup_search_fragment = new Pickup_Search_fragment();
-        getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment, pickup_search_fragment).commit();
-        pickup_search_fragment.valuePickup(location14 -> {
-            pickup_search_fragment.dismiss();
-            pickupPlaceNameInt = location14;
-            Pickupmethod(pickupPlaceNameInt);
-            blue_pin_icon.setVisibility(View.VISIBLE);
-            red_pin_icon.setVisibility(View.GONE);
-        });
-    }
-
-//    private void confirnRideNavigationon() {
-//        directionUrl();
-//    }
 
 }

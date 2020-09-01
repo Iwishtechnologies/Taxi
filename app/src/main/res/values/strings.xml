@@ -67,5 +67,6 @@
     <string name="payment_available">Payment Available</string>
     <string name="title_activity_navigation_avtivity">NavigationAvtivity</string>
     <string name="wallet_amount">Wallet Amount</string>
+    <string name="vehicle_search">Vehicle Search</string>
 
 </resources>

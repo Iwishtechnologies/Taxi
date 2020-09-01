@@ -18,11 +18,21 @@ import android.view.ViewGroup;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.Call;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import tech.iwish.taxi.R;
 import tech.iwish.taxi.adapter.PickupLocationAdapter;
 import tech.iwish.taxi.adapter.RentalAdapter;
@@ -64,6 +74,7 @@ public class RentalFragment extends DialogFragment implements SearchView.OnQuery
     public boolean onQueryTextChange(String s) {
 
 
+/*
         ConnectionServer connectionServer = new ConnectionServer();
         connectionServer.set_url(Constants.SEARCH_PLACE);
         connectionServer.requestedMethod("POST");
@@ -93,6 +104,67 @@ public class RentalFragment extends DialogFragment implements SearchView.OnQuery
                 }
             }
         });
+*/
+
+
+
+
+        OkHttpClient okHttpClient = new OkHttpClient();
+        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("value", s);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody body = RequestBody.create(JSON, jsonObject.toString());
+        Request request1 = new Request.Builder().url(Constants.SEARCH_PLACE).post(body).build();
+
+
+        okHttpClient.newCall(request1).enqueue(new okhttp3.Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String result = response.body().string();
+                    Log.e("result", result);
+                    JsonHelper jsonHelper = new JsonHelper(result);
+                    if (jsonHelper.isValidJson()) {
+                        pickupLocationLists.clear();
+                        String responses = jsonHelper.GetResult("status");
+                        if (responses.equals("OK")) {
+                            JSONArray jsonArray = jsonHelper.setChildjsonArray(jsonHelper.getCurrentJsonObj(), "predictions");
+
+
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                jsonHelper.setChildjsonObj(jsonArray, i);
+
+                                pickupLocationLists.add(new PickupLocationList(jsonHelper.GetResult("description"), jsonHelper.GetResult("id"), jsonHelper.GetResult("matched_substrings"), jsonHelper.GetResult("place_id"), jsonHelper.GetResult("reference"), jsonHelper.GetResult("structured_formatting"), jsonHelper.GetResult("terms")));
+
+                            }
+                            if(getActivity() != null){
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+
+                                        RentalAdapter rentalAdapter = new RentalAdapter(getActivity() , pickupLocationLists);
+                                        rental_recycleview.setAdapter(rentalAdapter);
+                                        rentalAdapter.setrentalPlace(data -> setrentaldat.rentaldatass(data));
+
+                                    }
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+
 
 
         return false;

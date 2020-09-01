@@ -16,6 +16,7 @@ public class Constants {
 //    public static String SUBFOLDER = "/api/";
 
     public static String URL = "http://173.212.226.143:8082/";
+//    public static String URL = "http://144.91.94.202:8082/";
 
     public static String SEARCH_PLACE = URL+"placesearch";
     public static String SEARCH_PLACE_DROP= URL+"user/placesearch/drop";
@@ -35,6 +36,10 @@ public class Constants {
     public static String WALEET_MONEY_GET= URL+"user/moneyget";
     public static String CONFIRM_RIDE_HIS= URL+"user/confirm_ride_histriy";
     public static String TRACKING_CHECK= URL+"api/trackingidmatch";
+    public static String PROFILE_IMAGE = URL+"api/profile_image";
+    public static String REFER_CODE_CHECK= URL+"api/refer_code_check";
+    public static String RENTAL_VEHICLE= URL+"api/rental_vehicle";
+    public static String OTP_CHECK = URL+"api/otp_booking_check";
 
 
     public static String PICKUPLOCATIONREQUEST= URL+"user/pickupLocationRequest";

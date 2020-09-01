@@ -1,6 +1,7 @@
 package tech.iwish.taxi.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,8 +19,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.kaopiz.kprogresshud.KProgressHUD;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.List;
 
+import tech.iwish.taxi.Interface.DropLocationInterface;
 import tech.iwish.taxi.R;
 import tech.iwish.taxi.fragment.ConfirmRideFragment;
 import tech.iwish.taxi.other.DropLocationList;
@@ -30,11 +36,12 @@ public class SearchDropAdapter extends RecyclerView.Adapter<SearchDropAdapter.Vi
     private Context context;
     private DropInterFace dropInterFace;
     private KProgressHUD kProgressHUD;
+    DropLocationInterface dropLocationInterface;
 
-
-    public SearchDropAdapter(FragmentActivity activity, List<DropLocationList> dropLocationListMap) {
+    public SearchDropAdapter(FragmentActivity activity, List<DropLocationList> dropLocationListMap ,DropLocationInterface dropLocationInterface) {
         this.context = activity;
         this.dropLocationLists = dropLocationListMap;
+        this.dropLocationInterface = dropLocationInterface;
     }
 
     @NonNull
@@ -47,20 +54,39 @@ public class SearchDropAdapter extends RecyclerView.Adapter<SearchDropAdapter.Vi
 
     @Override
     public void onBindViewHolder(@NonNull Viewholder holder, int position) {
+
+
+
+        String setVal = "";
+
+//        try {
+//            JSONArray jsonArray = new JSONArray(dropLocationLists.get(position).getTerms());
+//            for (int i = 0; i < jsonArray.length() ; i++) {
+//                JSONObject jsonObject =jsonArray.getJSONObject(i);
+//
+//                setVal += jsonObject.getString("value") + " ";
+//
+//            }
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+
+        holder.status_check.setText(setVal);
+
         holder.place.setText(dropLocationLists.get(position).getDescription());
          kProgressHUD = new KProgressHUD(context);
 
         holder.placeLayout.setOnClickListener(view -> {
 
             setProgressDialog("");
-
-//            keyboad open code
-            InputMethodManager input = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
-            input.hideSoftInputFromWindow(view.getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
-
-            dropInterFace.droplocationInterFace(dropLocationLists.get(position).getDescription());
-
-            remove_progress_Dialog();
+//
+////            keyboad open code
+//            InputMethodManager input = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
+//            input.hideSoftInputFromWindow(view.getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
+//
+////            dropInterFace.droplocationInterFace(dropLocationLists.get(position).getDescription());
+//            dropLocationInterface.drop_loaction_Interface(dropLocationLists.get(position).getDescription());
+//            remove_progress_Dialog();
 /*
             ConfirmRideFragment confirmRideFragment = new ConfirmRideFragment(null , null , null);
             FragmentManager fm = ((FragmentActivity) context).getSupportFragmentManager();
@@ -95,13 +121,14 @@ public class SearchDropAdapter extends RecyclerView.Adapter<SearchDropAdapter.Vi
 
     public class Viewholder extends RecyclerView.ViewHolder {
 
-        TextView place;
+        TextView place ,status_check;
         LinearLayout placeLayout, click_linerLayout_vehicle;
 
         public Viewholder(@NonNull View itemView) {
             super(itemView);
 
             place = (TextView) itemView.findViewById(R.id.place);
+            status_check = (TextView) itemView.findViewById(R.id.status_check);
             placeLayout = (LinearLayout) itemView.findViewById(R.id.placeLayout);
 
         }

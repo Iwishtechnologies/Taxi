@@ -24,7 +24,7 @@ public class PickupLocationAdapter extends RecyclerView.Adapter<PickupLocationAd
     private onPickupListner onpickupListner;
 
 
-    public PickupLocationAdapter(FragmentActivity activity, List<PickupLocationList> pickupLocationLists ) {
+    public PickupLocationAdapter(FragmentActivity activity, List<PickupLocationList> pickupLocationLists) {
         this.pickupLocationLists = pickupLocationLists;
         this.context = activity;
 
@@ -43,16 +43,16 @@ public class PickupLocationAdapter extends RecyclerView.Adapter<PickupLocationAd
     @Override
     public void onBindViewHolder(@NonNull Viewholder holder, final int position) {
 
-        holder.place.setText(pickupLocationLists.get(position).getDescription());
-
+        if (!pickupLocationLists.get(position).getDescription().isEmpty())
+            holder.place.setText(pickupLocationLists.get(position).getDescription());
+/*
         holder.placeLayout.setOnClickListener(view -> {
 //                Toast.makeText(context, "" + pickupLocationLists.get(position).getDescription(), Toast.LENGTH_SHORT).show();
-            InputMethodManager input = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
-            input.hideSoftInputFromWindow(view.getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
+            InputMethodManager input = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+            input.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
             onpickupListner.onListen(pickupLocationLists.get(position).getDescription());
 
-
-        });
+        });*/
     }
 
     @Override
@@ -78,15 +78,14 @@ public class PickupLocationAdapter extends RecyclerView.Adapter<PickupLocationAd
     }
 
 
-    public void setOnPickupListner(onPickupListner onpickupListner)
-    {
+    public void setOnPickupListner(onPickupListner onpickupListner) {
         this.onpickupListner = onpickupListner;
     }
 
 
-    public interface onPickupListner{
+    public interface onPickupListner {
 
-         void onListen(String location);
+        void onListen(String location);
 
     }
 

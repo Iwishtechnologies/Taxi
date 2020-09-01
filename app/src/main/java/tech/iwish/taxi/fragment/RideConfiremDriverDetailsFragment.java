@@ -26,9 +26,21 @@ import android.widget.Toast;
 
 import com.goodiebag.pinview.Pinview;
 
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.Map;
 import java.util.Random;
 
+import okhttp3.Call;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import tech.iwish.taxi.R;
 import tech.iwish.taxi.activity.MainActivity;
 import tech.iwish.taxi.config.Constants;
@@ -42,7 +54,7 @@ import static tech.iwish.taxi.config.SharedpreferencesUser.DRIVER_OTP;
 
 public class RideConfiremDriverDetailsFragment extends Fragment {
 
-    private LinearLayout confirmOtp , trip_dis;
+    private LinearLayout confirmOtp, trip_dis;
     private Random generate_otp;
     private int otp;
     private Button info_driver;
@@ -51,14 +63,14 @@ public class RideConfiremDriverDetailsFragment extends Fragment {
     private String distance;
     private String driver_name;
     private String driver_mobile;
-    private String driverId, rental , trackid;
-    private String otps, outstation , otpsdriver;
-    private TextView trip_distance, trip_duration, trip_rate, call_driver ,amts;
+    private String driverId, rental, trackid;
+    private String otps, outstation, otpsdriver;
+    private TextView trip_distance, trip_duration, trip_rate, call_driver, amts;
     private SharedpreferencesUser sharedpreferencesUser;
     private AlertDialog.Builder builder;
     private View dialogView;
     View view;
-    private Map data  ;
+    private Map data;
 
 
     @Nullable
@@ -72,7 +84,7 @@ public class RideConfiremDriverDetailsFragment extends Fragment {
         trip_duration = (TextView) view.findViewById(R.id.trip_duration);
         trip_rate = (TextView) view.findViewById(R.id.trip_rate);
         amts = (TextView) view.findViewById(R.id.amts);
-        trip_dis = (LinearLayout)view.findViewById(R.id.trip_dis);
+        trip_dis = (LinearLayout) view.findViewById(R.id.trip_dis);
 
 
         generate_otp = new Random();
@@ -86,33 +98,74 @@ public class RideConfiremDriverDetailsFragment extends Fragment {
         distance = arguments.getString("distance");
         driver_name = arguments.getString("driver_name");
         driver_mobile = arguments.getString("driver_mobile");
-        driverId = arguments.getString("driverId");
+//        driverId = arguments.getString("driverId");
         otps = arguments.getString("otp");
         rental = arguments.getString("rental");
         trackid = arguments.getString("trackid");
 
-        this.otpsdriver = otps ;
+        this.otpsdriver = otps;
 
         amts.setText(rate);
 
 
+        OkHttpClient okHttpClient = new OkHttpClient();
+        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("driverId", driverId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody body = RequestBody.create(JSON, jsonObject.toString());
+        Request request1 = new Request.Builder().url(Constants.OTP_CHECK).post(body).build();
+
+
+        okHttpClient.newCall(request1).enqueue(new okhttp3.Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String result = response.body().string();
+                    Log.e("result", result);
+                    JsonHelper jsonHelper = new JsonHelper(result);
+                    if (jsonHelper.isValidJson()) {
+                        String responses = jsonHelper.GetResult("response");
+                        if (responses.equals("TRUE")) {
+
+                            JSONArray jsonArray = jsonHelper.setChildjsonArray(jsonHelper.getCurrentJsonObj(), "data");
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                jsonHelper.setChildjsonObj(jsonArray, i);
+                                driverId = jsonHelper.GetResult("data");
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+
         if (rental != null) {
             trip_dis.setVisibility(View.GONE);
-            driver ();
+            driver();
         } else if (outstation != null) {
-            driver ();
+            driver();
         } else {
 
             otp = Integer.parseInt(otps);
             trip_distance.setText(distance);
             trip_duration.setText(time);
             trip_rate.setText(rate);
-            driver ();
+            driver();
         }
         return view;
     }
-    private void driver (){
-        sharedpreferencesUser.driverInfo(driver_name, driver_mobile, rate, time, distance, otpsdriver ,trackid);
+
+    private void driver() {
+        sharedpreferencesUser.driverInfo(driver_name, driver_mobile, rate, time, distance, otpsdriver, trackid);
 
         info_driver.setOnClickListener((View) -> {
             char[] breack_otp = otpsdriver.toCharArray();

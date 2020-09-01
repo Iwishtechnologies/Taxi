@@ -19,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -27,8 +28,10 @@ import android.widget.Toast;
 import com.kaopiz.kprogresshud.KProgressHUD;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +39,14 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import okhttp3.Call;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import tech.iwish.taxi.Interface.DropLocationInterface;
 import tech.iwish.taxi.R;
+import tech.iwish.taxi.RecyclerTouchListener;
+import tech.iwish.taxi.adapter.PickupLocationAdapter;
 import tech.iwish.taxi.adapter.SearchDropAdapter;
 import tech.iwish.taxi.config.Constants;
 import tech.iwish.taxi.connection.ConnectionServer;
@@ -54,9 +64,11 @@ public class Search_dropFragment extends DialogFragment {
     private KProgressHUD kProgressHUD;
     private EditText EditviewSearchview;
     public Map<String, Double> latitude_logitude ;
+    DropLocationInterface dropLocationInterface;
 
-    public Search_dropFragment(Map<String, Double> latitude_logitude) {
+    public Search_dropFragment(Map<String, Double> latitude_logitude ,DropLocationInterface dropLocationInterface) {
         this.latitude_logitude = latitude_logitude;
+        this.dropLocationInterface = dropLocationInterface;
     }
 
     @Nullable
@@ -94,13 +106,13 @@ public class Search_dropFragment extends DialogFragment {
         searchview.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
-                SearchTime(s);
+//                SearchTime(s);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String s) {
-//                SearchTime(s);
+                SearchTimes(s);
                 return true;
             }
         });
@@ -110,13 +122,96 @@ public class Search_dropFragment extends DialogFragment {
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
         search_drop_recycle.setLayoutManager(linearLayoutManager);
 
+        search_drop_recycle.addOnItemTouchListener(new RecyclerTouchListener(getContext(), search_drop_recycle, new RecyclerTouchListener.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+
+                InputMethodManager input = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                input.hideSoftInputFromWindow(view.getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
+                dropLocationInterface.drop_loaction_Interface(dropLocationListMap.get(position).getDescription());
+
+            }
+
+            @Override
+            public void onLongItemClick(View view, int position) {
+
+            }
+        }));
+
+
+
+
         return view;
+    }
+
+    private void SearchTimes(String s) {
+
+
+        dropLocationListMap.clear();
+        String URL = "https://maps.googleapis.com/maps/api/place/autocomplete/json?input='india'"+s+"&location="+String.valueOf(latitude_logitude.get("PickLatitude"))+","+ String.valueOf(latitude_logitude.get("PickLogitude"))+" &radius=5000&key=AIzaSyApe8T3JMiqj9OgEbqd--zTBfl3fibPeEs";
+
+        Log.e("a",URL);
+
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(URL)
+                .build();
+
+        client.newCall(request).enqueue(new okhttp3.Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                e.printStackTrace();
+            }
+
+
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String result = response.body().string();
+
+                    Log.e("result",result);
+
+                    JsonHelper jsonHelper = new JsonHelper(result);
+                    if (jsonHelper.isValidJson()) {
+                        String responses = jsonHelper.GetResult("status");
+                        if (responses.equals("OK")) {
+//                            pickupLocationLists.clear();
+                            JSONArray jsonArray = jsonHelper.setChildjsonArray(jsonHelper.getCurrentJsonObj(), "predictions");
+
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                jsonHelper.setChildjsonObj(jsonArray, i);
+                                dropLocationListMap.add(new DropLocationList(jsonHelper.GetResult("description"), jsonHelper.GetResult("id"), jsonHelper.GetResult("matched_substrings"), jsonHelper.GetResult("place_id"), jsonHelper.GetResult("reference"), jsonHelper.GetResult("structured_formatting"), jsonHelper.GetResult("terms")));
+
+                            }
+
+                            if (getActivity() != null) {
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+
+                                        SearchDropAdapter searchDropAdapter = new SearchDropAdapter(getActivity(), dropLocationListMap,dropLocationInterface);
+                                        search_drop_recycle.setAdapter(searchDropAdapter);
+                                        searchDropAdapter.notifyDataSetChanged();
+                                        remove_progress_Dialog();
+
+                                    }
+                                });
+                            }
+
+                        }
+                    }
+
+                }
+            }
+        });
+
+
+
     }
 
     private void SearchTime(String value) {
 
-        Toast.makeText(getContext(), ""+latitude_logitude.get("PickLatitude"), Toast.LENGTH_SHORT).show();
-        Toast.makeText(getContext(), ""+latitude_logitude.get("PickLogitude"), Toast.LENGTH_SHORT).show();
 
         setProgressDialog("Search Place");
 
@@ -126,7 +221,6 @@ public class Search_dropFragment extends DialogFragment {
         connectionServer.buildParameter("value", value);
         connectionServer.buildParameter("PickLatitude", String.valueOf(latitude_logitude.get("PickLatitude")));
         connectionServer.buildParameter("PickLogitude", String.valueOf(latitude_logitude.get("PickLogitude")));
-        connectionServer.readTimeout(400);
         connectionServer.execute(output -> {
             Log.e("output", output);
             JsonHelper jsonHelper = new JsonHelper(output);
@@ -142,17 +236,18 @@ public class Search_dropFragment extends DialogFragment {
 
                     }
 
-                    SearchDropAdapter searchDropAdapter = new SearchDropAdapter(getActivity(), dropLocationListMap);
+                    SearchDropAdapter searchDropAdapter = new SearchDropAdapter(getActivity(), dropLocationListMap,dropLocationInterface);
                     search_drop_recycle.setAdapter(searchDropAdapter);
                     searchDropAdapter.notifyDataSetChanged();
                     remove_progress_Dialog();
-                    searchDropAdapter.setdropLOcationValue(data -> valuedrop.DroplocationValue(data));
+//                    searchDropAdapter.setdropLOcationValue(data -> valuedrop.DroplocationValue(data));
                 }
             }
         });
 
 
     }
+
 
 
     public void setValueDrop(DropValueInterFace drop) {

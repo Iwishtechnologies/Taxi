@@ -1,5 +1,6 @@
 package tech.iwish.taxi.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,15 +17,23 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.gms.maps.model.LatLng;
 import com.kaopiz.kprogresshud.KProgressHUD;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import okhttp3.Call;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import tech.iwish.taxi.R;
 import tech.iwish.taxi.config.Constants;
 import tech.iwish.taxi.config.SharedpreferencesUser;
@@ -97,19 +106,7 @@ public class OutStationVehicleAdapter extends RecyclerView.Adapter<OutStationVeh
             }, 0, 1000);
 
 
-//            ConnectionServer connectionServer = new ConnectionServer();
-//            connectionServer.requestedMethod("POST");
-//            connectionServer.set_url(Constants.Vehicle);
-//            connectionServer.execute(output -> {
-//                Log.e("output", output);
-//                JsonHelper jsonHelper = new JsonHelper(output);
-//                if (jsonHelper.isValidJson()) {
-//                    String response = jsonHelper.GetResult("response");
-//                    if (response.equals("TRUE")) {
-//
-//                    }
-//                }
-//            });
+
 
         });
     }
@@ -141,9 +138,9 @@ public class OutStationVehicleAdapter extends RecyclerView.Adapter<OutStationVeh
 
             bundle.putString("otp", otp);
             bundle.putString("driverId", driverId);
-            bundle.putString("trackid",trackid);
+            bundle.putString("trackid", trackid);
 
-            ConnectionServer connectionServer = new ConnectionServer();
+   /*         ConnectionServer connectionServer = new ConnectionServer();
             connectionServer.set_url(Constants.DRIVERSHOW);
             connectionServer.requestedMethod("POST");
             connectionServer.buildParameter("driverId", driverId);
@@ -168,7 +165,63 @@ public class OutStationVehicleAdapter extends RecyclerView.Adapter<OutStationVeh
                         remove_progress_Dialog();
                     }
                 }
+            });*/
+
+
+//            **************************************************
+
+            OkHttpClient okHttpClient = new OkHttpClient();
+            MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+            JSONObject jsonObjects = new JSONObject();
+            try {
+                jsonObjects.put("driverId", driverId);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            RequestBody body = RequestBody.create(JSON, jsonObjects.toString());
+            Request request1 = new Request.Builder().url(Constants.DRIVERSHOW).post(body).build();
+
+
+            okHttpClient.newCall(request1).enqueue(new okhttp3.Callback() {
+                @Override
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                    e.printStackTrace();
+                }
+
+                @Override
+                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                    if (response.isSuccessful()) {
+                        String result = response.body().string();
+                        Log.e("result", result);
+                        JsonHelper jsonHelper = new JsonHelper(result);
+                        if (jsonHelper.isValidJson()) {
+                            String responses = jsonHelper.GetResult("response");
+                            if (responses.equals("TRUE")) {
+
+                                JSONArray jsonArray = jsonHelper.setChildjsonArray(jsonHelper.getCurrentJsonObj(), "data");
+                                for (int i = 0; i < jsonArray.length(); i++) {
+                                    jsonHelper.setChildjsonObj(jsonArray, i);
+                                    bundle.putString("driver_name", jsonHelper.GetResult("DriverName"));
+                                    bundle.putString("driver_mobile", jsonHelper.GetResult("Mobile"));
+                                }
+                                ((Activity) context).runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        RideConfiremDriverDetailsFragment rideConfiremDriverDetailsFragment = new RideConfiremDriverDetailsFragment();
+                                        FragmentManager fm = ((FragmentActivity) context).getSupportFragmentManager();
+                                        rideConfiremDriverDetailsFragment.setArguments(bundle);
+                                        fm.beginTransaction().replace(R.id.confirmRideLoad, rideConfiremDriverDetailsFragment).commit();
+                                        remove_progress_Dialog();
+
+                                    }
+                                });
+
+                            }
+                        }
+                    }
+                }
             });
+
 
         } catch (JSONException e) {
             e.printStackTrace();
